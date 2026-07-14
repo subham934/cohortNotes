@@ -106,3 +106,24 @@ image is immutable, so we can't change the code inside container.
 => docker start <container_name> - this command will start the container
 => docker restart <container_name> - this command will restart the container
 => docker rm <container_name> - this command will remove the container
+
+
+
+//===============================
+
+we have created one more API inside our express server
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({
+        message: "OK",
+        time: Date.now()
+    });
+});
+
+if we wnat to access it as localhost:8080/api/health, we wont get the result because our container was created with an image which had only two API  / , /api/data
+
+so we have to stop the container and create a new image and then create container from the new image
+
+
+docker build . -t cohort_2
+docker run -p 2000:3000 cohort_2
