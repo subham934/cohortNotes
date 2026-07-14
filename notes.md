@@ -95,3 +95,14 @@ docker run -p 8080:3000 cohort_2
 => now we can access the server at localhost:8080
 
 
+//===============================
+
+
+image is immutable, so we can't change the code inside container.
+
+=> docker ps - this command will list all the containers
+=> docker ps -a - this command will list all the containers including stopped ones
+=> docker stop <container_name or container_id> - this command will stop the container
+=> docker start <container_name> - this command will start the container
+=> docker restart <container_name> - this command will restart the container
+=> docker rm <container_name> - this command will remove the container
