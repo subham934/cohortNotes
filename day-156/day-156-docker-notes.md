@@ -21,6 +21,68 @@ codebase + dependencies + Node.js + Operating System
 > Image = blueprint (static)
 > Container = execution of that blueprint (running virtual environment)
 
+### 2.1 Why do we need an Image?
+
+Sharing just the codebase (e.g. via GitHub) isn't enough — the receiving machine still needs the right Node.js version, OS, and dependencies manually installed. Without a fixed environment, "works on my machine" bugs keep happening.
+
+An **image bundles everything needed to run the app** — code + dependencies + Node.js + OS — into one self-contained, portable package. Whoever runs the image gets an identical environment automatically; nothing needs to be installed manually.
+
+**Analogy:** a takeaway pizza box. Base (dough) = OS, sauce+cheese = Node.js runtime, toppings = npm dependencies, garnish = actual code. Once boxed (image built), anyone can open it and use it as-is — no cooking (manual setup) required.
+
+**How an image is formed from the codebase:** each Dockerfile instruction executes top-to-bottom and produces a **layer**, stacked on top of the previous one:
+
+```
+FROM node:20-alpine      → Layer 1: base OS + Node.js
+COPY package.json .      → Layer 2: dependency manifest added
+RUN npm install           → Layer 3: dependencies installed inside the image
+COPY server.js .         → Layer 4: actual source code added
+CMD ["node","server.js"]  → metadata: command to run when a container starts
+```
+
+Running `docker build .` executes these layers in order and produces one final, frozen image.
+
+**Practical uses of an image:**
+- **Consistency** — every teammate, CI/CD pipeline, or cloud server gets the identical environment.
+- **Portability** — push to Docker Hub, pull and run anywhere without manual setup.
+- **Reproducibility** — a production bug can be reproduced locally using the exact same image.
+- **Deployment unit** — cloud platforms (AWS ECS, Kubernetes, Render, etc.) deploy images, not raw codebases.
+- **Scaling** — one image can be used to spin up many identical containers.
+
+### 2.2 Why do we need a Container?
+
+An image is just a **packed, static bundle** — it doesn't do anything by itself. Nothing is actually running, no server is listening, no port is open. A container is what turns that static package into a **live, running process**.
+
+**Analogy continued:** the pizza box (image) is fully packed and ready, but nobody can eat until the box is opened and the pizza is actually served on a plate. The container is that served, live pizza — the actual usable output.
+
+**How a container is formed from an image:** running `docker run cohort_2` makes Docker:
+1. Load the frozen image from disk
+2. Spin up a new isolated environment on top of it — its own filesystem, network, and process space
+3. Execute the image's `CMD` (e.g. `node server.js`)
+4. The result is a live, running process — the container
+
+A container is not a copy of the image — it runs on top of the image with a thin **writable layer** added, so any runtime changes (logs, temp files) stay in the container and never modify the underlying image.
+
+**Practical uses of a container:**
+- **Isolation** — each container has its own process/network space; one crashing doesn't affect others.
+- **Actual execution unit** — this is what's "running" in production, not the image.
+- **Multiple instances from one image** — spin up several containers from the same image for scaling.
+- **Disposable & recreatable** — a broken container can be deleted and a fresh one spun up from the same image in seconds.
+- **Lightweight** — containers share the host OS kernel (unlike a full VM), so they start in seconds rather than minutes.
+
+### 2.3 Relating Image and Container
+
+| Aspect | Image | Container |
+|---|---|---|
+| Nature | Static, frozen, read-only | Live, running, dynamic |
+| Analogy | Recipe / packed pizza box | Cooked cake / pizza being served |
+| State | Doesn't do anything by itself | Actively runs the process (e.g. server listening) |
+| Relationship | One image → many containers possible | Each container derives from one specific image |
+| Changes | Immutable — needs a rebuild to change | Runtime changes possible (writable layer) but not permanent |
+| Created via | `docker build` | `docker run` (from an image) |
+| Purpose | Portable, shareable package — "what to run" | Actual execution — "running it" |
+
+**Core relationship:** an image is a template — like a class in programming — from which any number of independent, isolated running instances (containers) can be created, similar to how a class produces multiple objects.
+
 ## 3. Building the Express Server
 
 ```js
@@ -120,7 +182,9 @@ docker run -p 2000:3000 cohort_2
 ## Key Takeaways
 
 - Docker solves environment inconsistency across team machines.
-- Image = static blueprint; Container = running instance of that blueprint.
+- An image bundles code + dependencies + Node.js + OS into one portable package — solves "works on my machine" and enables consistent deployment.
+- A container is the live, running execution of an image — nothing actually runs until an image is turned into a container.
+- Image = static blueprint (like a class); Container = running instance of that blueprint (like an object) — one image can produce many containers.
 - Dockerfile defines how the image is built, layer by layer.
 - Port mapping (`-p host:container`) is required to access a containerized server from the host.
 - Images are immutable — any code change requires a **rebuild** of the image and a **new container run**.
