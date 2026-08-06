@@ -1,0 +1,101 @@
+@import "button";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+// sass mixin
+// @mixin flexCen() {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+
+// scss nesting
+// main {
+//   height: 100%;
+//   width: 100%;
+//   background-color: #555;
+//   @include flexCen();
+
+//   section {
+//     height: 50%;
+//     width: 50%;
+//     background-color: beige;
+//     @include flexCen();
+
+//     h1 {
+//       font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+//         sans-serif;
+//     }
+//   }
+// }
+
+// here, i've use mixin with variable (parameters)
+// @mixin button-style($bg-color){
+//     padding: 20px 30px;
+//     background-color: $bg-color;
+//     color: white;
+//     border: none;
+//     border-radius: 7px;
+//     outline: none;
+//     cursor: pointer;
+//     font-size: 18px;
+// }
+
+// .blue{
+//     @include button-style(blue);
+// }
+
+// .red{
+//     @include button-style(red);
+// }
+
+main {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  section {
+    height: 100%;
+    flex-grow: 1; //flex-grow: 1 tells each <section> to expand and share any leftover horizontal space equally with other flex items inside <main>. Since all 5 sections have flex-grow: 1, they will grow equally and split the available space into 5 equal parts.
+
+    background-size: cover;
+    background-position:center;
+    transition: all 0.3s ease-in;
+    filter: brightness(0.6);
+    cursor: pointer;
+  }
+  
+  section:hover {
+    filter: brightness(1);
+    flex-grow: 1.5;
+  }
+
+  section:nth-child(1) {
+    background-image: url("https://i.pinimg.com/736x/5e/6a/01/5e6a01e41322b9454a88b9d135ec0b91.jpg");
+  }
+  
+  section:nth-child(2) {
+    background-image: url("https://i.pinimg.com/736x/76/fe/34/76fe347826921c03e367d8bef281da54.jpg");
+  }
+  
+  section:nth-child(3) {
+    background-image: url("https://i.pinimg.com/736x/f3/9a/d2/f39ad265bcf761b5b47c0bc4294da8b6.jpg");
+  }
+  
+  section:nth-child(4) {
+    background-image: url("https://i.pinimg.com/736x/d0/85/60/d08560e4f05e6cdc99de91862643865b.jpg");
+  }
+
+  section:nth-child(5) {
+    background-image: url("https://i.pinimg.com/736x/c9/09/f3/c909f39b213c6e526feb683c6947b6dc.jpg");
+  }
+}

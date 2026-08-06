@@ -1,0 +1,27 @@
+@mixin button-style($bg-color: blue, $text-color: white, $text-size) {
+  padding: 15px 30px;
+  background-color: $bg-color;
+  color: $text-color;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-size: $text-size;
+  outline: none;
+  font-weight: 800;
+  margin-right: 30px;
+
+}
+
+
+.blue {
+  @include button-style(blue, white, 18px);
+}
+
+// .red {
+//   @include button-style(red, yellow, 18px);
+// }
+
+
+.red{
+    @include button-style(red, aqua, 18px)
+}

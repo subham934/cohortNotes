@@ -1,0 +1,159 @@
+/* lesson1
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body{
+  width: 100%;
+  height: 100vh;
+  background-color: #111;
+}
+
+.box, .box1, .box2, .box3{
+  width: 300px;
+  height: 300px;
+  margin-bottom: 1rem;
+}
+.box{
+  background-color: red;
+}
+
+.box1{
+  background-color: blue;
+}
+
+.box2{
+  background-color: green;
+}
+
+.box3{
+  background-color: yellow;
+}
+
+.buttons{
+  display: flex;
+  gap: 10px;
+}
+
+button{
+  padding: 10px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: red;
+  color: white;
+  border-radius: 5px;
+  font-size: 2rem;
+  padding: 20px 30px;
+  transition: all 0.2s ease;
+} */
+
+
+/* lesson2 
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:sans-serif;
+}
+
+.loader{
+  position:fixed;
+  inset:0;
+  background:black;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+
+nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:25px 60px;
+}
+
+ul{
+  display:flex;
+  gap:30px;
+  list-style:none;
+}
+
+.hero{
+  height:80vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.hero h1{
+  font-size:5rem;
+} */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  font-family:sans-serif;
+}
+
+.page{
+  width:100%;
+  height:100vh;
+  border-bottom:1px solid #a32727;
+}
+
+.page2{
+  position: relative;
+}
+
+.content{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  color: white;
+  font-size: 8rem;
+}
+
+.content h1{
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  font-size: 6rem;
+}
+
+.imageDiv{
+  width: 100%;
+  height: 100%;
+  transform-origin: center;
+}
+
+img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.box{
+  width:200px;
+  height:200px;
+  background-color:purple;
+}

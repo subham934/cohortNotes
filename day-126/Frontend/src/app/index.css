@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --theme-bg: #07090f;
+  --theme-card: rgba(8, 11, 18, 0.4);
+  --theme-input: rgba(7, 9, 15, 0.6);
+  --theme-border: rgba(255, 255, 255, 0.08);
+  --theme-text: #f3f4f6;
+  --theme-muted: #9ca3af;
+  --theme-accent: #31b8c6;
+  --theme-accent-rgb: 49, 184, 198;
+  --theme-accent-dim: #1a7a85;
+}
+
+.hacker {
+  --theme-bg: #000d00;
+  --theme-card: rgba(0, 20, 0, 0.75);
+  --theme-input: rgba(0, 10, 0, 0.85);
+  --theme-border: rgba(0, 255, 70, 0.18);
+  --theme-text: #00ff46;
+  --theme-muted: #00aa30;
+  --theme-accent: #00ff46;
+  --theme-accent-rgb: 0, 255, 70;
+  --theme-accent-dim: #00cc38;
+}
+
+.hacker,
+.hacker * {
+  font-family: 'Share Tech Mono', monospace !important;
+}
+
+.hacker h1,
+.hacker h2,
+.hacker h3,
+.hacker h4,
+.hacker h5,
+.hacker h6 {
+  text-shadow: 0 0 8px rgba(0, 255, 70, 0.4) !important;
+}
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+  --font-space: 'Space Grotesk', sans-serif;
+  --font-hacker: 'Share Tech Mono', monospace;
+
+  --color-theme-bg: var(--theme-bg);
+  --color-theme-card: var(--theme-card);
+  --color-theme-input: var(--theme-input);
+  --color-theme-border: var(--theme-border);
+  --color-theme-text: var(--theme-text);
+  --color-theme-muted: var(--theme-muted);
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-accent-dim: var(--theme-accent-dim);
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
+@utility animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@utility animate-scaleIn {
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

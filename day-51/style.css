@@ -1,0 +1,175 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #fff;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right bottom, gray, purple);
+  padding: 20px;
+}
+
+section {
+  height: 100%;
+  width: 350px;
+  background-color: black;
+  border-radius: 10px;
+  margin: auto;
+}
+
+.all-reels {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.all-reels::-webkit-scrollbar {
+  display: none;
+}
+
+.reel {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  /* background-color: lightblue; */
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.reel video {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.reel .bottom {
+  padding: 30px 20px;
+  width: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.844));
+  position: absolute;
+  bottom: 0;
+}
+
+.bottom .user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.bottom .user img {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.bottom .user h4 {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.bottom .user button {
+  background-color: transparent;
+  padding: 2px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 2px;
+  border: 1px solid white;
+}
+
+.bottom > h3 {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.right {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+  width: 40px;
+  position: absolute;
+  right: 0;
+  /* height: 100%; */
+  /* transform: translateX(100%); */
+  bottom: 12%;
+  border-radius: 10px;
+  /* background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.998)); */
+}
+
+.right h4 {
+  cursor: pointer;
+}
+
+.right i {
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.right h6 {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.right > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  cursor: pointer;
+}
+
+.love {
+  color: red;
+}
+
+.right > div h4{
+    pointer-events: none;
+}
+
+.right > div h6{
+    pointer-events: none;
+}
+
+.mute{
+    background-color: #333;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    top: 0%;
+    right: 0%;
+}
+
+.mute i{
+    font-size: 22px;
+    pointer-events: none;
+}
+.mute:active{
+    scale: 0.95;
+}

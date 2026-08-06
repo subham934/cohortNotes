@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Minimalist Matte Black Background -->
+  <rect width="512" height="512" rx="140" fill="#0D0D0D"/>
+
+  <!-- Modern Geometric "S" Monogram -->
+  <!-- Designed with sharp, high-fashion angles and perfect symmetry -->
+  <path d="M140 150 
+           H372 
+           V225 
+           L235 225 
+           C210 225 195 240 195 260 
+           V275 
+           L372 275 
+           V362 
+           H140 
+           V287 
+           H277 
+           C302 287 317 272 317 252 
+           V237 
+           L140 237 
+           Z" 
+        fill="#FFBF00"/>
+
+  <!-- Subtle brand dot accent -->
+  <circle cx="372" cy="150" r="10" fill="#FFFFFF"/>
+</svg>

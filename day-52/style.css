@@ -1,0 +1,47 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #555;
+}
+
+/* .box{
+    height: 400px;
+    width: 400px;
+    border: 1px solid white; */
+/* background: linear-gradient(in oklab to right, purple, violet, pink); */
+/* background: linear-gradient(in hsl to right, purple, violet, pink); */
+/* background: radial-gradient( red, blue); */
+/* background: radial-gradient(150px , red, blue); */
+/* background: radial-gradient(250px, green , red, blue); */
+
+/* to change the center of radial-gradient we write as below */
+
+/* background: radial-gradient(300px at 100px 100px, red, blue); */
+/* } */
+
+:root{
+    --primary: rebeccapurple;
+    --x: 200px;
+    --y: 200px;
+}
+
+body{
+    background-image: url('https://images.unsplash.com/photo-1767536474726-55fd012dd09b?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-size: cover;
+    background-position: center;
+}
+
+.box {
+  height: 100%;
+  width: 100%;
+  background: radial-gradient(150px at var(--x) var(--y), transparent 22%,rgba(0,0,0,.9) 72%);
+}

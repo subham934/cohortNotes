@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chapter 5 Practice - Horizontal Scroll</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="scroll-container">
+      
+      <!-- Section 1 -->
+      <section class="panel section-1">
+        <div class="panel-content">
+          <span class="tag">Introduction</span>
+          <h2>Visualizing Microscopic Worlds</h2>
+          <p>Scroll down to explore the structure and typography of pathogens.</p>
+          <div class="scroll-indicator">
+            <span class="arrow">↓</span> Scroll to Begin
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2 -->
+      <section class="panel section-2">
+        <div class="giant-text-container">
+          <h1 class="giant-text">Streptococcus pneumoniae</h1>
+        </div>
+        <div class="panel-content text-overlay">
+          <span class="tag tag-accent">The Pathogen</span>
+          <h3>Pneumococcus Bacteria</h3>
+          <p>A major cause of community-acquired pneumonia and meningitis.</p>
+        </div>
+      </section>
+
+      <!-- Section 3 -->
+      <section class="panel section-3">
+        <div class="panel-content">
+          <span class="tag">Conclusion</span>
+          <h2>Explore More Species</h2>
+          <p>This layout is crafted using horizontal GSAP ScrollTrigger timelines.</p>
+          <a href="#" class="btn-refresh" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Scroll Back to Top</a>
+        </div>
+      </section>
+
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

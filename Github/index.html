@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A E T H E R — Minimalist Essentials</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="AETHER Minimalist essentials collection with premium fabrics and refined everyday silhouettes."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Custom Cursor elements -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Navigation Bar -->
+    <he 
+    ader class="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo" data-magnetic>A E T H E R</a>
+
+        <nav class="nav-links">
+          <a href="#" class="nav-link active" data-filter="all" data-magnetic>Shop All</a>
+          <a href="#" class="nav-link" data-filter="outerwear" data-magnetic>Outerwear</a>
+          <a href="#" class="nav-link" data-filter="tops" data-magnetic>Tops</a>
+          <a href="#" class="nav-link" data-filter="bottoms" data-magnetic>Bottoms</a>
+        </nav>
+
+        <div class="nav-utilities">
+          <button class="icon-btn search-toggle" aria-label="Search" data-magnetic>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+          <button class="icon-btn cart-toggle" id="cartBtn" aria-label="Cart" data-magnetic>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"
+              ></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span class="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Header -->
+      <section class="hero-section">
+        <span class="hero-subtitle">Summer Essentials Collection</span>
+        <div class="hero-badge">New drop · quietly modern</div>
+        <h1 class="hero-title">Effortless Silhouettes</h1>
+        <p class="hero-description">
+          A curation of daily essentials crafted from organic cotton, fine
+          linen, and lightweight technical fabrics. Designed for everyday
+          utility and comfort.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span>12</span>
+            <small>new styles</small>
+          </div>
+          <div class="stat-item">
+            <span>4</span>
+            <small>core categories</small>
+          </div>
+          <div class="stat-item">
+            <span>48h</span>
+            <small>fast dispatch</small>
+          </div>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div class="filter-container">
+          <button class="filter-tab active" data-filter="all">All Items</button>
+          <button class="filter-tab" data-filter="outerwear">Outerwear</button>
+          <button class="filter-tab" data-filter="tops">Tops</button>
+          <button class="filter-tab" data-filter="bottoms">Bottoms</button>
+        </div>
+      </section>
+
+      <!-- Product Lineup Grid -->
+      <section class="product-grid-container">
+        <div class="product-grid" id="productGrid">
+          <!-- Product 1: Hoodie -->
+          <div class="product-card" data-category="outerwear" data-id="1">
+            <div class="product-image-wrap">
+              <img
+                src="images/oversized_hoodie.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80';"
+                alt="Sand Oversized Hoodie"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="S">S</button>
+                  <button class="size-btn" data-size="M">M</button>
+                  <button class="size-btn" data-size="L">L</button>
+                  <button class="size-btn" data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">OUTERWEAR</span>
+              <h3 class="product-title">Sand Oversized Hoodie</h3>
+              <p class="product-desc">
+                Heavyweight organic loopback cotton fleece. Relaxed, dropped
+                shoulder silhouette.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$120.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 2: Linen Shirt -->
+          <div class="product-card" data-category="tops" data-id="2">
+            <div class="product-image-wrap">
+              <img
+                src="images/linen_shirt.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80';"
+                alt="Olive Linen Resort Shirt"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="S">S</button>
+                  <button class="size-btn" data-size="M">M</button>
+                  <button class="size-btn" data-size="L">L</button>
+                  <button class="size-btn" data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">TOPS</span>
+              <h3 class="product-title">Olive Linen Resort Shirt</h3>
+              <p class="product-desc">
+                Breathable organic flax linen. Relaxed camp-collar style for
+                warm summer days.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$85.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 3: Trousers -->
+          <div class="product-card" data-category="bottoms" data-id="3">
+            <div class="product-image-wrap">
+              <img
+                src="images/cropped_trousers.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=600&q=80';"
+                alt="Charcoal Cropped Trousers"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="30">30</button>
+                  <button class="size-btn" data-size="32">32</button>
+                  <button class="size-btn" data-size="34">34</button>
+                  <button class="size-btn" data-size="36">36</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">BOTTOMS</span>
+              <h3 class="product-title">Charcoal Cropped Trousers</h3>
+              <p class="product-desc">
+                Tailored wool-cotton blend fabric with clean front pleats and a
+                relaxed cropped fit.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$95.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 4: Windbreaker -->
+          <div class="product-card" data-category="outerwear" data-id="4">
+            <div class="product-image-wrap">
+              <img
+                src="images/windbreaker_jacket.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=600&q=80';"
+                alt="Obsidian Windbreaker Jacket"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="S">S</button>
+                  <button class="size-btn" data-size="M">M</button>
+                  <button class="size-btn" data-size="L">L</button>
+                  <button class="size-btn" data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">OUTERWEAR</span>
+              <h3 class="product-title">Obsidian Windbreaker Jacket</h3>
+              <p class="product-desc">
+                Water-resistant technical matte nylon shell. Features drawcords
+                and storm flap.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$145.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 5: Off-White Pique Polo -->
+          <div class="product-card" data-category="tops" data-id="5">
+            <div class="product-image-wrap">
+              <img
+                src="images/pique_polo.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=600&q=80';"
+                alt="Off-White Pique Polo"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="S">S</button>
+                  <button class="size-btn" data-size="M">M</button>
+                  <button class="size-btn" data-size="L">L</button>
+                  <button class="size-btn" data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">TOPS</span>
+              <h3 class="product-title">Off-White Pique Polo</h3>
+              <p class="product-desc">
+                Fine pique knit organic cotton. Classical flat-knit collar and tailored ribbed cuffs.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$75.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 6: Sand Cargo Shorts -->
+          <div class="product-card" data-category="bottoms" data-id="6">
+            <div class="product-image-wrap">
+              <img
+                src="images/cargo_shorts.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=600&q=80';"
+                alt="Sand Cargo Shorts"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="30">30</button>
+                  <button class="size-btn" data-size="32">32</button>
+                  <button class="size-btn" data-size="34">34</button>
+                  <button class="size-btn" data-size="36">36</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">BOTTOMS</span>
+              <h3 class="product-title">Sand Cargo Shorts</h3>
+              <p class="product-desc">
+                Durable cotton twill build. Minimal utility pockets with clean flap closures and comfortable fit.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$80.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 7: Charcoal Wool Sweater -->
+          <div class="product-card" data-category="tops" data-id="7">
+            <div class="product-image-wrap">
+              <img
+                src="images/wool_sweater.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614975058789-41316d0e2e9c?auto=format&fit=crop&w=600&q=80';"
+                alt="Charcoal Wool Sweater"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="S">S</button>
+                  <button class="size-btn" data-size="M">M</button>
+                  <button class="size-btn" data-size="L">L</button>
+                  <button class="size-btn" data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">TOPS</span>
+              <h3 class="product-title">Charcoal Wool Sweater</h3>
+              <p class="product-desc">
+                Premium merino wool yarn. Thick ribbed crewneck trim for excellent insulation in cooler seasons.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$135.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 8: Tan Technical Trench Coat -->
+          <div class="product-card" data-category="outerwear" data-id="8">
+            <div class="product-image-wrap">
+              <img
+                src="images/trench_coat.png"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=600&q=80';"
+                alt="Tan Technical Trench Coat"
+                class="product-image"
+                loading="lazy"
+              />
+              <div class="quick-add-pane">
+                <span class="quick-add-label">Quick Add</span>
+                <div class="size-options">
+                  <button class="size-btn" data-size="S">S</button>
+                  <button class="size-btn" data-size="M">M</button>
+                  <button class="size-btn" data-size="L">L</button>
+                  <button class="size-btn" data-size="XL">XL</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-details">
+              <span class="product-cat">OUTERWEAR</span>
+              <h3 class="product-title">Tan Technical Trench Coat</h3>
+              <p class="product-desc">
+                Waterproof double-breasted cotton gabardine. Adjustable buckled belt and classic storm flap design.
+              </p>
+              <div class="product-price-row">
+                <span class="product-price">$195.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Slide-out Cart Drawer -->
+    <div class="cart-drawer-overlay" id="cartOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+      <div class="cart-header">
+        <h2>Your Cart (<span id="cartDrawerCount">0</span>)</h2>
+        <button class="close-btn" id="closeCartBtn" data-magnetic>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="cart-items" id="cartItems">
+        <!-- Dynamic Cart Items go here -->
+        <div class="cart-empty-message">
+          <p>Your cart is empty.</p>
+          <a href="#" class="shop-now-btn" id="shopNowCartBtn"
+            >Continue Shopping</a
+          >
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span>Subtotal</span>
+          <span class="cart-total-price" id="cartTotal">$0.00</span>
+        </div>
+        <button class="checkout-btn" disabled>Proceed to Checkout</button>
+        <p class="cart-note">Free standard shipping on all orders over $150.</p>
+      </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- GSAP Animation Engine -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
+      integrity="sha512-9iHH9y1NKZ6A7dqj4K50tQ5LTxYziSPgnlqlQ6nUy8TzX9ad+qSDxVqqSO8mRCUQXvULcG7t3hOK7C6v2M1YKA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <!-- Core App Logic -->
+    <script src="script.js" defer></script>
+  </body>
+</html>

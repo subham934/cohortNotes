@@ -1,0 +1,15 @@
+SCSS
+
+Nesting:
+-> In SCSS, you can write selectors inside other selectors.
+-> THis mimics the structure of your HTML and makes code cleaner
+
+Mixins:
+-> A mixin is like a reuable styles for CSS rules.
+-> Helps avoid code repetition.
+-> Can take argurements for make it dynamic.
+
+Partials & Imports:
+-> Partials Small SCSS files(start with _) to split your code (e.g.: _header.scss, _footer.scss)
+-> Imports: Use @import to bring all partials into one main file.
+-> Keeps project modular & easy to maintain.
