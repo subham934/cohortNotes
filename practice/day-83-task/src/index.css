@@ -1,0 +1,67 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.allProducts{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  background-color: black;
+}
+
+.product{
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.521);
+  display: block;
+  width: 300px;
+  padding: 20px;
+  border-radius: 10px;
+  text-decoration: none;
+
+}
+
+.product img{
+  height: 200px;
+  object-fit: cover;
+}
+
+.product h2{
+  font-size: 22px;
+  margin-top: 40px;
+  color: white;
+}
+
+
+.cta{
+  padding: 10px 25px;
+  border: none;
+  background: lightseagreen;
+  color: white;
+  font-size: 20px;
+  border-radius: 15px;
+  font-weight: 600;
+}
+
+.home{
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.home h1{
+  font-size: 70px;
+  white-space: nowrap;
+  margin-bottom: 20px;
+}

@@ -1,0 +1,125 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+}
+/* 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  anchor-name: --some-anchor;  
+}
+
+.box {
+  height: 200px;
+  width: 200px;
+  border-radius: 20px;
+}
+
+.box:hover {
+  anchor-name: --some-anchor;
+}
+
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.green {
+  background-color: green;
+} */
+
+/* .anchor {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  position: absolute;
+  top: anchor(top);
+  left: anchor(left);
+  height: 50px;
+  width: 60px;
+  position-anchor: --some-anchor;
+  transition: all .3s linear;
+  mix-blend-mode: exclusion;
+} */
+
+.anchor {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  position: absolute;
+  top: anchor(top);
+  left: anchor(left);
+  bottom: anchor(bottom);
+  right: anchor(right);
+  pointer-events: none;
+  position-anchor: --some-anchor;
+  transition: all 0.3s linear;
+  mix-blend-mode: exclusion;
+}
+
+
+body{
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.box{
+  height: 200px;
+  width: 200px;
+  transition: all .3s ease-in-out;
+}
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.green {
+  background-color: green;
+}
+
+.box:hover{
+  transform: scale(1.2) !important;
+  opacity: 1 !important;
+}
+
+:has(.box:hover) .box{
+  transform: scale(0.8);
+  opacity: .5;
+}
+
+
+
+.balls{
+  display: flex;
+  gap: 10px;
+  border: 3px solid white;
+}
+
+.ball{
+  height: 50px;
+  width: 50px;
+  transition: all .3s ease;
+  border-radius: 50%;
+}
+
+.balls:has(.green){
+  background-color: pink;
+}

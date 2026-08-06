@@ -1,0 +1,136 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes changeBg {
+  from {
+    background-color: white;
+    transform: translateX(0) scale(1);
+    /* visibility: visible; */
+  }
+  to {
+    background-color: rgb(255, 36, 36);
+    border-radius: 30px;
+    transform: translateX(100px) scale(1.2);
+    /* visibility: hidden; */
+  }
+}
+
+/* .box {
+  height: 200px;
+  width: 400px;
+  border: 1px solid white;
+  animation: changeBg 3s forwards ease-in-out infinite alternate; */
+/* animation: changeBg 3s forwards ease-in-out; */
+
+/* } */
+
+/* display, visibility are properties that we can't animate */
+
+/* 🔹 Discrete animation properties (CSS)
+
+In CSS animations, discrete properties are properties that cannot be smoothly interpolated between two values.
+Instead of animating gradually, they jump instantly from one value to another at a specific point in time.
+
+👉 Think of it as ON / OFF, not a smooth transition.
+
+The browser cannot calculate in-between values
+
+So the change happens suddenly
+
+Usually switches at 0% → 100% (or at a keyframe)
+
+🔥 Common discrete properties
+
+These properties do NOT animate smoothly:
+
+Property	Reason
+display	none ↔ block (no middle state)
+visibility	hidden ↔ visible
+position	static ↔ absolute
+overflow	hidden ↔ visible
+z-index	stacking order, no fractions
+font-family	fonts can’t blend
+background-image	images can’t morph
+content	text replacement */
+
+/* @property --bgColor {
+    syntax: "<color>";
+    initial-value: green;
+    inherits: false;
+}
+
+@keyframes animateBgColor {
+    from{
+        --bgColor: red;
+    }
+    to{
+        --bgColor: blue;
+    }
+}
+
+.box-2{
+    width: 400px;
+    height: 200px;
+    border: 1px solid white;
+    background-color: var(--bgColor);
+    animation: animateBgColor 10s ;
+} */
+
+/* ================================ */
+
+
+@property --rotate{
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+
+@keyframes borderAnimate {
+    from{
+        --rotate: 0deg;
+    }
+    to{
+        --rotate: 360deg;
+    }
+}
+
+.box {
+  max-width: 300px;
+  padding-inline: 10px;
+  padding-bottom: 10px;
+  color: whitesmoke;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 0 55px rgb(255, 36, 183);
+  border-radius: 15px;
+  background: linear-gradient(black) padding-box,
+    conic-gradient(from var(--rotate), black, rgb(255, 36, 183), black) border-box;
+  text-align: center;
+  border: 5px solid rgba(255, 255, 255, 0);
+  animation: borderAnimate 10s;
+  animation-iteration-count: infinite;
+}
+
+.box img {
+  width: 100%;
+}

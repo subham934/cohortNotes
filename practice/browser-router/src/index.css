@@ -1,0 +1,107 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 15px;
+  padding-inline: 50px;
+  background-color: lightsalmon;
+  color: white;
+}
+
+.navbar h1 {
+  font-size: 30px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar ul a {
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 300;
+  margin-bottom: 5px;
+  transition: all 0.2s ease-in-out;
+}
+
+.navbar ul a:hover,
+.navbar ul a.active {
+  color: red;
+}
+
+.footer{
+  position: absolute;
+  left: 0;bottom: 0;
+  background-color: mediumaquamarine;
+  color: white;
+  width: 100%;
+  text-align: center;
+  padding-block: 10px;
+  padding-inline: 50px;
+  font-size: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn{
+  padding: 10px 20px;
+  background: cadetblue;
+  color: white;
+  font-weight: 700;
+  font-size: 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.home h1,
+.about h1,
+.products h1,
+.courses h1{
+  text-align: center;
+  margin-block: 20px;
+  font-size: 70px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+}
+
+.product-links{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+  margin-block: 20px;
+}
+
+.product-links a{
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  background: lightsalmon;
+  padding: 10px 20px;
+  border-radius: 10px;
+}

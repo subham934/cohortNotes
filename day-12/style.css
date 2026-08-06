@@ -1,0 +1,190 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body{
+    width: 100%;
+    height: 100%;
+}
+
+#car1{
+    width: 100px;
+    height: 100px;
+    background-color: red;
+}
+
+#car2{
+    width: 200px;
+    height: 200px;
+    background-color: green;
+    position: absolute;
+    left: 50%;
+}
+
+/* jo bhi element absolute hota hai, wo upar uth jata hai, and agar tumne us element ko move kiya to wo kisi ke upar bhi aah sakta hai */
+
+/* koi bhi element jispe position nahi hai , uspar top ,left, bottom, right and z-index naam ki property kaam nahi karti */
+
+/* koi bhi element par absolute lagaane se wo upar uth jaata hai, uski space khali hoti hai and uski jagah baad waala element aah jata hai */
+
+#car3{
+    width: 300px;
+    height: 300px;
+    background-color: blue;
+}
+
+
+#box{
+    width: 400px;
+    height: 400px;
+    background-color: red;
+    position: relative;
+}
+
+
+#small{
+    position: absolute;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    background-color: yellow;
+}
+
+
+#mainbox{
+    position: relative;
+    width: 400px;
+    height: 400px;
+    background-color: red;
+}
+
+#innerbox{
+    /* position: relative; */
+    width: 300px;
+    height: 300px;
+    background-color: yellow;
+}
+
+#microinnerbox{
+    width: 200px;
+    height: 200px;
+    background-color: blue;
+}
+
+#actualbox{
+    position: absolute;
+    left: 50%;
+    /* left: 120%; */ 
+    /* hum jab 120% left lete hai, toh woh 120% left move toh karta hai , but wrt #mainbox, kyunki #mainbox ka position relative hai  */
+    width: 30px;
+    height: 30px;
+    background-color: aquamarine;
+}
+
+
+#homepage{
+    width: 100%;
+    height: 3000px;
+    background-color: bisque;
+}
+
+#side{
+    position: fixed;
+    /* position fixed ak fixed position pe rehta hai, aur absolute , scroll karne pe upar chal jata hai */
+    right: 0;
+    top: 50%;
+    width: 100px;
+    height: 400px;
+    background-color: aquamarine;
+}
+
+
+/* agar aapka ek div hai, jiske andar ek aur element hai, jo sticky hai, to wo element scroll karte karte upar chipak jayege and tab tak wahi rahega jab tak aapka poora parent scroll nahi ho jata.  */
+
+
+/* 👉 position: sticky works ONLY in the direction you are scrolling.
+
+You are scrolling vertically, so only top or bottom can work. */
+
+
+/* ✔ Vertical scroll → sticky listens to top/bottom
+❌ Vertical scroll → sticky IGNORES left/right
+
+Your page scrolls vertically.
+So sticky only respects:
+
+top:
+bottom:
+
+
+It ignores:
+right:
+left:
+
+
+So the element stays where a normal block stays → LEFT side. */
+
+
+#parent{
+    width: 100%;
+    background-color:#222;
+}
+
+#child{
+    width: 100%;
+    height: 2000px;
+    background-color: #333;
+}
+
+h1{
+    color: aliceblue;   
+}
+
+#sticky{
+    position: sticky;
+    top: 0%;
+    /*Red wala `#sticky` box normal scroll hota rehta hai, lekin jaise hi uska top screen ke top ko touch karta hai, woh wahin chipak jaata hai, aur apne parent ke khatam hote hi phir normal scroll karke upar chala jaata hai.   */
+    width: 300px;
+    height: 200px;
+    background-color: red;
+}
+
+#child2{
+    width: 100%;
+    height: 2000px;
+    background-color: #555;
+}
+
+/* 
+⭐ 1st phase — Normal behavior
+
+Jab tum page scroll karna start karte ho:
+
+Red wala #sticky box bhi baaki content ke saath upar move hota rehta hai.
+Is time woh bilkul normal div jaisa behave kar raha hota hai.
+
+⭐ 2nd phase — Sticky point reached
+
+Jab scroll karte-karte red box ka top screen ke top se takraata hai, tab:
+
+Sticky activate ho jaata hai
+Box wahin chipak jaata hai
+Aur ab woh aur upar nahi jaata
+Yeh exactly top: 0 ke wajah se hota hai.
+
+⭐ 3rd phase — Stays stuck while parent scrolls
+
+Ab jab tak parent div (#child) scroll ho raha hai:
+
+Red box screen ke top par chipka hua rehta hai
+Aur baaki saara content uske neeche slide hota hua dikhta hai.
+
+⭐ 4th phase — Parent ends → Sticky stops
+
+Jab parent div ka bottom aata hai:
+Sticky box ko ab chipakne ki jagah nahi milti
+Sticky effect khatam ho jaata hai
+Aur woh normal element ki tarah upar scroll ho kar gayab ho jaata hai. */

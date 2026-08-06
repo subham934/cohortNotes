@@ -1,0 +1,139 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* h1{
+    color: rebeccapurple;
+    font-size: 60px;
+}
+
+#box{
+    width: 200px;
+    height: 200px;
+    background-color: crimson;
+}
+
+#inner{
+    height: 50%;
+    width: 50%;
+    background-color: aqua;
+} */
+
+
+/* #box{
+    height: 30vh;
+    width: 30vw;
+    background-color: blueviolet;
+}
+ */
+
+#box1{
+    height: 30vw;
+    width: 30vw;
+    background-color: aqua;
+}
+
+/* 
+
+px(pixels) - fixed
+
+%(percent) - depends on parent
+
+vw(viewport width) - depends on viewport's width
+
+vh(viewport height) - depends on viewport's height
+
+vmax(viewport maximum) - depends on maximum viewport
+
+vmin(viewport minimum) - depends on minimum viewport
+
+em -  em depends upon size of parent, if .parent has fontsize: 30px and h2 has font-size of 3em it means h2's font-size is 30px *3 = 90px
+
+em - according to the parent and can be controlled by parent
+
+rem - root em , 1rem = 16px,
+rem - according to the root and can be controlled by root 
+
+
+
+✅ How to change rem values
+1. Change in CSS
+html {
+  font-size: 20px;    Now 1rem = 20px 
+}
+
+Or:
+
+html {
+  font-size: 62.5%;   Common trick: 1rem = 10px 
+}
+
+Because:
+62.5% of 16px = 10px
+This makes calculations easier.
+
+
+
+*/
+
+
+
+
+/* 
+.parent{
+    background-color: darkslategray;
+    width: 50%;
+    margin: 20px;
+    padding: 20px;
+}
+
+h2{
+    font-size: 50px;
+}
+
+h4{
+    font-size: 10vw;
+}
+
+h6{
+    font-size: 20px;
+}
+
+p{
+    font-size: 15px;
+} */
+
+
+/* em depends upon size of parent, if .parent has fontsize: 30px and h2 has font-size of 3em it means h2's font-size is 30px *3 = 90px */
+.parent{
+    background-color: darkslategray;
+    width: 50%;
+    margin: 20px;
+    padding: 20px;
+    font-size: 30px;
+}
+
+h2{
+    font-size: 3em;
+}
+
+h4{
+    font-size: 2em;
+}
+
+h6{
+    font-size: 1em;
+}
+
+p{
+    font-size: 2rem;
+}

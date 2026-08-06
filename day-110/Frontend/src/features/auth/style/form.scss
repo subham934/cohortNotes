@@ -1,0 +1,39 @@
+@mixin flex-column($gap: 0rem) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+main {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .form-container {
+    @include flex-column(2rem);
+    border: 1px solid whitesmoke;
+    min-width: 400px;
+    padding: 2rem;
+    border-radius: 1rem;
+  }
+
+  h1 {
+    text-align: center;
+    color: rgb(146, 45, 45);
+  }
+
+  form {
+    @include flex-column(1rem);
+
+    input {
+      border: none;
+      outline: none;
+      padding-inline: 1rem;
+      padding-block: 0.5rem;
+      border-radius: 1rem;
+      font-size: 22px;
+    }
+  }
+}

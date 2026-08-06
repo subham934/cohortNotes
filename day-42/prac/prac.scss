@@ -1,0 +1,37 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: white;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    background-color: #555;
+}
+
+
+#box{
+    height: 100px;
+    width: 100px;
+    background-color: crimson;
+}
+
+
+
+h1{
+    font-size: 50px;
+    font-weight: 700;
+}
+
+button{
+    background: crimson;
+    padding: 10px 25px;
+    margin-top: 50px;
+}

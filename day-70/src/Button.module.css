@@ -1,0 +1,22 @@
+.button{
+    padding: 10px 25px;
+    font-size: 30px;
+    background-color: lawngreen;
+    color: rgb(153, 149, 144);
+    font-weight: 700;
+    border-radius: 5px;
+    max-width: fit-content;
+    border: none;
+    outline: none;
+    margin-bottom: 20px;
+    transition: all ease 0.3s;
+    margin-top: 20px;
+}
+
+.button:active{
+    scale: .94;
+}
+
+.button:hover{
+    background-color: green;
+}

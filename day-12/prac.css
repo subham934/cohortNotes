@@ -1,0 +1,135 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.car1{
+    width: 200px;
+    height: 200px;
+    background-color: red;
+}
+
+.car2{
+    width: 300px;
+    height: 300px;
+    background-color: cadetblue;
+    position: absolute;
+    left: 50%;
+}
+
+.car3{
+    width: 200px;
+    height: 300px;
+    background-color: chartreuse;
+}
+
+.box{
+    width: 400px;
+    height: 400px;
+    background-color: red;
+    position: relative;
+}
+
+.small{
+    width: 40px;
+    height: 40px;
+    background-color: rebeccapurple;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.mini{
+    width: 40px;
+    height: 40px;
+    background: bisque;
+}
+
+.mainbox{
+    width: 500px;
+    height: 500px;
+    background-color: red;
+    position: relative;
+}
+
+.innerbox{
+    /* position: relative; */
+    width: 400px;
+    height: 400px;
+    background-color: yellowgreen;
+    /* position: sticky; */
+}
+
+.microinnerbox{
+    width: 250px;
+    height: 250px;
+    background-color: grey;
+    /* position: sticky; */
+    
+}
+
+.actualbox{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: crimson;
+    /* transform: translate(-50%, -50%); */
+}
+
+.homepage{
+    width: 100%;
+    height: 1200px;
+    background-color: aquamarine;
+}
+
+.sidepage{
+    /* position: sticky; */
+    position: fixed;
+    right: 0;
+    top: 20%;
+    width: 100px;
+    height: 400px;
+    background-color: bisque;
+}
+
+
+#parent{
+    width: 100%;
+    background-color:#222;
+}
+
+#child{
+    width: 100%;
+    height: 2000px;
+    background-color: #333;
+}
+
+h1{
+    color: aliceblue;   
+}
+
+#sticky{
+    position: sticky;
+    top: 0%;
+    /*Red wala `#sticky` box normal scroll hota rehta hai, lekin jaise hi uska top screen ke top ko touch karta hai, woh wahin chipak jaata hai, aur apne parent ke khatam hote hi phir normal scroll karke upar chala jaata hai.   */
+    width: 300px;
+    height: 200px;
+    background-color: red;
+}
+
+#child2{
+    width: 100%;
+    height: 2000px;
+    background-color: #555;
+}

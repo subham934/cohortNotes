@@ -1,0 +1,123 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #222;
+}
+
+#box1 {
+  height: 100px;
+  width: 100px;
+  background-color: crimson;
+  border: 5px solid white;
+}
+
+#box2 {
+  height: 100px;
+  width: 100px;
+  background-color: lightseagreen;
+}
+
+#box {
+  height: 200px;
+  width: 200px;
+  background-color: aliceblue;
+  /* transform: translateX(-50%); */
+  /* transform: translateY(-50%); */
+  /* transform: rotate(45deg); */
+  /* transform: rotateX(170deg); */
+  /* transform: rotateY(30deg); */
+  /* transform: rotateZ(90deg); */
+
+  background-image: url("https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  background-size: cover;
+  background-position: center;
+}
+
+/* When we apply only rotateX(45deg), the rotation is hard to notice because it looks flat.
+
+To make the 3D rotation visible, we add perspective to the parent div. */
+
+.parent {
+  perspective: 500px; /* Adds depth — important! */
+  margin: 30px;
+}
+
+.child {
+  width: 250px;
+  height: 150px;
+  background: lightgreen;
+  /* transform: rotateX(45deg); */
+  /* Now the tilt is clearly visible */
+  transform: rotateX(45deg);
+}
+
+.box {
+  width: 150px;
+  height: 150px;
+  background: skyblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transform: scale(1.5); /* increases size by 50% */
+}
+
+#main {
+  height: 100%;
+  width: 100%;
+  background-color: lightblue;
+  padding: 30px;
+}
+
+.card {
+  height: 300px;
+  width: 350px;
+  background-color: rgb(240, 64, 94);
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bottom {
+  height: 40%;
+  width: 100%;
+  background: linear-gradient(transparent, black);
+  position: absolute;
+  bottom: -40%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: red;
+  transition: all 0.3s ease;
+}
+
+.bottom h4{
+  color: white;
+  font-size: 30px;
+  font-weight: 300;
+}
+
+.bottom h3{
+  background-color: white;
+  padding: 5px 7px;
+  border-radius: 50%;
+}
+
+.card:hover .bottom {
+  bottom: 0;
+}

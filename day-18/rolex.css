@@ -1,0 +1,187 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* 
+main{
+    width: 100%;
+    height: 100%;
+    background-color: #555;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 70px 1fr 1fr;
+    grid-template-areas: "header header header"
+                        "section section section"
+                        "div1 div2 div3";
+                        grid-gap: 10px;
+                        padding: 10px;
+}
+
+header{
+    background-color: crimson;
+    grid-area: header;
+}
+
+section{
+    background-color: lightsalmon;
+    grid-area: section;
+}
+
+#div1{
+    background-color: darkmagenta;
+    grid-area: div1;
+}
+
+#div2{
+    background-color: mediumspringgreen;
+    grid-area: div2;
+}
+
+#div3{
+    background-color: olivedrab;
+    grid-area: div3;
+} */
+
+/* main{
+    width: 100%;
+    height: 100%;
+    background-color: #555;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 70px 300px 1fr;
+    grid-template-areas: "header header"
+                        "aside section"
+                        "figure figure";
+    grid-gap: 10px;
+    padding: 10px;
+    display: grid;
+}
+
+header{
+    background-color: crimson;
+    grid-area: header;
+}
+
+section{
+    background-color: mediumorchid;
+    grid-area: section;
+}
+
+aside{
+    background-color: darkorange;
+    grid-area: aside;
+}
+
+figure{
+    background-color: darkolivegreen;
+    grid-area: figure;
+} */
+
+/* main {
+  width: 100%;
+  height: 100%;
+  background-color: #555;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 70px 1fr 0.5fr 0.5fr;
+  grid-template-areas:
+    "header header header"
+    "section section section"
+    "div-left fig-up div-right"
+    "div-left fig-down div-right";
+}
+
+header {
+  background-color: burlywood;
+  border: 3px solid white;
+  grid-area: header;
+}
+
+section {
+  background-color: greenyellow;
+  border: 3px solid white;
+  grid-area: section;
+}
+
+#div-left {
+  background-color: thistle;
+  border: 3px solid white;
+  grid-area: div-left;
+}
+
+#div-right {
+  background-color: goldenrod;
+  border: 3px solid white;
+  grid-area: div-right;
+}
+
+#fig-up {
+  background-color: mediumseagreen;
+  border: 3px solid white;
+  grid-area: fig-up;
+}
+
+#fig-down {
+  background-color: royalblue;
+  border: 3px solid white;
+  grid-area: fig-down;
+} */
+
+main {
+  width: 100%;
+  height: 100%;
+  background-color: #999;
+  display: grid;
+  grid-template-columns: 1fr 300px 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:
+    "left-top top-center top-right"
+    "left-top center bottom-right"
+    "left-bottom left-bottom bottom-right";
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+.left-top {
+  background-color: darkgoldenrod;
+  border: 5px solid white;
+  grid-area: left-top;
+}
+
+.left-bottom {
+  background-color: olivedrab;
+  border: 5px solid white;
+  grid-area: left-bottom;
+}
+
+.bottom-right {
+  background-color: navajowhite;
+  border: 5px solid white;
+  grid-area: bottom-right;
+}
+
+.center {
+  background-color: cadetblue;
+  border: 5px solid white;
+  grid-area: center;
+}
+
+.top-center {
+  background-color: aquamarine;
+  border: 5px solid white;
+  grid-area: top-center;
+}
+
+.top-right {
+  background-color: deeppink;
+  border: 5px solid white;
+  grid-area: top-right;
+}

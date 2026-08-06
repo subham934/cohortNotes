@@ -1,0 +1,15 @@
+Frontend - html, css(scss, tailwind), js(watch the js video on YT, build multiple project, solve js 30 project by Wes bos, https://www.youtube.com/watch?v=VuN8qwZoego&list=PLu8EoSxDXHP6CGK4YVJhL_VWetA865GOH),
+pure JS projects, ReactJS(Study hard), NextJS, UI/UX 
+look for machine coding
+
+
+
+
+creative Frontend - gsap, threejs, chartJS, best animator
+
+Full stack = 
+backend = core backend logic, API integration, integrate with/to AI, RAG, microservices, networking, architechture, deployment, system design, load balance, scaling 
+
+prepinsta
+
+

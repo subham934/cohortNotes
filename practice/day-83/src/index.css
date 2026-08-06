@@ -1,0 +1,38 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.section {
+  background: rgb(105, 105, 182);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+
+.nav{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: lavenderblush;
+}
+
+button{
+  padding: 10px 20px;
+  background-color: lightblue;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

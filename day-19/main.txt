@@ -1,0 +1,22 @@
+px(pixels) - fixed
+%(percent) - depends on parent
+vw(viewport width) - depends on viewport's width
+vh(viewport height) - depends on viewport's height
+vmax(viewport maximum) - depends on maximum viewport
+vmin(viewport minimum) - depends on minimum viewport
+
+✅ How to change rem values
+1. Change in CSS
+html {
+  font-size: 20px;   /* Now 1rem = 20px */
+}
+
+Or:
+
+html {
+  font-size: 62.5%;  /* Common trick: 1rem = 10px */
+}
+
+Because:
+62.5% of 16px = 10px
+This makes calculations easier.

@@ -1,0 +1,96 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  font-size: 70px;
+  font-weight: 600;
+  position: absolute;
+  top: 30vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+h2 {
+  font-size: 70px;
+  font-weight: 600;
+  position: absolute;
+  top: 60vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: black;
+}
+
+/* .link {
+  color: black;
+  text-decoration: none;
+} */
+
+/* link.activeLink {
+  color: red !important;
+  text-decoration: underline;
+  font-weight: bold;
+} */
+
+/* .activeLink {
+  color: red !important;
+  text-decoration: underline;
+  font-weight: bold;
+} */
+
+.sale {
+  background-color: rgb(212, 52, 52);
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+}
+
+.sale p {
+  color: white;
+  flex-shrink: 0;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: rebeccapurple;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  color: white;
+}
+
+.footer button {
+  padding: 10px 20px;
+  background-color: lightseagreen;
+  border: none;
+  font-size: 15px;
+  color: white;
+}

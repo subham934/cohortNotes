@@ -1,0 +1,118 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* body{
+    overflow: hidden;
+}
+
+main{
+    height: 100%;
+    width: 100%;
+    background-color: black;
+}
+
+button{
+    padding: 15px 30px;
+    font-weight: 600;
+    font-size: 20px;
+    background-color: crimson;
+    border: none;
+    border-radius: 5px;
+    position: relative;
+    z-index: 9;
+}
+
+button:active{
+    scale: .95;
+}
+
+h1{
+    white-space: nowrap;
+} */
+
+
+
+  
+main{
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.card{
+    width: 500px;
+    background-color: wheat;
+    border-radius: 10px;
+    padding: 30px;
+
+}
+
+.card p{
+    font-family: monospace;
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.card p span{
+    font-weight: 900;
+    color: royalblue;
+}
+
+.outer{
+    height: 20px;
+    width: 100%;
+    background-color: rgb(197, 197, 197);
+    border-radius: 50px;
+}
+
+.inner{
+    width: 0%;
+    height: 100%;
+    border-radius: 50px;
+    background-color: green;
+}
+
+.bottom{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.bottom h2{
+    font-family: monospace;
+    font-size: 60px;
+    font-weight: 300;
+}
+
+.bottom button{
+    padding: 12px 25px;
+    background-color: yellowgreen;
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all .4s ease;
+}
+
+.bottom button:active{
+    scale: 0.75;
+}

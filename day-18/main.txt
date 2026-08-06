@@ -1,0 +1,11 @@
+what is css grid and how it's different form flexbox
+display: grid
+grid-template-columns and grid-template-rows
+units: px, %, fr, auto
+grid gap, row-gap, column-gap
+repeat() function
+minmax() function
+grid-column-start , grid-column-end, grid-row-start, grid-row-end
+shorthand: grid-column and grid-row
+grid-template-areaa and grid-areaa
+alignment: justify-items, align-items, justify-content, align-content

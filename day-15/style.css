@@ -1,0 +1,213 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: sans-serif;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+button,
+input {
+  font-family: inherit;
+  border: none;
+  outline: none;
+}
+
+#box1 {
+  height: 200px;
+  width: 200px;
+  background-color: crimson;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5; /*in this case box2 should be above box1 but its not because of z-index:5*/
+}
+
+#box2 {
+  height: 200px;
+  width: 200px;
+  background-color: greenyellow;
+  position: absolute;
+  top: 40%;
+  left: 55%;
+}
+
+#box3 {
+  height: 200px;
+  width: 200px;
+  background-color: lightblue;
+}
+
+#box {
+  width: 200px;
+  height: 200px;
+  background-color: blueviolet;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* 
+#parent {
+  height: 100%;
+  width: 100%;
+  background-color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+
+#child1 {
+  width: 200px;
+  height: 200px;
+  background-color: crimson;
+  border: 3px solid white;
+}
+
+#child2 {
+  height: 200px;
+  width: 200px;
+  background-color: lightseagreen;
+  border: 3px solid white;
+}
+
+#child3 {
+  height: 200px;
+  width: 200px;
+  background-color: lightblue;
+  border: 3px solid white;
+}
+
+#child4 {
+  height: 200px;
+  width: 200px;
+  background-color: tan;
+  border: 3px solid white;
+} */
+
+
+
+#parent {
+  height: 100%;
+  width: 100%;
+  background-color: #666;
+  display: flex;
+  flex-wrap: nowrap;
+  /* overflow: auto; */
+  overflow: hidden;
+}
+
+#child1 {
+  width: 200px;
+  height: 200px;
+  background-color: crimson;
+  border: 3px solid white;
+  flex-shrink: 0;
+}
+
+#child2 {
+  height: 200px;
+  width: 200px;
+  background-color: lightseagreen;
+  border: 3px solid white;
+  flex-shrink: 0;
+
+}
+
+#child3 {
+  height: 200px;
+  width: 200px;
+  background-color: lightblue;
+  border: 3px solid white;
+  flex-shrink: 0;
+
+}
+
+#child4 {
+  height: 200px;
+  width: 200px;
+  background-color: tan;
+  border: 3px solid white;
+  flex-shrink: 0;
+
+}
+
+#main{
+    height: 100%;
+    width: 100%;
+    background-color:lightblue;
+    padding: 20px;
+    display: flex;
+    gap: 30px;
+}
+
+.card{
+    padding: 20px;
+    height: 300px;
+    width: 250px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 10px 20px 20px rgba(106, 231, 4, 0.829);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+}
+
+.card img{
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.card h2{
+    font-weight: 200;
+    font-size: 26px;
+      text-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+}
+
+.card p{
+    font-size: 14px;
+    font-weight: 100;
+    color: #888;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.card button{
+    border-radius: 50px;
+    padding: 10px 20px;
+    background-color: tan;
+    border: none;
+    color: white;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+    transition: all 300ms ease-in;
+    cursor: pointer;
+}
+
+.card button:hover{
+    background-color: peru;
+    
+}

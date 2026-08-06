@@ -1,0 +1,20 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# COPY package.json /app
+# COPY package-lock.json /app
+# we can write the above two lines in oneline
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000 
+# this just shows that the container will be running on port 3000
+# this doesn't actually publish the port to the host machine.
+
+CMD ["node", "server.js"]
+

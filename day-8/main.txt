@@ -1,0 +1,24 @@
+Web development - FrontEnd & BackEnd
+
+FrontEnd 
+    -HTML(backbone of website)
+    -CSS(Styling the website)
+    -JS (Soul of website, that give its character)
+
+BackEnd
+
+Code-Editor
+    - Helps us write Code
+
+Browser
+    - use to see output
+
+
+=> image.jpg,,,,, here, "image" is name and ".jpg" is the file extension
+=> music.mp3,,,,, here, "music" is name and ".mp3" is the file extension
+
+
+Boiler Plate is a default piece of code that we have to write before writng original code.
+
+
+inside head tag we store information

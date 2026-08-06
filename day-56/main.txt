@@ -1,0 +1,225 @@
+
+#  Day 56 – Object-Oriented Concepts in JavaScript
+
+JavaScript OOP (Object-Oriented Programming) helps you write cleaner, reusable, and structured code using **objects**, **classes**, **constructors**, **prototypes**, and **inheritance**.
+
+---
+
+## 🔹 1. Introduction to OOPS in JavaScript
+
+JavaScript supports OOP using:
+
+- Objects  
+- Classes  
+- Constructors  
+- Prototypes  
+- Inheritance  
+
+### ✔️ Simple Object Example
+
+```js
+const user = {
+  name: "Anubhav",
+  age: 24,
+  greet() {
+    console.log(`Hello, I am ${this.name}`);
+  },
+};
+
+user.greet();
+```
+
+---
+
+## 🔹 2. Understanding Classes and Objects
+
+- **class = blueprint**
+- **object = real instance created from the blueprint**
+
+### ✔️ Basic Example
+
+```js
+class Car {
+  constructor(brand, price) {
+    this.brand = brand;
+    this.price = price;
+  }
+
+  drive() {
+    console.log(`${this.brand} is driving...`);
+  }
+}
+
+const car1 = new Car("BMW", 5000000);
+car1.drive();
+```
+
+---
+
+## 🔹 3. Constructor & Prototype
+
+###  Constructor  
+A constructor is a special method inside a class that initializes object properties.
+
+```js
+class Student {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+const s1 = new Student("Anubhav", 24);
+```
+
+---
+
+## 🔹 Prototype in JavaScript
+
+Every function in JavaScript has a **prototype**, which is used to **share methods** across all objects created from that function.
+
+### ✔️ Example Without Classes
+
+```js
+function Person(name) {
+  this.name = name;
+}
+
+// Adding method using prototype
+Person.prototype.sayHi = function () {
+  console.log(`Hi, I am ${this.name}`);
+};
+
+const p1 = new Person("Anubhav");
+p1.sayHi();
+```
+
+---
+// ==============================================
+
+
+
+
+class Human{
+    constructor(){
+        this.name = 'abcd';
+        this.age = 22;
+        this.saansLo = function(){}   // ❌ Yeh galat tarika
+        this.khanaKhaao = function(){} // ❌ Yeh galat tarika
+    }
+}
+
+let h1 = new Human()
+let h2 = new Human()
+```
+```
+h1 ke paas → apni saansLo() copy  ❌
+h2 ke paas → apni saansLo() copy  ❌
+
+Same function — 2 baar memory mein! 😬
+```
+
+---
+
+### Real life se socho:
+```
+h1 aur h2 dono Human hain —
+Dono saans lete hain aur khana khaate hain
+
+Kya dono ke liye alag alag 
+"saans lene ka manual" chahiye? 
+
+Nahi! — Ek manual dono share kar sakte hain! 😄
+
+Solution — Prototype!
+javascriptclass Human{
+    constructor(){
+        this.name = 'abcd';   // ✅ har instance ka apna
+        this.age = 22;         // ✅ har instance ka apna
+    }
+}
+
+// Functions prototype mein daalo
+Human.prototype.saansLo = function(){
+    console.log('hey');
+}
+Human.prototype.khanaKhaao = function(){
+    console.log('hey');
+}
+```
+```
+h1 ke paas → apna name, age ✅
+h2 ke paas → apna name, age ✅
+
+saansLo()    → dono share karte hain ✅
+khanaKhaao() → dono share karte hain ✅
+
+Ek hi memory mein! 😊
+```
+
+---
+
+### Memory visualization:
+```
+❌ Constructor mein function:
+
+h1 → { name, age, saansLo() , khanaKhaao() }  — copy 1
+h2 → { name, age, saansLo() , khanaKhaao() }  — copy 2
+                  ↑             ↑
+              waste!          waste!
+
+✅ Prototype mein function:
+
+h1 → { name, age } ─────────────────┐
+                                     ↓
+                            Human.prototype
+                            { saansLo(), khanaKhaao() }
+                                     ↑
+h2 → { name, age } ─────────────────┘
+
+Ek hi copy — dono use kar rahe hain! ✅
+
+this ka scene:
+javascriptHuman.prototype.saansLo = function(){
+    console.log(this.name)  // this = jisne call kiya
+}
+
+h1.saansLo()  // this = h1 → 'abcd'
+h2.saansLo()  // this = h2 → 'abcd'
+```
+```
+Same function — par this alag alag!
+h1 ne call kiya → this = h1
+h2 ne call kiya → this = h2
+
+Constructor kya karta hai?
+javascriptconstructor(){
+    this.name = 'abcd';
+    this.age = 22;
+}
+```
+```
+Jaise hi new Human() likhte ho →
+constructor automatic chalta hai →
+har instance ka apna name aur age banta hai!
+
+h1.name = 'abcd' ✅
+h2.name = 'abcd' ✅  — alag alag copies
+```
+
+---
+
+### Summary:
+
+| Cheez | Kahan rakho | Kyun |
+|---|---|---|
+| `name`, `age` | constructor mein | Har instance ka apna hota hai |
+| `saansLo()`, `khanaKhaao()` | prototype mein | Sab share karte hain |
+
+---
+
+### Simple rule yaad rakho:
+```
+Data      → constructor mein  (har instance ka apna)
+Functions → prototype mein    (sab share karte hain)
+Clear hua? 😊You are out of free messages until 10:30 PMUpgrade Sonnet 4.6Claude is AI and can make mistakes. Please double-check responses.ShareContentexcerpt_from_previous_claude_message.txt7 linestxtexcerpt_from_previous_claude_message.txt11 linestxt

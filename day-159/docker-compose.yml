@@ -1,0 +1,40 @@
+services:
+  # since we need to run two container, we need two things, backend and frontend
+  
+  # backend service
+  backend:
+    build: ./backend
+    # backend ki jo image banegi , uski dockerfile humko ./backend folder me hai
+    ports:
+      - '3000:3000'
+      # we'll map the portnumber 3000 to 3000
+    volumes:
+      - ./backend:/app
+      # in volumes ,we define ki backend folder k andar agar code main koi changes ho, toh usko hum turant container me reflect karna hai. for that we perform bind mounting inside app folder in container.
+      # bind-mount ignores the .dockerignore file
+      # bind mount maps a specific host file/directory to a container path. Useful for mounting source code for live devlopment, wwhere code changes on the host immediately reflect in the container.
+      
+      # jo image hoga ,wo container banayegi, uss container k andar hoga node:20-alpine, iske alawa rahega package.json and package-lock.json. Jab hum image k andar ak command run karenge "npm run install" toh mere pass aayega node_modules aur jab last main hum COPY . . karenge, toh uska matlab hai ki backend folder k andar jitni bhi  cheezain hai , wo container me aa jayegi. BTW, jitni bhi package.json, package-lock.json, node_modules, and other .dockerignore, dockerfile, server.js sab ja raha hai inside app folder because in dockerfile we have set WORKDIR /app
+
+      # in the volumes, with the code ./backend:/app we are telling all the content inside the backend folder must be copied inside the app folder in the container. Jitni bhi package.json, package-lock.json, node_modules, .dockerignore, dockerfile, server.js hai, sab app folder k andar aah jayegi. Pehle jo app folder k ander content tha , wo naya content se override ho jata hai. iska ak problem hai, ab jo container banta hai, uska jo base rehta hai, wo rehta hai linux, but jo node_modules folder hai,that is inside the app folder, wo gaya hai mera windows machine se hai, toh wo node_modules ak error de sakta hai, aur isi cheez se bachne k liye hum ak volume create karte hain::
+      - backend_node_modules:/app/node_modules
+      # iss line ka matlab hai, ki jo node_modules aaye hain unko replace karo image k andar k node_modules se.
+      # image k andar 4 cheez rehti hain,  OS, Nodejs runtime environment, dependencies(node_modules), codebase
+      # with this line - backend_node_modules: /app/node_modules, jo node_modules container main hain unko replace kar deta hai image k node_modules se. kyunki container main jo node_modules tha wo window ka node_modules tha , lekin container linux based hoti hai , toh windows ka node_modules linux main error kar sakte hain
+      # bind-mount ignores the .dockerignore file, 
+
+    command: npx nodemon -L server.js
+
+  # frontend service
+  frontend:
+    build: ./frontend
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    command: npm run dev 
+
+volumes:
+  backend_node_modules:
+  frontend_node_modules:

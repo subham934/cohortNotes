@@ -1,0 +1,105 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main {
+  /* width: 100%; */
+  /* height: 100%; */
+  /* background-color: #555; */
+  /* display: grid; */
+  /* grid-template-columns:1fr 2fr 4fr; */
+  /* grid-template-columns: 1fr 1fr 1fr ; */
+  /* grid-template-rows: 1fr 1fr 1fr; */
+  /* grid-template-columns: repeat(4, 1fr); */
+  /* grid-template-columns: 100px minmax(200px , 400px) 100px ; */
+  /* grid-template-rows:  100px 200px 150px 150px; */
+  /* grid-template-columns: 200px 1fr 1fr 1fr; */
+  /* grid-template-rows: 200px 1fr 1fr 1fr; */
+  /* row-gap: 10px; */
+  /* column-gap: 30px; */
+  /* grid-gap: 20px; */
+  /* grid-template-columns: repeat(3, 1fr); */
+  /* grid-template-rows: repeat(4, 1fr); */
+  /* grid-gap: 20px; */
+  /* align-items: end; */
+  /* justify-items: start; */
+  /* grid-template-columns: 1fr minmax(200px , 400px ) 1fr; */
+  /* grid-template-columns: repeat(3, 100px); */
+  /* grid-template-rows: repeat(3, 100px); */
+  /* align-items: center; */
+  /* justify-items: center; */
+  /* align-items: start; */
+  /* justify-items: start; */
+  /* align-items: end; */
+  /* justify-items: end; */
+  /* align-content: space-between; */
+  /* justify-content: space-between; */
+  /* align-content: space-evenly; */
+  /* justify-content: space-around; */
+  /* grid-template-columns: 1fr 1fr 1fr; */
+  /* grid-gap: 10px; */
+}
+
+.child {
+  background-color: crimson;
+  border: 3px solid white;
+  /* height: 100px; */
+  /* width: 100px; */
+}
+
+/* #child1{
+    grid-column-start: 1;
+    grid-column-end: 4  ;
+    grid-row-start: 1;
+    grid-row-end: 3;
+} */
+
+#child1 {
+  /* grid-row: 1/5; */
+  /* grid-column: 1/3; */
+}
+
+main {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: 70px 1fr 80px;
+  grid-template-areas:
+    "header header"
+    "aside section"
+    "footer footer";
+  grid-gap: 10px;
+}
+
+header {
+  background-color: gold;
+  grid-area: header;
+}
+
+aside {
+  background-color: khaki;
+  grid-area: aside;
+}
+
+section {
+  background-color: mediumpurple;
+  grid-area: section;
+  border-radius: 10px;
+}
+
+footer {
+  background-color: mediumspringgreen;
+  grid-area: footer;
+}

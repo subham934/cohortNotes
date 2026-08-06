@@ -1,0 +1,64 @@
+/* --- SIMPLE CSS BOILERPLATE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #fff;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* 
+body {
+  background-color: black;
+} */
+
+/* 
+#outer{
+    height: 500px;
+    width: 500px;
+    background-color: lightseagreen;
+}
+
+
+#inner1{
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    background-color: royalblue;
+}
+
+#inner2{
+    height: 200px;
+    width: 200px;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background-color: crimson;
+} */
+
+
+body {
+  background-color: black;
+  padding: 10px;
+}
+
+
+.elem {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 20px;
+  background-color: #333;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+button {
+  color: #fff;
+  background-color: royalblue;
+  padding: 10px 20px;
+  border: none;
+}
