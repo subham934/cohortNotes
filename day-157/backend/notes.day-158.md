@@ -384,4 +384,231 @@ docker compose up
 node_modules
 
 
-read: bind mounts, volumes
+//==========================================================
+
+The easiest way to understand it is:
+
+Bind mount = Docker uses a specific folder/file from your host machine.
+Volume = Docker manages the storage for you.
+
+
+1. Bind Mount
+
+A bind mount means:
+
+"Docker, take this exact folder from my computer and make it available inside the container."
+
+For example:
+
+volumes:
+  - ./backend:/app
+
+Here:
+
+./backend        → Host machine
+/app             → Container
+
+So Docker essentially creates this relationship:
+
+Your Computer                    Container
+
+backend/
+├── server.js        ────────→   /app/server.js
+├── package.json     ────────→   /app/package.json
+├── routes/          ────────→   /app/routes/
+└── controllers/     ────────→   /app/controllers/
+
+
+If you change:
+
+backend/server.js
+
+on your computer, the change is immediately visible inside:
+
+/app/server.js
+
+That's why bind mounts are very useful during development.
+
+Why?
+
+Because you don't have to rebuild the Docker image every time you change your code.
+
+
+2. Volume
+
+A Docker volume is different.
+
+Instead of saying:
+
+"Use this particular folder from my computer."
+
+you say:
+
+"Docker, create and manage some storage for me."
+
+For example:
+
+volumes:
+  - backend_node_modules:/app/node_modules
+
+And at the bottom:
+
+volumes:
+  backend_node_modules:
+
+Here:
+
+backend_node_modules
+
+is a named Docker volume.
+
+Docker manages where this data is physically stored.
+
+Conceptually:
+
+Docker-managed storage
+        ↓
+backend_node_modules
+        ↓
+/app/node_modules
+
+You don't care where Docker physically stores it on your computer.
+
+
+
+
+
+3. Now your example makes perfect sense
+
+You have:
+
+volumes:
+  - ./backend:/app
+  - backend_node_modules:/app/node_modules
+
+There are two different types of mounts here.
+
+First:
+- ./backend:/app
+
+This is a bind mount.
+
+You're telling Docker:
+
+Take my backend folder from my computer and mount it at /app.
+
+Second:
+- backend_node_modules:/app/node_modules
+
+This is a named volume.
+
+You're telling Docker:
+
+Create/use a Docker-managed volume called backend_node_modules and mount it at /app/node_modules.
+
+
+
+4. Why do we need both?
+
+This is the important part.
+
+Suppose your host has:
+
+backend/
+├── server.js
+├── package.json
+└── node_modules/
+
+And you do:
+
+- ./backend:/app
+
+Then conceptually:
+
+Host backend/
+       ↓
+Container /app/
+
+backend/
+├── server.js
+├── package.json
+└── node_modules/
+
+So your host's node_modules would also appear inside the container.
+
+We don't want that.
+
+Therefore we add:
+
+- backend_node_modules:/app/node_modules
+
+Now Docker uses its own volume for that particular directory:
+
+Host                              Container
+
+backend/                          /app/
+├── server.js        ─────────→   server.js
+├── package.json     ─────────→   package.json
+└── node_modules/    X            node_modules/
+                                      ↑
+                                      │
+                              Docker Volume
+                              backend_node_modules
+
+So the final setup is:
+
+./backend:/app
+        ↓
+Bind Mount
+        ↓
+Your source code is shared
+
+
+backend_node_modules:/app/node_modules
+        ↓
+Named Volume
+        ↓
+node_modules is managed separately by Docker
+
+
+5. Main difference
+
+
+
+
+|                                        | Bind Mount          | Volume                                   |
+| -------------------------------------- | ------------------- | ---------------------------------------- |
+| Storage managed by                     | You/host filesystem | Docker                                   |
+| Specify host path?                     | **Yes**             | **No**                                   |
+| Example                                | `./backend:/app`    | `backend_node_modules:/app/node_modules` |
+| Great for source code?                 | ✅ Yes               | Usually no                               |
+| Great for persistent application data? | Sometimes           | ✅ Yes                                    |
+| Docker-managed?                        | ❌                   | ✅                                        |
+| Common in development?                 | ✅                   | ✅                                        |
+
+
+
+
+The one thing to remember
+BIND MOUNT
+Host's specific folder
+        ↓
+Container
+VOLUME
+Docker-managed storage
+        ↓
+Container
+
+So in your Compose file:
+
+- ./backend:/app
+
+👉 Bind mount
+
+and
+
+- backend_node_modules:/app/node_modules
+
+👉 Named volume
+
+That's exactly why you have both.
