@@ -23,6 +23,9 @@ app.get("/api/users", (req, res)=>{
     {id: 2, name: "Jane Doe", email: "[EMAIL_ADDRESS]", role: "user"},
     {id: 3, name: "Bob Smith", email: "[EMAIL_ADDRESS]", role: "user"},
     {id: 4, name: "Ron Weasley", email: "[EMAIL_ADDRESS]", role: "user"},
+    {id: 5, name: "Harry Potter", email: "[EMAIL_ADDRESS]", role: "user"},
+    {id: 6, name: "Hermione Granger", email: "[EMAIL_ADDRESS]", role: "user"},
+
   ]
 
   return res.status(200).json(users)   
