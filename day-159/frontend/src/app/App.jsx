@@ -7,7 +7,7 @@ const App = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get('api/users')
+    axios.get('/api/users')
       .then(res => {
         console.log(res.data);
         setUsers(res.data);

@@ -4,11 +4,11 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,         // Exposes Vite server on 0.0.0.0 inside container
-    port: 5173,
+    // host: true,         // Exposes Vite server on 0.0.0.0 inside container
+    // port: 5173,
     proxy: {
       '/api': {
-        target: 'http://backend:3000', // Uses docker compose backend service name
+        target: 'http://localhost:3000', // Uses docker compose backend service name
         changeOrigin: true,
         secure: false,
       },
