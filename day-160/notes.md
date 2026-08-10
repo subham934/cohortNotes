@@ -1,11 +1,13 @@
 What is AWS?
 -> its a cloud service provider
 
-AWS is a cloud provider providing IAAS, PAAS, 
+AWS is a cloud provider providing IaaS, PaaS, SaaS
 
 VPC- Virtual Private Cloud
 -> A Virtual Private Cloud (VPC) is a secure, isolated private network hosted within a public cloud. It gives you full control over your cloud environment, letting you run servers, store data, and set up network rules away from other users.
+
 -> VPC is a big private network
+
 -> subnet : 
 ---> A smaller network built inside your big VPC network.
 ---> Used to group and isolate your servers (like keeping databases private and web servers public).
