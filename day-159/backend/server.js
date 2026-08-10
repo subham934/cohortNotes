@@ -1,5 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 
 const app = express();
 
@@ -21,7 +22,11 @@ app.get('/api/users', (req, res) => {
     { id: 1, name: 'Alice' },
     { id: 2, name: 'Bob' },
     { id: 3, name: 'Charlie' },
-    
+    { id: 4, name: 'Ankur' },
+    { id: 5, name: 'Ronny' },
+    { id: 6, name: 'Dolly' },
+    { id: 7, name: 'Monu' },
+    { id: 8, name: 'Khushbu' },
   ];
   res.status(200).json(users);
 });

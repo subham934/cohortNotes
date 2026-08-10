@@ -260,6 +260,56 @@ services:
 now, just run "docker compose up" in day-159
 
 
+
+
+//========================================================
+
+now lets say  we want to install a package in the backend folder, in that case , we'll first install the package, then we'll stop the docker-compose, for that we'll use `docker compose down` and then we'll again run the command `docker compose up --build` 
+
+//========================================================
+
+
+now, to run the file, we'll need to make changes in `vite.config.js` file of frontend folder. in that file, we need to add `host: "0.0.0.0",` to the server section.
+
+our frontend development server runs with vite, now vite by default doesnt allow external network access, but we need to access it from our host machine, so we need to add `host: "0.0.0.0",` to the server section. also `watch: {usePolling: true}` 
+
+
+
+```js
+--------------
+vite.config.js
+--------------
+
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [ react() ],
+  server: {
+    host: "0.0.0.0",
+    watch: {
+      usePolling: true,
+    },
+    proxy: {
+      '/api': {
+        target: 'http://backend:3000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
+})
+
+```
+
+
+
+
+
+
+
 //========================================================
 
 # Docker Compose — Development Environment
