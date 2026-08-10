@@ -1,13 +1,7 @@
 import { Router } from 'express';
 import * as authController from '../controllers/auth.controller.js';
 
-
-
-
 const authRouter = Router();
-
-
-
 
 /**
  * POST /api/auth/register
@@ -15,8 +9,7 @@ const authRouter = Router();
  * access : public
  */
 
-authRouter.post("/register",authController.register)
-
+authRouter.post('/register', authController.register);
 
 /**
  * GET /api/auth/get-me
@@ -24,7 +17,14 @@ authRouter.post("/register",authController.register)
  * access: private
  */
 
-authRouter.get("/get-me",authController.getMe)
+authRouter.get('/get-me', authController.getMe);
 
+/**
+ * GET /api/auth/refresh-token
+ * desc: with the help of this , client could request on api/auth/refresh to generate a new token
+ * access: private
+ */
+
+authRouter.get('/refresh-token', authController.refreshToken);
 
 export default authRouter;
