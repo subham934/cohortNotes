@@ -5,9 +5,13 @@ In AWS, we have VPC = Virtual Private Cloud. It is a private network that is iso
 - Flipkart has its own VPC.
 
 - there are N number of server that Netflix is using, and all this server is inside one VPC, and  the database will also be inside that VPC
+
 - similarly JioHotstar will also have its own VPC and will have N number of servers inside that VPC and  the database will also be inside that VPC
+
 - for the security purpose, we cannot connect to the database directly from the internet, so we have to connect to the server first and then from the server to the database
+
 - since all the server and database will be inside the VPC, they can connect to each other directly without any restriction.
+
 - JioHotstar ka jo VPC hai, uske andar ka resource agar Netflix k koi bhi resource, jo ki dusre VPC k andar hai, usko access karna chahta hai, toh woh nahi hoga. Server apne VPC k kisi bhi resource ko access kar sakta hai, usme koi problem nahi hai, but ek VPC se dusre VPC ko access karna hai, toh wo default mei nahi hota hai.
 
 
@@ -57,7 +61,78 @@ Target Group : list of resources to send traffic. ALB k pass request aati hain, 
 //====================================
 
 ECR vs ECS
+
 ECR = Elastic Container Registry. ECR ak private registry hain, jaha pe hum apni docker images ko store karte hain.
 
 ECS = Elastic Container Service. ECS ak orchestrator hain, jo containers ko manage karta hain.
 
+
+//===================================================
+
+now , let go to frontend and we will run "npm run build", which will give a "dist" folder, move this folder to backend and rename it as "public", and make below changes in server.js
+
+
+-----------
+server.js
+-----------
+import express from 'express';
+import morgan from 'morgan';
+
+const app = express();
+
+app.use(express.json()); // Parse JSON request bodies
+app.use(morgan('dev')); // Log HTTP requests
+app.use(express.static('public'));
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK!',
+  });
+});
+
+app.get('/api/hello', (req, res) => {
+  res.status(200).json({ message: 'Hello, World!' });
+});
+
+app.get('/api/users', (req, res) => {
+  const users = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' },
+    { id: 4, name: 'Dave' },
+  ];
+  res.status(200).json(users);
+});
+
+app.get('*name', (req, res) => {
+  res.sendFile('/public/index.html', { root: __dirname });
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+
+=> run the code in backend with `npx nodemon server.js`
+
+// now , if we go to localhost:3000, we will be able to access my frontend, here in my backend ,we also have frontend,  now this backend server will serve both the frontend and the API's 
+
+
+
+//===================================================
+
+=> now, what happened in the above case introduces us to multistages build in docker.
+
+=> now , we will create a dockerfile and .dockerignore file in day-161. but the question arise that we have both the dockerfile and .dockerignore file in frontend and backend folder, so why do we need them in day-161?
+
+=> the answer is , the dockerfile in backend will create a standalone image for backend, the dockerfile in frontend will create a standalone image in frontend. when we run the image of backend, it will create a container for backend, when we run the image of frontend, it will create a container for frontend. But we want an image that has both our frontend and backend
+
+=> there could be one solution where at first we run the `npm run build` in frontend, it will give us a `dist` folder, which , we will move to `backend` and rename it as `public` and then run the dockerfile, now the image which will be created will have both backend and frontend. this idea look good on paper but is not viable because the process is manual and we'll have to make it automatic. with the help of docker , we'll automate it.
+
+=> we will create a dockerfile in the root, i.e., day-161, and this dockerfile will have both frontend and backend.
+
+
+
+
+
+//===================================================
+WATCH THE VIDEO AGAIN AND AGAIN
