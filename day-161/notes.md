@@ -46,6 +46,8 @@ ALB(Application Load Balancer) = jab hamari application kafi badi ho jati hain, 
 
 -> ALB is inside VPC, Jo InternetGateway hain wo internet aur VPC ko connect karta hain, aur phir jo bhi traffic aata hain, wo ALB k through servers main distribute ho jata hain. 
 
+-> Round Robin se decide hota hai ki ALB kis server pe request bhejegi
+
 //===================================================
 
 Security Group = Security Group firewall ki tarah act karta hain, aur ye decide karta hain ki kaun se traffic ko VPC k andar aane dena hain aur kaun se traffic ko VPC k bahar jane dena hain.
