@@ -320,6 +320,10 @@ So, **Service = Makes sure the required number of Tasks are running.**
 
 In AWS, we have root user. we dont use root user to create services. Instead, we create users and assign permissions to them. That is what IAM does.
 
-at first we create an image and pass it to ECR, the image in ECR is private, so , when we push image in ECR, we give access of that image to ECS
+at first we create an image and pass it to ECR, the image in ECR is private, so , when we push image in ECR, we give access of that image to ECS. We create image on Local Device, then push it on ECR , which is a private repository. Netflix has its own ECR and so does Hotstar. 
 
+our root_user has the permission of everything, if we use that root_user's credentials to push the image to ECR, and mistakenly , the root_user's credentials gets leaked, then the person who stole our device and do anything, he can delete our ECR, he can delete our ECS, he can do anything, he can even delete our entire AWS Account. So we dont use root_user's credentials. instead we create another user name "cohort_user" and give the permission of push and pull to ECR and push only to ECS. now we will use the "cohort_user" credentials to push the image to ECR and ECS. now, if our "cohort_user" credential gets stolen, then relative damage is less. 
 
+//============================================================
+
+LOOK AT THE VIDEO FEW MORE TIMES.
