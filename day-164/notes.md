@@ -1,5 +1,22 @@
 # Why Kubernetes?
 
+Kubernetes is an open-source system that automates running, scaling, and managing software packed inside containers.Think of a single container as a box with your app and everything it needs to run, and Kubernetes as the automated manager controlling thousands of those boxes across many computers
+
+Why Do We Need Kubernetes?
+When software grows into many small pieces (called microservices), you end up with hundreds or thousands of individual containers. Managing them by hand causes major problems:
+
+Self-Healing: If a container or the computer it lives on crashes, Kubernetes spots the failure and instantly starts a new container on a working computer.
+
+Scaling: When user traffic goes up, Kubernetes adds more copies of your app. When traffic drops, it shrinks the app back down to save resources.
+
+Load Balancing: It automatically spreads incoming user requests across all working containers so no single container gets overloaded.
+
+Easy Updates: It updates your software piece by piece without turning off the entire application.
+
+
+
+
+
 Kubernetes is used to MANAGE and ORCHESTRATE containers at scale.
 
 Before understanding Kubernetes, remember:
@@ -34,7 +51,7 @@ But imagine we have hundreds of containers:
 
 Managing all of these containers manually becomes very difficult.
 
-This is where Kubernetes comes in.
+This is where Kubernetes comes in. 
 
 
 # 1. What Problem Does Kubernetes Solve?
@@ -315,7 +332,7 @@ payment-service
 Kubernetes finds the correct Pod
 
 
-So Kubernetes hides the constantly changing Pod IP addresses.
+So Kubernetes hides the constantly changing Pod IP addresses. 
 
 
 # 8. Desired State
@@ -688,7 +705,7 @@ docker build . -t cohort_2_express:latest
 docker run -p 3000:3000 cohort_2_express
 
 => now , we can access this server on http://localhost:3000. check the sum of 1 billion numbers.
-=> now, stop the container and delete it, docker ps < containerId > docker stop < containerId > docker rm < containerId>
+=> now, stop the container and delete it, docker ps , docker stop < containerId > , docker rm < containerId>
 => here, we have an image called cohort_2_express, now we will see kubernetes, and with the help of kubernetes , we will deploy this image and make it live.
 
 
@@ -696,7 +713,9 @@ docker run -p 3000:3000 cohort_2_express
   - Cluster: It is network of computers. Our server runs inside a cluster of computers. 
 
 Inside a container, we have a server.
-now suppose , we have a container that can server 1000 users, but , the number of users increases, now we have to create more containers and run them parallel to serve the users. so , when the load is high, we have to create more containers, and when the load is low, we have to remove containers. but , we can't do this manually. we have to do this automatically.
+
+=> now suppose , we have a container that can server 1000 users, but , the number of users increases, now we have to create more containers and run them parallel to serve the users. so , when the load is high, we have to create more containers, and when the load is low, we have to remove containers. but , we can't do this manually. we have to do this automatically.
+
 so , here , we will use kubernetes to manage our containers.
 
 
@@ -706,10 +725,33 @@ as of now, we will consider pod & container to be the same thing.
 
 ========================
 
-Deployment: It tells which image to run for the container, how much CPU is required, how much RAM is required, & max replicas (how many containers to run in parallel). so , basically , deployment manages pods/containers.
+Deployment:It is a component inside kubernetes. It tells which image to run for the container, how much CPU is required, how much RAM is required, & max replicas (how many containers to run in parallel). so , basically , deployment manages pods/containers.
 -> replica states that we have to maintain a minimum of N containers.
+
 -> containers can crash because the developer may have written wrong code, which cause error during run-time that leads to error in server & hence container crashes.
--> when a new container is created , it has a new IP, user ka jo traffic hai, wo, service k through guzar ta hain, kyun ki container crash ho jata hain aur naya container ki zaroorat hoti hain, aur kyuun ki naya container ka IP address pata nahi hota humko, toh jo bhi traffic hai wo service k through hi guzar ta hain, service automatically new container ka IP address discover kar leti hain aur traffic ussi IP address pr bhej deti hain.
+-----------------------------------------
+-> In Kubernetes, a Service is a stable network address and load balancer that gives your applications a reliable way to talk to a changing group of Pods.
+
+Why Do We Need a Service?
+Pods are temporary. When a Pod crashes or gets updated, Kubernetes destroys it and creates a new one with a completely new IP address. If your website tried to connect directly to a specific Pod's IP address, the connection would break every time that Pod restarted.
+
+A Service solves this problem by acting like a fixed phone number for a shifting team of workers:
+
+Permanent Address: The Service gets a permanent IP address and name that never changes, even if all the Pods behind it are replaced.
+
+Traffic Routing: It automatically catches incoming requests and forwards them to whichever Pods are currently alive and working.
+
+Built-in Load Balancing: If you have five Pods running your website, the Service splits the incoming traffic evenly across all five so no single Pod gets overworked.
+
+Common Types of Services
+
+ClusterIP: The default type. It gives a hidden address that can only be reached by other apps inside the same Kubernetes cluster.
+
+NodePort: Opens a specific port on every computer (Node) in your cluster, letting external traffic reach the Service from outside.
+
+LoadBalancer: Tells your cloud provider (like Google Cloud or AWS) to set up an external traffic router so real users on the internet can access your app.
+
+-----------------------------------------
 
 
 Ingress: they are rules which tells, kaun si traffic kaha jana chahiye, eg: if traffic comes on localhost:3000/login --> goes to user-service, and if traffic comes on localhost:3000/orders --> goes to order-service.
@@ -720,3 +762,114 @@ Ingress Controller: It is the actual implementation of ingress rules. It is a po
 ========================
 
 Now, with the help of kubernetes, we will deploy our container.
+
+Verify kubectl is working, go to terminal and check this out::
+
+- kubectl version
+- kubectl get nodes
+
+
+now, we need to create 3 files:
+deployment.yml = it contains 3 thing, 
+    1) image name to run
+    2) replica set
+    3) cpu & ram required
+
+service.yml = it contains, 
+    1) port mapping
+    2) service name
+
+ingrss.yml = it contains, 
+    1) rules
+
+
+
+
+--------------
+deployment.yml
+--------------
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: express
+  template:
+    metadata:
+      labels:
+        app: express
+    spec:
+      containers:
+      - name: express-container
+        image: cohort-2-express:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        resources:
+          limits: 
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+
+
+
+deployment.yml basically manages pods also ki kis image k saath pods ko run karna hai
+
+now, ak single deployment file run kiya, deployment 2 pods ko manage kar raha hai. Inn pods tak traffic leke jane ka kaam karta hain service ka
+
+------------
+service.yml
+------------
+
+
+kind: Service
+apiVersion: v1
+metadata:
+  name:  express-service
+spec:
+  selector:
+    app:  express
+  type:  ClusterIP 
+  ports:
+  - name:  name-of-the-port
+    port:  80
+    targetPort:  3000
+
+-> iss service pe agar kuch bhi traffic aaya toh woh traffic pods ko forward kar degi.
+-> service k pass traffic lata hain "ingrase controller"
+
+-----------
+ingress.yml
+-----------
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: express-ingress
+  labels:
+    app.kubernetes.io/name: express-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: express-service
+              port: 
+                number: 80
+
+                
+
+
+//======================================================
+AAJ KA CLASS GAND FARR DI, WATCH THE VIDEO AGAIN AND AGAIN AND AGAIN
