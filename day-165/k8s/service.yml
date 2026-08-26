@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name:  main-server-service # name of the service
+spec:
+  selector: # we have pods which has the label as "app: main-server", if any traffic comes to this service, it will be forwarded to the pods which has the label "app: main-server"
+    app:  main-server # name of the pod which we want to expose, this should match the label of the pod
+  type: ClusterIP
+  ports:
+  - name:  name-of-the-port
+    port:  80
+    targetPort:  3000 # this is the port on which the container is running, so if any traffic comes to this service on port 80, it will be forwarded to the pods on port 3000

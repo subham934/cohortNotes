@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-deployment # yeh deployment ka naam hai
+spec:
+  replicas: 3 # kitne pods chahiye, agar 3 hai toh 3 pods maintain honge
+  selector:
+    matchLabels:
+      app: main-server
+  template:
+    metadata:
+      labels:
+        app: main-server
+    spec:
+      containers: # ek pod multiple containers run kar sakta hai, lekin hum sirf ek container rakh rahe hain, if we want multiple containers, we can add them here with different names and images but generally we keep one container per pod
+      - name: main-server # container ka naam
+        image: express_cohort_2:latest # image ka naam, agar locally present nahi hai toh kahi aur se leke aah jao
+        imagePullPolicy: Always # agar locally present nahi hai toh kahi aur se (docker hub) leke aah jao 
+        ports: # ports bolta hain ki jo container banega, iss container k ander traffic kis port ke through aayega 
+        - containerPort: 3000
+        resources: 
+          limits:
+            memory: "128Mi" # RAM 128 megabytes
+            cpu: "500m" # CPU 500 millicores (0.5 CPU core)
+            # 1 core = 1000m (1000 millicores)
+          requests:
+            memory: "64Mi" # RAM 64 megabytes
+            cpu: "250m" # CPU 250 millicores (0.25 CPU core)

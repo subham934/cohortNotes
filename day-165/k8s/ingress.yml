@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: express-app # name of the ingress
+  labels:
+    app.kubernetes.io/name: express-app # label of the ingress
+spec:
+  ingressClassName: nginx
+  rules:
+   - http:
+      paths:
+      - pathType: Prefix
+        path: "/" # koi bhi api agar / ke sath start hoti hai, toh usko forward kar do main-server-service ke through
+        backend:
+          service:
+            name: main-server-service
+            port: 
+              number: 80
+ 
