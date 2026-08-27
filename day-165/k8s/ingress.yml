@@ -7,13 +7,21 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-   - http:
-      paths:
-      - pathType: Prefix
-        path: "/" # koi bhi api agar / ke sath start hoti hai, toh usko forward kar do main-server-service ke through
-        backend:
-          service:
-            name: main-server-service
-            port: 
-              number: 80
- 
+    - http:
+        paths:
+          - pathType: Prefix
+            path: '/' # koi bhi api agar / ke sath start hoti hai, toh usko forward kar do main-server-service ke through
+            backend:
+              service:
+                name: main-server-service
+                port:
+                  number: 80
+    - http:
+        paths:
+          - pathType: Prefix
+            path: '/api/product'
+            backend:
+              service:
+                name: product-service
+                port:
+                  number: 80

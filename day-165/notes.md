@@ -300,11 +300,11 @@ metrics-server bydefault system main nahi rehta, so we need to install it. Yeh m
 
 Now, we need to install metrics-server in our cluster to enable Horizontal Pod Autoscaler (HPA). We can use the following command to install metrics-server in our cluster day-165:
 
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+ - kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
-kubectl patch deployment metrics-server -n kube-system --type json -p '[{\"op\":\"add\",\"path\":\"/spec/template/spec/containers/0/args/-\",\"value\":\"--kubelet-insecure-tls\"}]'
+ - kubectl patch deployment metrics-server -n kube-system --type json -p '[{\"op\":\"add\",\"path\":\"/spec/template/spec/containers/0/args/-\",\"value\":\"--kubelet-insecure-tls\"}]'
 
-kubectl rollout status deployment/metrics-server -n kube-system
+ - kubectl rollout status deployment/metrics-server -n kube-system
 
 The above 3 commands helps us to setup metrics-server in our cluster to enable Horizontal Pod Autoscaler (HPA).
 
@@ -315,6 +315,9 @@ NAME CPU(cores) MEMORY(bytes)
 express-deployment-5897776fc7-588pq 1m 10Mi  
 express-deployment-5897776fc7-rp2hp 1m 40Mi  
 express-deployment-5897776fc7-vf85n 1m 11Mi
+
+
+//============================================================
 
 We also have CLI tools called watch cli.
 watch = automatically re-run a command at a fixed interval and refresh the output.
@@ -423,9 +426,9 @@ C:\some-folder\watch.exe -n 2 kubectl top pods
 
 we can simply run:
 
-watch -n 2 kubectl top pods
+## watch -n 2 kubectl top pods
 
-## Overall Flow
+# Overall Flow
 
 Mac/Linux:
 
@@ -453,7 +456,7 @@ BusyBox executable ko jis naam se call kiya jaata hai, woh usi corresponding com
 
 Iske baad hum terminal mein directly:
 
-watch -n 2 kubectl top pods
+## watch -n 2 kubectl top pods
 
 use kar sakte hain.
 
@@ -472,19 +475,56 @@ this is a tool jo kisi bhi server pe kuch numbers of traffic bhej raha hota hain
 I've installed it using antigravity AI. The prompt was ::
 there is one more cli called brew install hey, but its not available for windows, how do i install in my system
 
+the command i've to write is below::
+
+## hey -z 2m -c 200 http://localhost
+=> 2 minutes ke liye 200 concurrent requests bhej raha hain http://localhost pe
 
 
 
+//==========================================================
 
 
+also , jo hamare 3 pods hain, unke andar jo traffic chal raha hain , unko nikalne k liye we can use the following command:
 
 
+## kubectl logs deployment/express-deployment --tail=100 -f
 
-
-
+Iska matlab hain ki humne jitne bhi pods hain, unke andar jo traffic chal raha hain, usko nikalne k liye humne `kubectl logs` command ka use kiya hain. Is command mein humne deployment ka naam diya hain aur `--tail=100` ka matlab hain ki last 100 lines ko show karo aur `-f` ka matlab hain ki continuously follow karo aur latest logs ko show karo. Overall, iska matlab hain ki humne jitne bhi pods hain, unke andar jo traffic chal raha hain, usko nikalne k liye `kubectl logs` command ka use kiya hain.
 
 
 
 
 //==========================================================
 //==========================================================
+
+
+Now, when we run all the 3 command, i.e., watchCLI, heyCLI and kubectl logs, we will see the traffic on all 3 pods simultaneously. Aur kyunki jo hamara route tha wo thoda heavy tha, toh response aane main time lag raha hain, hamare pods ka CPU usage bhi badh chuka hain. Hamre pods ko scale karna hain, for that we need to run the below command::
+
+kubectl autoscale deployment express-deployment `
+  --min=3 `
+  --max=10 `
+  --cpu-percent=50
+
+Iska matlab:
+
+express-deployment ke pods minimum 3 aur maximum 10 ke beech scale honge
+Agar average CPU usage 50% se zyada ho jaata hai, to Kubernetes automatically naye pods add karega (max 10 tak)
+Agar CPU usage kam ho jaata hai, to pods bhi automatically kam ho jayenge (min 3 tak)
+
+Yani ye ek HorizontalPodAutoscaler (HPA) setup hai jo CPU load ke hisaab se pods ki count dynamically adjust karta hai.
+
+Now, we will delete all the previous pods with the below command, this will delete all the pods and because the heyCLI and kubectl logs commands are running in the background, they will continue to run even after the pods have been deleted and stop after 10-15mins , after that they will stop running and the number of pods will reduce to 3.
+
+kubectl delete pod express-deployment-5897776fc7-588pq --grace-period=0 --force
+kubectl delete pod express-deployment-5897776fc7-rp2hp --grace-period=0 --force
+kubectl delete pod express-deployment-5897776fc7-vf85n --grace-period=0 --force
+
+
+//==========================================================
+//==========================================================
+
+
+=> Hamare pass Metrics Server hain aur uske saath hain HPA(Horizontal Pod AutoScaler). HPA pod ko autoscale karta rehta hain on the basis of load. Metrics Server monitor karta hain ki pod ki CPU usage aur memory usage ko. Metrics server se HPA continuously data leta rehta hain aur HPA ko agar lagta hain ki CPU usage zyada ho raha hain toh pods ko scale up karega. Agar CPU usage kam ho raha hain toh HPA ko inform karega ki pods ko scale down karo.
+
+Kubernetes ka usage hain ki wo microservice support karta hain. 
