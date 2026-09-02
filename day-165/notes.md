@@ -294,9 +294,9 @@ express-app nginx \* 172.18.0.2 80 61s
 //==========================================================
 //==========================================================
 
-The HorizontalPodAutoscaler (HPA) watches CPU usage across your pods and automatically scales the replica count up or down. When CPU exceeds your threshold it adds pods. When traffic drops it removes them. It requires metrics-server to read CPU data — on Docker Desktop this is not pre-installed and must be added manually.
+The HorizontalPodAutoscaler (HPA) watches CPU usage across your pods and automatically scales the replica count up or down. When CPU usage exceeds your threshold, it adds pods; when traffic drops, it removes them. It requires metrics-server to read CPU data — on Docker Desktop this is not pre-installed and must be added manually.
 
-metrics-server bydefault system main nahi rehta, so we need to install it. Yeh metrics-server cluster k ander jitne bhi pods hain unko monitor karta hain ki kitna CPU use kar rahe hain aur kitna memory use kar rahe hain. Agar CPU usage zyada ho raha hain toh metrics-server HPA ko inform karega ki pods ko scale up karo. Agar CPU usage kam ho raha hain toh metrics-server HPA ko inform karega ki pods ko scale down karo.
+Metrics-server by default nahi rehta cluster mein, isliye humein ise install karna padta hai. Yeh metrics-server cluster ke andar jitne bhi pods hain, unko monitor karta hai ki kitna CPU aur kitna memory use kar rahe hain. Agar CPU usage zyada ho raha hai, toh metrics-server HPA ko inform karega ki pods ko scale up karo. Agar CPU usage kam ho raha hai, toh metrics-server HPA ko inform karega ki pods ko scale down karo.
 
 Now, we need to install metrics-server in our cluster to enable Horizontal Pod Autoscaler (HPA). We can use the following command to install metrics-server in our cluster day-165:
 
@@ -308,7 +308,9 @@ Now, we need to install metrics-server in our cluster to enable Horizontal Pod A
 
 The above 3 commands helps us to setup metrics-server in our cluster to enable Horizontal Pod Autoscaler (HPA).
 
-kubectl top pods => shows the CPU and memory usage of the pods.
+## kubectl top pods
+
+=> `kubectl top pods` => shows the CPU and memory usage of the pods.
 
 This below is the output of the above command:
 NAME CPU(cores) MEMORY(bytes)  
@@ -521,6 +523,16 @@ kubectl delete pod express-deployment-5897776fc7-rp2hp --grace-period=0 --force
 kubectl delete pod express-deployment-5897776fc7-vf85n --grace-period=0 --force
 
 
+
+
+to edit the HPA again apply it to the cluster, we can use the following command:
+
+# kubectl edit hpa express-deployment
+
+
+
+
+
 //==========================================================
 //==========================================================
 
@@ -528,3 +540,229 @@ kubectl delete pod express-deployment-5897776fc7-vf85n --grace-period=0 --force
 => Hamare pass Metrics Server hain aur uske saath hain HPA(Horizontal Pod AutoScaler). HPA pod ko autoscale karta rehta hain on the basis of load. Metrics Server monitor karta hain ki pod ki CPU usage aur memory usage ko. Metrics server se HPA continuously data leta rehta hain aur HPA ko agar lagta hain ki CPU usage zyada ho raha hain toh pods ko scale up karega. Agar CPU usage kam ho raha hain toh HPA ko inform karega ki pods ko scale down karo.
 
 Kubernetes ka usage hain ki wo microservice support karta hain. 
+
+Toh humne abhi tak jitne bhi files banaya hain inside `backend` folder , unko dalange ek folder jiska naam hain `main-server` , which is inside the `backend` folder. Also inside the `backend` folder, we'll create one more folder called `product`
+
+Inside the `product` folder we'll create `npm init -y`
+then we'll install express and morgan axios
+- `npm i express morgan axios`
+
+-----------------
+product/server.js
+-----------------
+
+import express from "express";
+import morgan from "morgan";
+import axios from "axios";
+
+
+const app = express();
+
+app.use(morgan("dev"));
+app.use(express.json());
+
+
+app.get("/", async (req, res)=>{
+    const response = await axios.get("http://main-server-service/"); // this http://main-server-service/ means that we have created a service called main-server-service (check service.yml), so, now we are creating a server that calls this service and then return the response.  
+    res.send(response.data);
+})
+
+app.listen(8080, () => {
+    console.log("Server is running on port 8080");
+})
+
+
+---------------------
+product/.dockerignore
+---------------------
+node_modules
+.env
+
+------------------
+product/dockerfile
+------------------
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 8080
+
+CMD [ "node", "server.js" ]
+
+
+Now, lets create an image for this product server and run it. Go to the directory:: `D:\cohort\day-165\backend\product` and run the below command::
+
+# docker build . -t product_server:latest
+
+
+Now, we'll create a deployment file and a service file for this product server.
+
+
+------------------
+k8s/deployment-product.yml
+------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+      - name: product
+        image: product_server:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+
+now , apply this deployment using the below command::
+
+
+kubectl apply -f  ./k8s/deployment-product.yml
+
+Here, we have created one more deployment, and once we run this command, we will see the product-deployment in the output with 3 pods running.
+
+
+Now, lets create a service for the product deployment, 
+
+
+
+------------------
+k8s/service-product.yml
+------------------
+kind: Service
+apiVersion: v1
+metadata:
+  name:  product-service
+spec:
+  selector:
+    app:  product
+  type:  ClusterIP 
+  ports:
+  - name:  product-service-port
+    port:  80
+    targetPort:  8080
+
+
+
+
+Now, lets apply this service using the below command::
+
+
+kubectl apply -f  ./k8s/service-product.yml
+
+
+
+now, we need to make changes in ingress.yml
+
+---------------
+k8s/ingress.yml
+---------------
+
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: express-app # name of the ingress
+  labels:
+    app.kubernetes.io/name: express-app # label of the ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: '/' # koi bhi api agar / ke sath start hoti hai, toh usko forward kar do main-server-service ke through
+            backend:
+              service:
+                name: main-server-service
+                port:
+                  number: 80
+    - http:
+        paths:
+          - pathType: Prefix
+            path: '/api/product'
+            backend:
+              service:
+                name: product-service
+                port:
+                  number: 80
+
+Now, lets apply the ingress using the below command::
+
+kubectl apply -f  ./k8s/ingress.yml
+
+
+now, lets run logs for product-deployment:
+
+# kubectl logs deployment/product-deployment --tail=100 -f
+
+
+
+//==========================================================
+//==========================================================
+
+now, if we go and type http://localhost/api/product in our browser, we will get the response as ::
+Cannot GET /api/product
+
+so, we need to make changes in server.js and change the path from "/" to "/api/product".
+
+
+--------------- 
+product/server.js
+---------------
+
+import express from "express";
+import morgan from "morgan";
+import axios from "axios";
+
+
+const app = express();
+
+app.use(morgan("dev"));
+app.use(express.json());
+
+
+app.get("/api/product", async (req, res)=>{
+    const response = await axios.get("http://main-server-service/"); // this http://main-server-service/ means that we have created a service called main-server-service (check service.yml), so, now we are creating a server that calls this service and then return the response.  
+    res.send(response.data);
+})
+
+app.listen(8080, () => {
+    console.log("Server is running on port 8080");
+})
+
+now , lets create an image for the product server using the below command:
+
+# docker build . -t product_server:latest
+
+
+now, that image is created again, we also need to update the deployment file , for that we have another command called ::
+
+# kubectl rollout restart deployment/product-deployment
+
+  
+
+//==========================================================
+//==========================================================
