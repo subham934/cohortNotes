@@ -10,6 +10,45 @@
   src: url('./fonts/Lausanne-500.woff2');
 }
 
-body {
+/* body {
   overflow-x: hidden;
+} */
+
+.link{
+  overflow: hidden;
 }
+
+.moveLink{
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: transform .4s ease, opacity .4s ease;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.link:hover .moveLink{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+@keyframes moveX {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.moveX {
+  animation: moveX 8s linear infinite;
+}
+
+.favColor{
+  color:#D3FD50;
+}
+.bg-favColor{
+  background: #D3FD50 !important;
+}
+
