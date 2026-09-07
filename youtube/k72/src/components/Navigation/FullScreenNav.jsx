@@ -1,56 +1,100 @@
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import React from 'react';
+import { useContext } from 'react';
 import { useRef } from 'react';
+import { NavbarContext } from '../../context/NavContext';
 
 const FullScreenNav = () => {
+  const fullNavLinksRef = useRef(null);
 
-    const fullNavLinksRef = useRef(null)
- useGSAP(function () {
-        const tl = gsap.timeline()
-     
-        tl.from('.stairing', {
-            delay:1,
-            height: 0,
-            stagger: {
-                amount: -0.2
-            }
-        })
-        
-        
-        tl.from(fullNavLinksRef.current,{
-            opacity: 0,
-        })
+  const fullScreenRef = useRef(null);
 
-        tl.from(".link",{
-            opacity:0,
-            rotateX:90,
-            stagger:{
-                amount: 0.2
-            }
-        })
-    })
-    
+  const [navbarOpen, setNavbarOpen] = useContext(NavbarContext);
 
+  function gsapAnimation() {
+    const tl = gsap.timeline();
+    // Instantly show container and reset states before animating
+    tl.set('.fullscreennav', { display: 'block' });
+    tl.set('.navlink', { opacity: 0 });
+    tl.set('.stairing', { opacity: 1, height: 0 });
+    // Stairs rise up (colored stripes — the transition effect)
+    tl.to('.stairing', {
+      height: '100%',
+      duration: 0.55,
+      stagger: { amount: -0.25 },
+      ease: 'power3.out',
+    });
+    // All stripes fade out together smoothly → black background revealed
+    tl.to('.stairing', { opacity: 0, duration: 0.5, ease: 'power2.inOut' });
+    // Fade in header (cross + logo) on the black background
+    tl.to('.navlink', { opacity: 1, duration: 0.35, ease: 'power2.out' });
+    // Then reveal links
+    tl.to('.link', {
+      opacity: 1,
+      rotateX: 0,
+      duration: 0.4,
+      stagger: { amount: 0.25 },
+      ease: 'power2.out',
+    }, '-=0.15');
+  }
+
+  function gsapAnimationReverse() {
+    const tl = gsap.timeline();
+    // Hide header and links simultaneously
+    tl.to('.navlink', { opacity: 0, duration: 0.25, ease: 'power2.in' });
+    tl.to('.link', {
+      opacity: 0,
+      rotateX: 90,
+      duration: 0.25,
+      stagger: { amount: 0.1 },
+      ease: 'power2.in',
+    }, '<');
+    // All stripes fade back in together smoothly → covers the black background
+    tl.set('.stairing', { height: '100%' });
+    tl.to('.stairing', { opacity: 1, duration: 0.5, ease: 'power2.inOut' });
+    // Then retract stairs
+    tl.to('.stairing', {
+      height: 0,
+      duration: 0.5,
+      stagger: { amount: 0.15 },
+      ease: 'power3.inOut',
+    });
+    // Finally hide the container
+    tl.set('.fullscreennav', { display: 'none' });
+  }
+
+  useGSAP(
+    function () {
+      // Skip on initial render — navbarOpen starts false, don't run reverse animation
+      if (!navbarOpen && !fullScreenRef.current._gsapAnimated) return;
+      if (navbarOpen) {
+        fullScreenRef.current._gsapAnimated = true;
+        gsapAnimation();
+      } else {
+        gsapAnimationReverse();
+      }
+    },
+    { dependencies: [navbarOpen] }
+  );
   return (
     <div
+      ref={fullScreenRef}
       id="fullscreennav"
-      className="hidden h-screen text-white overflow-x-hidden w-full absolute"
+      className="fullscreennav hidden h-screen bg-black text-white overflow-x-hidden z-50 w-full absolute"
     >
-
-        <div className='h-screen w-full fixed'>
-              <div className='h-full w-full flex'>
-                    <div className='stairing h-full w-1/5 bg-[#D3FD50]'></div>
-                    <div className='stairing h-full w-1/5 bg-[#354110]'></div>
-                    <div className='stairing h-full w-1/5 bg-[#D3FD50]'></div>
-                    <div className='stairing h-full w-1/5 bg-[#354110]'></div>
-                    <div className='stairing h-full w-1/5 bg-[#D3FD50]'></div>
-                </div>
+      <div className="h-screen w-full fixed">
+        <div className="h-full w-full flex">
+          <div className="stairing h-0 w-1/5 bg-[#D3FD50]"></div>
+          <div className="stairing h-0 w-1/5 bg-[#354110]"></div>
+          <div className="stairing h-0 w-1/5 bg-[#D3FD50]"></div>
+          <div className="stairing h-0 w-1/5 bg-[#354110]"></div>
+          <div className="stairing h-0 w-1/5 bg-[#D3FD50]"></div>
         </div>
-      <div ref={fullNavLinksRef} className='relative'>
-        <div className="flex w-full justify-between p-5 items-start">
-        <div className="">
-          <div className="w-36">
+      </div>
+      <div ref={fullNavLinksRef} className="relative">
+        <div className="navlink flex w-full justify-between p-5 items-start" style={{opacity: 0}}>
+          <div className="">
+            <div className="w-36">
             <svg
               className="w-full"
               xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +109,9 @@ const FullScreenNav = () => {
           </div>
         </div>
 
-        <div className="h-32 w-32 relative cursor-pointer">
+        <div onClick={()=>{
+          setNavbarOpen(false)
+        }} className="h-32 w-32 relative cursor-pointer">
           <div className="h-44 absolute w-1 -rotate-45 origin-top bg-favColor"></div>
           <div className="h-44 absolute w-1 right-0 rotate-45 origin-top bg-favColor"></div>
           <div></div>
