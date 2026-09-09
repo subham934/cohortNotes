@@ -25,3 +25,105 @@ So, our entire project has 4 services:
 
 Let's start with sandbox
 
+Sandbox will do following things::
+- create containers for vite dev server
+- provide Terminal access
+- provide preview URL
+- provide the APIs for file updates
+- delete containers when not in use
+
+
+Now, we will do the top 3 things: 
+
+- create containers for vite dev server
+- provide Terminal access
+- provide preview URL
+
+
+
+we have a sandbox service, user request to api/sandbox/start, when we call this API, sandbox service will do the following::
+
+- create a new container
+- return the preview URL : with this URL, user can see the preview of the code
+- return terminal URL: with this URL, we can access our terminal, it is a websocket URL with which we will access the terminal. we will use node-pty
+
+As of now, we will create a sandbox-service with basic service like creating a bare-minimum server with the help of kubernetes, and once the server is created , we will add basic functionality so that the following things are achieved::
+- create containers for vite dev server
+- provide Terminal access
+- provide preview URL
+
+
+\day-168\sandbox\server> npm i express morgan dotenv mongoose
+
+
+
+----------------------------------
+day-168/sandbox/server/app/app.js
+----------------------------------
+
+import express from "express";
+import morgan from "morgan";
+
+
+const app = express()
+
+app.use(morgan("dev"))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+
+app.get("/api/sandbox/health", (req, res) => {
+    res.status(200).json({
+        message: "Sandbox API is healthy",
+        status: "ok"
+    })
+})
+
+export default app;
+
+
+
+
+------------------------
+sandbox/server/server.js
+------------------------
+
+
+import app from "./src/app.js"
+
+app.listen(3000, ()=>{
+    console.log(`Sandbox server is running on port ${3000}`)
+})
+
+=> making some changes in package.json file to run the server with nodemon
+=> inside the day-168/sandbox/server run "npm run dev" , then go to browser and check "http://localhost:3000/api/sandbox/health" , you will see the response from the server.
+
+
+-> now we will deploy with kubernetes, for that we will create a dockerfile and then we will create a deployment.yml file and then we will create a service.yml file and finally we will create a ingress.yml file. we will also see how this server create a pod/container
+-> to deploy the server with kubernetes, we need to create an image and for that we need to create a dockerfile and .dockerignore file. we will create a dockerfile and .dockerignore file inside the day-168/sandbox/server folder.
+
+
+----------------------------
+sandbox/server/dockerfile
+----------------------------
+
+FROM node:20-alpine
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
+
+-------------------------
+sandbox/server/.dockerignore
+-------------------------
+
+node_modules
+.env
+
+
+=> Now, lets set-up kubernetes
+
