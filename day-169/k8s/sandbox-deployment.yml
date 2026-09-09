@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-deployment
+  labels:
+    name: sandbox-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sandbox
+  template:
+    metadata:
+      labels:
+        app: sandbox
+    spec:
+      containers:
+        - image: sandbox:latest
+          imagePullPolicy: IfNotPresent # this is used to check if the image is present in the local machine or not, if not then it will pull the image from the docker hub, if yes then it will use the local image
+          name: main-sandbox-container
+          resources:
+            limits:
+              cpu: '500m'
+              memory: '400Mi'
+            requests:
+              cpu: '250m'
+              memory: '200Mi'
+          livenessProbe: # this is used to check if the container is alive or not, kubernetes will request on the api at the given path "/api/sandbox/health" and if the response is not 200 then it will restart the container, if the container is not ready then it will not forward the request to the container , if its working fine then it will keep running , after 90 seconds of startup it will start checking for the health
+            httpGet:
+              path: /api/sandbox/health # this is the path where the health check will be performed, if the response is not 200 then it will restart the container
+              port: 3000
+            initialDelaySeconds: 90
+            timeoutSeconds: 10
+          readinessProbe: # this is used to check if the container is ready to serve the request or not, if not then it will not forward the request to the container, if container is not ready then it will not forward the request to the container
+            httpGet:
+              path: /api/sandbox/health
+              port: 3000
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+          ports:
+            - containerPort: 3000
+              name: main-sandbox
