@@ -318,6 +318,296 @@ ABOUT 99% EXPLAINATION IS DONE ABOVE, PLEASE LOOK AT THE VIDEO 2-3 TIMES MORE , 
 DAY-169
 //==========================================//
 
-In yesterday's code, we had main-pods like Auth, Notification, AI Orchestration and Sandbox. As of now, we have only created the sandbox Service Pod. This Sandbox Service Pod is responsible for creating user pods. The user pods will be created by the sandbox service when the user requests to start a new session. The user pods will have their own ingress and service, so that the user can access the preview URL and terminal URL. 
+In yesterday's code, we had main-pods like Auth, Notification, AI Orchestration and Sandbox. As of now, we have only created the sandbox Service Pod. This Sandbox Service Pod will be responsible for creating user pods. The user pods will be created by the sandbox service when the user requests to start a new session. The user pods will have their own ingress and service, so that the user can access the preview URL and terminal URL. 
+
+
+Today, our architecture will be abit different, we wont create ingress all the time, instead of that, we will create a POD, which will have the vite-development-server, and along with that, we will also have a SERVICE to take the request to the POD. Now, the question arises that if there is no ingress, then how will the traffic reach SERVICE? we need ingress , so that the traffic coming from outside(from user which is outside the cluster) can be forwarded to the service. User cann't directly access the service, for that we need ingress. So the question is  how will the traffic reach SERVICE?
+
+
+Answer:
+Each user-pod has a preview URL, i.e., pod1.preview.localhost and pod2.preview.localhost, we will create an ingress which will look like "*.preview.localhost", if the user request for pod1.preview.localhost, then the ingress " *.preview.localhost" will handle it, it wont directly send the request to the service. The request such as  pod1.preview.localhost and pod2.preview.localhost will reach " *.preview.localhost", this ingress will send the request to "router server", this "router server" will see read the request and will see that the request is for pod1.preview.localhost, so it will forward the request to pod1-service, and pod1-service will forward the request to pod1-pod. Similarly, if the request is for pod2.preview.localhost, then the "router server" will forward the request to pod2-service, and pod2-service will forward the request to pod2-pod. This router-server is an express server. This router-server will also have a service called router-service, so that the ingress can forward the request to router-service, and router-service will forward the request to router-server. 
+
+
+Yesterday, we have only created codespace-ingress, which was forwarding the request to sandbox-service, and sandbox-service was forwarding the request to sandbox-pod. So, these are the 3 things, i.e., codespace-ingress, sandbox-service and sandbox-pod which we have created yesterday. Today, we will setup the router-server and also, we will develop a functionality where the sandbox-service will create a new pod for the user, and this new pod will have its own service, and the router-server will forward the request to that service. 
+
+
+
+//==========================================
+
+Lets start with the sandbox-service where we will give a power to sandbox-service to create a new pod for the user and service. 
+
+we know that user-pod will have react's vite-development-server, for that we will need image , any pod has a container, and this container lets you run your application and for that we will need an image.
+
+Inside sandbox folder, we will create a new folder called "template"
+
+\day-169\sandbox\template > npm create vite .
+
+Here, our user-pod will have vite-development-server, so we will create a react project with vite. We will create a react project with vite, and then we will create an image of that react project, and this image will be used by the sandbox-service to create a new pod for the user. Now, inside the template folder we have the react-vite code and we'll convert this code into image, for that lets create a dockerfile and .dockerignore . 
+
+
+-----------------------------------
+day-169>sandbox>template>dockerfile
+-----------------------------------
+FROM node:20-alpine
+
+WORKDIR /workspace
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
+
+
+
+
+--------------------------------------
+day-169>sandbox>template>.dockerignore
+--------------------------------------
+
+node_modules
+.env
+
+we'll also need to make some changes in vite.config.js file::
+
+
+--------------------------------------
+day-169>sandbox>template>vite.config.js
+--------------------------------------
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server:{
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: true, // the vite-deployment-server that on user-pod, runs on localhost:5173, the request that comes to this pod is from pod1.preview.localhost, so the request pod1.preview.localhost is different from localhost:5173, so we need to allow the request from pod1.preview.localhost, so we set allowedHosts: true, so that the request from pod1.preview.localhost is allowed.
+
+  }
+})
+
+
+now , lets create an image for this::
+
+day-169>sandbox>template > docker build -t template:latest .
+
+now, an image will be created, the name of this image is `template`, so indide the user-pod, we will have vite-development-server running. Now, lets write a code so that sandbox-service can create a new pod for the user. For that we have a package called "kubernetes-client" which will help us to create a new pod for the user.
+
+we'll install the following packages inside sandbox/server folder:
+npm i @kubernetes/client-node
+npm i uuid
+
+
+now , inside sandbox/server/src folder , we will create one more folder called "kubernetes" 
+
+
+---------------------------------------
+sandbox/server/src/kubernetes/config.js
+---------------------------------------
+
+
+import * as K8sApi from '@kubernetes/client-node';
+
+const kc = new K8sApi.KubeConfig();
+kc.loadFromDefault();
+
+export const k8sCoreV1Api = kc.makeApiClient(K8sApi.CoreV1Api);
+
+// with the help of k8sCoreV1Api we can create a pod, service.
+
+
+
+
+=> now we'll write a code on how to create a pod. To create a pod we will write code inside pod.js
+
+
+
+
+---------------------------------------
+sandbox/server/src/kubernetes/pod.js
+---------------------------------------
+
+import { k8sCoreV1Api } from './config.js';
+
+export async function createPod(sandboxId) {
+  const podManifest = {
+    metadata: {
+      name: `sandbox-pod-${sandboxId}`,
+      labels: {
+        app: 'sandbox',
+        sandboxId: sandboxId,
+      },
+    },
+    spec: {
+      containers: [
+        {
+          image: 'template', // this is the image name called "template"
+          imagePullPolicy: 'IfNotPresent',
+          name: 'sandbox-container',
+          ports: [{ containerPort: 5173, name: 'http' }],
+          resources: {
+            limits: { cpu: '500m', memory: '1Gi' },
+            requests: { cpu: '250m', memory: '500Mi' },
+          },
+        },
+      ],
+    },
+  };
+
+  const response = await k8sCoreV1Api.createNamespacedPod({
+    namespace: 'default',
+    body: podManifest,
+  });
+
+  return response;
+}
+
+//when we execute this code, we will create a pod which will have the image called "template" 
+
+
+---------------------------------------------------
+
+now that POD is created, still udhar tak request nahi pahooch sakti hai, so we need to create a service for that pod, for that we will write a code inside service.js
+
+
+---------------------------------------------------
+sandbox/server/src/kubernetes/service.js
+---------------------------------------------------
+
+import { k8sCoreV1Api } from "./config.js";
+
+export const createService = async (sandboxId) => {
+    const serviceManifest = {
+        metadata: {
+            name: `sandbox-service-${sandboxId}`,
+            labels: {
+                app: 'sandbox',
+                sandboxId: sandboxId
+            }
+        },
+        spec: {
+            selector: {
+                app: 'sandbox',
+                sandboxId: sandboxId
+            },
+            ports: [
+                {
+                    name: "http",
+                    port: 80,
+                    targetPort: 5173,
+                    protocol: "TCP"
+                }
+            ],
+            type: "ClusterIP"
+        }
+    }
+    
+    const response = await k8sCoreV1Api.createNamespacedService({
+        namespace: 'default',
+        body: serviceManifest
+    })
+
+    return response;
+}
+
+
+
+now, lets make changes in app.js file, so that when user requests to start a new session, we will create a new pod and service for that user. For that we will create a new API called "/api/sandbox/start" , when user requests to this API, we will create a new pod and service for that user.
+
+
+
+-------------------------
+sandbox/server/src/app.js
+-------------------------
+
+import express from "express";
+import morgan from "morgan";
+import {createPod} from "./kubernetes/pod.js";
+import {createService} from "./kubernetes/service.js";
+import {v7 as uuid} from "uuid";
+
+const app = express()
+
+app.use(morgan("dev"))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+
+app.get("/api/sandbox/health", (req, res) => {
+    res.status(200).json({
+        message: "Sandbox API is healthy",
+        status: "ok"
+    })
+})
+
+app.post("/api/sandbox/start", async (req, res) => {
+    const sandboxId = uuid() // with this we generate a sandbox id
+
+    await Promise.all([
+        createPod(sandboxId),
+        createService(sandboxId)
+    ]) // with this we create a new pod and service for that user
+
+// we have created an API called /api/sandbox/start, when user requests to this API, we generate a sandboxId and with this Id we will create a POD and a SERVICE for that user. The POD will have the image called "template" which we created earlier, and this image will have the vite-development-server running. The SERVICE will forward the request to the POD, so that user can access the preview URL and terminal URL. The preview URL will be like "sandboxId.preview.localhost" and the terminal URL will be like "sandboxId.terminal.localhost". The ingress will forward the request to the service, and the service will forward the request to the pod.
+
+
+    res.status(200).json({
+        message: "Sandbox environment created successfully",
+        status: "ok",
+        sandboxId,
+        previewUrl : `http://${sandboxId}.preview.localhost`
+    })
+
+})
+
+export default app;
+
+
+
+=> Now, we will again create a new image for the sandbox-service, for that go to the day-169/sandbox/server folder and run the following command::
+docker build -t sandbox:latest .
+
+now , our image is created, go to D:\cohort\day-169\ and run the following command::
+kubectl apply -f ./k8s
+
+
+we will get the below response::
+ingress.networking.k8s.io/codespace-ingress created
+deployment.apps/sandbox-deployment created
+service/sandbox-service created
+
+we need to install ingress-controller, for that run the following command::
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==========================================
+
+
+
+
+
+
+
+
+
+
 
 
