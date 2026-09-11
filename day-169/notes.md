@@ -336,7 +336,7 @@ Yesterday, we have only created codespace-ingress, which was forwarding the requ
 
 Lets start with the sandbox-service where we will give a power to sandbox-service to create a new pod for the user and service. 
 
-we know that user-pod will have react's vite-development-server, for that we will need image , any pod has a container, and this container lets you run your application and for that we will need an image.
+we know that user-pod will have react's vite-development-server, for that we will need image . Any pod has a container, and this container lets you run your application and for that we will need an image.
 
 Inside sandbox folder, we will create a new folder called "template"
 
@@ -469,7 +469,7 @@ export async function createPod(sandboxId) {
   return response;
 }
 
-//when we execute this code, we will create a pod which will have the image called "template" 
+//when we execute this code, we will create a pod where the image called "template" will be running
 
 
 ---------------------------------------------------
@@ -582,6 +582,8 @@ we will get the below response::
 ingress.networking.k8s.io/codespace-ingress created
 deployment.apps/sandbox-deployment created
 service/sandbox-service created
+
+
 
 we need to install ingress-controller, for that run the following command::
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml
