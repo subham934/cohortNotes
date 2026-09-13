@@ -589,27 +589,134 @@ we need to install ingress-controller, for that run the following command::
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml
 
 
+now, go to browser and type http://localhost/api/sandbox/health, you will get the response "Sandbox API is healthy"
 
 
+now, lets go to postman and give a POST request to http://localhost/api/sandbox/start, we will get error
 
 
+To check the error thats coming, we will check the logs of the sandbox-service pod, for that run the following command::
+
+kubectl logs deployment/sandbox-deployment -f
+
+Error: HTTP-Code: 403
+Message: Unknown API Status Code!
+=> this is a forbidden error, we have sandbox-service and we with this snadbox-service we are trying to create a new pod and service, the entire process is inside the kubernetes cluster, but by default, kubernetes cluster doesn't allow any pod to create a new pod or service, for that we need to give some permissions to the sandbox-service pod, so that it can create a new pod and service. Let's create a file called "rbac.yml" inside the day-169/k8s folder, this file will have the rules for the sandbox-service pod, so that it can create a new pod and service. 
 
 
+--------------------
+day-169/k8s/rbac.yml
+--------------------
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name:  resource-manager # this is the name of the service account
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: resource-manager
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: resource-manager-binding
+subjects:
+- kind: ServiceAccount
+  name: resource-manager
+roleRef:
+  kind: Role
+  name: resource-manager
+  apiGroup: rbac.authorization.k8s.io
 
 
-
+we are creating a service account called "resource-manager" and we are giving this service account the permission to "get", "list", "watch", "create", "delete" pods and services. Now, we need to give this service account to the sandbox-service pod, for that we will make some changes in the sandbox-deployment.yml file.
 
 
 //==========================================
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-deployment
+  labels:
+    name: sandbox-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sandbox
+  template:
+    metadata:
+      labels:
+        app: sandbox
+    spec:
+    # - this one , we have created now called serviceAccountName, this will give the permission to the sandbox-service pod to create a new pod and service
+      serviceAccountName: resource-manager # this is the name of the service account that we created in the rbac.yml file, this will give the permission to the sandbox-service pod to create a new pod and service   
+      containers:
+        - image: sandbox:latest
+          imagePullPolicy: IfNotPresent # this is used to check if the image is present in the local machine or not, if not then it will pull the image from the docker hub, if yes then it will use the local image
+          name: main-sandbox-container
+          resources:
+            limits:
+              cpu: '500m'
+              memory: '400Mi'
+            requests:
+              cpu: '250m'
+              memory: '200Mi'
+          livenessProbe: # this is used to check if the container is alive or not, kubernetes will request on the api at the given path "/api/sandbox/health" and if the response is not 200 then it will restart the container, if the container is not ready then it will not forward the request to the container , if its working fine then it will keep running , after 90 seconds of startup it will start checking for the health
+            httpGet:
+              path: /api/sandbox/health # this is the path where the health check will be performed, if the response is not 200 then it will restart the container
+              port: 3000
+            initialDelaySeconds: 90
+            timeoutSeconds: 10
+          readinessProbe: # this is used to check if the container is ready to serve the request or not, if not then it will not forward the request to the container, if container is not ready then it will not forward the request to the container
+            httpGet:
+              path: /api/sandbox/health
+              port: 3000
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+          ports:
+            - containerPort: 3000
+              name: main-sandbox
 
 
+Now, we have created a service account called "resource-manager" , with this , the sandbox-deployment pod will have the permission to create a new pod and service. Now, we need to apply the changes in the kubernetes cluster, for that go to the day-169 folder and run the following command::
+kubectl apply -f ./k8s
+
+wait for few minutes so that the sandbox-deployment pod is restarted and the new changes are applied. Now, go to postman and give a POST request to http://localhost/api/sandbox/start, you will get the response with sandboxId and previewUrl. 
 
 
+so, when reqeusting on postman with POST http://localhost/api/sandbox/start we get the below response:
+
+{
+    "message": "Sandbox environment created successfully",
+    "status": "ok",
+    "sandboxId": "01a0957b-3c9a-7026-8e81-ff741d83ac50",
+    "previewUrl": "http://01a0957b-3c9a-7026-8e81-ff741d83ac50.preview.localhost"
+}
 
 
+we can check the docker desktop, we will see that a new pod is created with the name "sandbox-pod-01a0957b-3c9a-7026-8e81-ff741d83ac50" and a new service is created with the name "sandbox-service-01a0957b-3c9a-7026-8e81-ff741d83ac50". The pod will have the image called "template" which we created earlier, and this image will have the vite-development-server running. The service will forward the request to the pod, so that user can access the preview URL and terminal URL. The preview URL will be like "sandboxId.preview.localhost" and the terminal URL will be like "sandboxId.terminal.localhost".
+
+we will verify if everything inside the POD is working fine or not, for that we will check the logs of the pod, for that run the following command::
+
+kubectl logs sandbox-pod-01a0957b-3c9a-7026-8e81-ff741d83ac50
+
+we can see that the vite-development-server is running inside the pod. 
 
 
+-------------------------------------------------------
 
+As of now, we have created user-pod and service, now, we need to create an ingress which looks like "*.preview.localhost" and a router-server which will forward the request to the user-service. 
 
+Inside the sandbox folder, we'll create one new folder called `router` and istall `npm i express morgan http-proxy-middleware`
 
+with the help of http-proxy-middleware, we will forward the request, which comes from router-server, to the user-service . 

@@ -14,6 +14,7 @@ spec:
       labels:
         app: sandbox
     spec:
+      serviceAccountName: resource-manager # this is the name of the service account that we created in the rbac.yml file, this will give the permission to the sandbox-service pod to create a new pod and service   
       containers:
         - image: sandbox:latest
           imagePullPolicy: IfNotPresent # this is used to check if the image is present in the local machine or not, if not then it will pull the image from the docker hub, if yes then it will use the local image
