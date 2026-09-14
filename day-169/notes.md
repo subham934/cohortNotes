@@ -642,6 +642,11 @@ we are creating a service account called "resource-manager" and we are giving th
 
 //==========================================
 
+----------------------------------
+day-169/k8s/sandbox-deployment.yml
+----------------------------------
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -717,6 +722,259 @@ we can see that the vite-development-server is running inside the pod.
 
 As of now, we have created user-pod and service, now, we need to create an ingress which looks like "*.preview.localhost" and a router-server which will forward the request to the user-service. 
 
-Inside the sandbox folder, we'll create one new folder called `router` and istall `npm i express morgan http-proxy-middleware`
+Inside the sandbox folder, we'll create one new folder called `router` and istall `npm i express morgan http-proxy-middleware`. In this folder , we'll help to create router-server
 
 with the help of http-proxy-middleware, we will forward the request, which comes from router-server, to the user-service . 
+
+we'll create an app.js and server.js
+
+-------------------------
+sandbox/router/src/app.js
+-------------------------
+
+import express from "express";
+import morgan from "morgan";
+import { createProxyMiddleware } from "http-proxy-middleware";
+
+
+const app = express();
+app.use(morgan("combined"));
+
+
+// this middleware will forward the request to the user-service, the request that comes to router-server, comes from pod1.preview.localhost, so we need to extract `pod1`, because this will be ID. 
+
+
+app.use((req, res, next)=>{
+    const host = req.headers.host;
+    const sandboxId = host.split(".")[0]; // we are extracting the sandboxId from the host
+    
+    const target = `http://sandbox-service-${sandboxId}`; // we are forwarding the request to the user-service which is running on the sandbox namespace in the kubernetes cluster
+    
+    return createProxyMiddleware({
+        target,
+        changeOrigin: true,
+        ws: true,
+    })(req, res, next);
+
+});
+
+export default app;
+
+
+-------------------------
+sandbox/router/server.js
+-------------------------
+
+import app from "./src/app.js";
+
+
+app.listen(3000, () => {
+  console.log("Sandbox Router server is running on port 3000");
+});
+
+
+now we need to create a dockerfile for the router-server and then run it in the kubernetes cluster, we'll create a dockerfile in the router folder, and then we'll run it in the kubernetes cluster. 
+
+
+//==========================================
+
+------------------------
+  sandbox/router/dockerfile
+------------------------
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD [ "npm", "run", "dev" ]
+
+
+
+-----------------------------
+  sandbox/router/dockerignore
+-----------------------------
+
+.env
+node_modules
+
+also, install nodemon inside router and make changes in package.json
+
+sandbox/router > npm i -D nodemon 
+
+
+
+"dev": "nodemon -L server.js"
+
+
+now, lets create an image:
+
+sandbox/router>  docker build -t router:latest .
+
+
+
+//==========================================
+
+
+
+
+now we'll create a deployment for the router-server, we'll create a deployment in the k8s folder, and then we'll run it in the kubernetes cluster. 
+
+
+//==========================================
+
+------------------------
+  sandbox/k8s/router-deployment.yml
+------------------------
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  router-deployment
+  labels:
+    name:  router-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  router
+  template:
+    metadata:
+      labels:
+        app:  router
+    spec:
+      containers:
+      - image:  router
+        name:  router-server
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "250M"
+          limits:
+            cpu: "500m"
+            memory: "500M"
+        livenessProbe:
+          httpGet:
+            path: /api/status/healthz
+            port: 3000
+          initialDelaySeconds: 90
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/status/readyz
+            port: 3000
+          initialDelaySeconds: 30
+          timeoutSeconds: 10    
+        ports:
+        - containerPort:  3000
+          name:  my-name
+
+//==========================================
+
+
+since, in the livenessProbe and readinessProbe, we have given new API, we'll need to create an API inside app.js
+
+-------------------------
+sandbox/server/src/app.js
+-------------------------
+import express from "express";
+import morgan from "morgan";
+import { createProxyMiddleware } from "http-proxy-middleware";
+
+
+const app = express();
+app.use(morgan("combined"));
+
+app.get('/api/status/healthz', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+})
+
+app.get('/api/status/readyz', (req, res) => {
+    res.status(200).json({ status: 'ready' });
+})
+
+// this middleware will forward the request to the user-service, the request that comes to router-server, comes from pod1.preview.localhost, so we need to extract `pod1`, because this will be ID. 
+
+
+app.use((req, res, next)=>{
+    const host = req.headers.host;
+    const sandboxId = host.split(".")[0]; // we are extracting the sandboxId from the host
+    
+    const target = `http://sandbox-service-${sandboxId}`; // we are forwarding the request to the user-service which is running on the sandbox namespace in the kubernetes cluster
+    
+    return createProxyMiddleware({
+        target,
+        changeOrigin: true,
+        ws: true,
+    })(req, res, next);
+
+});
+
+export default app;
+
+
+since, we have created new API, we need to create the image again::
+
+sandbox/router >  docker build -t router:latest .
+
+
+
+
+we'll also need to create a router-service.yml inside k8s folder, which will forward the request to the router-deployment pod. 
+
+
+------------------------
+  sandbox/k8s/router-service.yml
+------------------------
+
+kind: Service
+apiVersion: v1
+metadata:
+  name:  router-service
+  labels:
+    app:  router
+spec:
+  selector:
+    app:  router
+  type:   ClusterIP
+  ports:
+  - name:  http
+    port:  80
+    targetPort:  3000
+
+
+
+we'll also need to make changes in ingress.yml    
+
+
+------------------------
+  sandbox/k8s/ingress.yml
+------------------------
+=========== the previous code ============
+    - host: '*.preview.localhost'
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: router-service
+                port:
+                  number: 80
+
+
+what this ingress does it,  any request coming to the wildcard ending with ".preview.localhost" will be forwarded to the router-service, which will then forward the request to the user-service.
+
+
+now, go to day-169 and type:: kubectl apply -f ./k8s
+
+
+
