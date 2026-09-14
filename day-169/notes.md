@@ -420,7 +420,7 @@ kc.loadFromDefault();
 
 export const k8sCoreV1Api = kc.makeApiClient(K8sApi.CoreV1Api);
 
-// with the help of k8sCoreV1Api we can create a pod, service.
+// with the help of k8sCoreV1Api we can create a pod, and service.
 
 
 
@@ -469,7 +469,7 @@ export async function createPod(sandboxId) {
   return response;
 }
 
-//when we execute this code, we will create a pod where the image called "template" will be running
+//when we execute this code, we will create a pod which will have a container, and inside this container, the image called "template" will be running
 
 
 ---------------------------------------------------

@@ -1,21 +1,24 @@
 {
-  "name": "router",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -L server.js"
-
+    "dev": "nodemon -L server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "http-proxy-middleware": "^4.2.0",
-    "morgan": "^1.12.1"
+    "mongoose": "^9.10.0",
+    "morgan": "^1.12.1",
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
