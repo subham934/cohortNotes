@@ -14,5 +14,16 @@ spec:
         backend:
           service:
             name: sandbox-service
-            port: 
+            port:
+              number: 80
+              # new line of code for router
+  - host: '*.preview.localhost'
+    http:
+      paths:
+      - pathType: Prefix
+        path: '/'
+        backend:
+          service:
+            name: router-service
+            port:
               number: 80

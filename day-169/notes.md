@@ -741,8 +741,7 @@ const app = express();
 app.use(morgan("combined"));
 
 
-// this middleware will forward the request to the user-service, the request that comes to router-server, comes from pod1.preview.localhost, so we need to extract `pod1`, because this will be ID. 
-
+// this below middleware will forward the request to the user-service, the request that comes to router-server, comes from pod1.preview.localhost, so we need to extract `pod1`, because this will be ID. 
 
 app.use((req, res, next)=>{
     const host = req.headers.host;
@@ -958,8 +957,26 @@ we'll also need to make changes in ingress.yml
 ------------------------
   sandbox/k8s/ingress.yml
 ------------------------
-=========== the previous code ============
-    - host: '*.preview.localhost'
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: codespace-ingress
+  labels:
+    app.kubernetes.io/name: codespace-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/api/sandbox"
+        backend:
+          service:
+            name: sandbox-service
+            port: 
+              number: 80
+              # new line of code for router
+   - host: '*.preview.localhost'
       http:
         paths:
           - pathType: Prefix
@@ -968,7 +985,7 @@ we'll also need to make changes in ingress.yml
               service:
                 name: router-service
                 port:
-                  number: 80
+                  number: 80            
 
 
 what this ingress does it,  any request coming to the wildcard ending with ".preview.localhost" will be forwarded to the router-service, which will then forward the request to the user-service.
@@ -976,5 +993,88 @@ what this ingress does it,  any request coming to the wildcard ending with ".pre
 
 now, go to day-169 and type:: kubectl apply -f ./k8s
 
+we'll see the following::
+router-deployment	Available	1/1
+router-deployment-6c4cc798c4-xsh4j	Running
 
 
+if we go to day-169/> kubectl logs router-deployment-6c4cc798c4-xsh4j,we can see that `Sandbox Router server is running on port 3000` stating that the server is live. 
+
+
+----------------------------------------
+
+
+now, if we click on previewURL "previewUrl": "http://01a0957b-3c9a-7026-8e81-ff741d83ac50.preview.localhost", we can see the react-vite-app, but it's jittery, and it's because for every request that comes to the router-server, it's creating a new sandbox-service, which is not efficient. It limits the request of the http 
+
+Let's delete some deployment::
+
+- kubectl delete -f ./k8s
+
+now, let's fix the deployment of router-server, we dont want to create a new proxy every time, for that let's make changes in app.js
+
+---------------------------
+sandbox/router/src/app.js
+---------------------------
+
+import express from 'express';
+import morgan from 'morgan';
+import { createProxyMiddleware } from "http-proxy-middleware"
+
+const app = express();
+app.use(morgan('combined'));
+
+app.get('/api/status/healthz', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+})
+
+app.get('/api/status/readyz', (req, res) => {
+    res.status(200).json({ status: 'ready' });
+})
+
+const proxies = {}
+
+function getProxy(sandboxId) {
+
+    const target = `http://sandbox-service-${sandboxId}`; // Construct target URL based on sandboxId
+
+    if (!proxies[ sandboxId ]) {
+        proxies[ sandboxId ] = createProxyMiddleware({
+            target,
+            changeOrigin: true,
+            ws: true,
+        })
+    }
+    return proxies[ sandboxId ];
+    // here, for each request, we wont create a new proxy, for one sandbox, we have one proxy and with that proxy, we will forward the request 
+}
+
+app.use((req, res, next) => {
+    const host = req.headers.host;
+    const sandboxId = host.split('.')[ 0 ]; // Extract sandboxId from subdomain
+
+
+
+    return getProxy(sandboxId)(req, res, next);
+})
+
+export default app
+
+
+
+now, create the image again::
+sandbox/router >  docker build -t router:latest .
+
+
+now, go to day-169 and type:: kubectl apply -f ./k8s
+
+
+
+now, finally, we can see our vite development server, whose domain is `http://01a0957b-3c9a-7026-8e81-ff741d83ac50.preview.localhost`
+
+we have successfully implemented a working sandbox
+
+------------------------
+
+so, today, we have done that the sandbox-service can create a new pod, and a new service for that pod, and also we have created a router-server, and with the help of it, any request that comes to the domain `*.preview.localhost` will be forwarded to the router-server, which will then forward the request to the user-service  and then to user-pod.
+
+------------------------
