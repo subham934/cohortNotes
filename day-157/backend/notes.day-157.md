@@ -241,6 +241,7 @@ now, if we run docker run -p 8000:3000 express_server , then , this time it will
 
 //=============================================================
 
+
 => most frequent changes occur only in our codebase. we will link the host machine's codebase with the container's codebase using volume. any changes we make in our host machine's codebase , it will sync with container and will reflect immediately. no need to create image again and again.
 
 => we will create a file called docker-compose.yml, here we'll create services which will have backend service , inside it, it will have build , this build have path to that folder which have dockerfile. here we'll also define ports and volumes.
