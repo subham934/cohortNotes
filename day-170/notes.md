@@ -1084,6 +1084,7 @@ so, today, we have done that the sandbox-service can create a new pod, and a new
 DAY-170
 //============================================================
 
+Yesterday, we have seen that our sandbox service could create a POD, this POD has a previewURL and with this previewURL we could access the user-pod. 
 
 let's restart kubernetes, then let's apply  "kubectl apply -f ./k8s" in day-170, and let's install ingress controller, wait for 2mins and go to postman and give a POST request with the URL "http://localhost/api/sandbox/start"
 
@@ -1091,12 +1092,27 @@ let's restart kubernetes, then let's apply  "kubectl apply -f ./k8s" in day-170,
 we can see the response :
 {
     "message": "Sandbox environment created successfully",
-    "sandboxId": "01a0a0ef-e1fb-7290-acbc-a8097c11d64d",
-    "previewUrl": "http://01a0a0ef-e1fb-7290-acbc-a8097c11d64d.preview.localhost"
+    "sandboxId": "01a0a583-3641-7415-825c-606eab818733",
+    "previewUrl": "http://01a0a583-3641-7415-825c-606eab818733.preview.localhost"
 }
+
 
 here, we got a preview URL, when we use this previewURL in a browser, we can see the react-vite-app
 
 
-now, we need to update the files on user-pod
+now, we need to update the files on user-pod, so we will work on this feature today
+
+
+Lets understand the architecture, there is a sandbox service, and when we request on api/sandbox/start, it create a new pod, and inside this pod, we have a vite-development-server that runs inside a container and also we get a previewURL, we also create a service so that the pod that was created could receive some requests. 
+
+Now, we need develop a feature ki jo vite ka development server hain, yeh jin files pe run ho rha hain un files ko hum change kar paye. Jo vite-development-server hain wo chal raha hain `workspace` folder mein. To verify, check on sandbox>template>dockerfile. Now, in the user-pod we have one container, but we will create one more container, which will be express-server and we'll call it "Agent". Jo vite-development-server hain wo chal raha hain `workspace` folder k ander, aur jo `workspace` folder hain wo hain container k ander. Toh jo `Agent` wala container hain `workspace` wala container kaise access karega, cause, generally aisa toh nahi hota,toh aisa hoga bhi nahi, so, what we are gonna do is, we wont create `workspace` folder inside container, instead  of that , the `workspace` folder will be mounted directly inside the `user-pod`. we will give access of the `workspace` folder to the `agent` container and the vite-container will also have access to the `workspace` folder. Hamare pass do container hain, aur inn dono container ke paas `workspace` folder ka access hoga. Jo `workspace` folder ka content hain, that content will be accessible by both the containers.
+
+
+the vite-dev-server will read the content of `workspace`, which has the react-jsx file, and will be serving it in previewUrl. 
+
+
+The `agent` is an express-server , so it will give API and with this API, we can read file, list file, update file, create new file, delete file inside `workspace` folder. It is done with `VOLUMES`. `VOLUMES` k andar jitni bhi files hone wali hain, wo store hone wali hain POD k andar hi , aur POD ko delete karne se wo files bhi delete ho jayengi. 
+
+
+Hamare pass ak template image hota hain aur uski help se vite ka devlopment server banta hain, aur similarly, jo agent container hain, usko create karne k liye ak aur image create karni padegi.
 

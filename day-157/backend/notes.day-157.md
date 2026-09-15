@@ -301,56 +301,54 @@ services:
   # backend is the name of our service
   backend:
     build: ./backend
-    # build is used to build the image from the dockerfile. ./backend is the path of the folder that has the dockerfile of backend.
+  # build is used to build the image from the dockerfile. ./backend is the path of the folder that has the dockerfile of backend.
     ports:
       - "8000:3000"
-    # ports is used to map the ports . "8000:3000" means host machine's port 8000 is mapped to container's port 3000.
+  # ports is used to map the ports . "8000:3000" means host machine's port 8000 is mapped to container's port 3000.
     volumes:
       - ./backend:/app
       - backend_node_modules:/app/node_modules
     
-    # volumes is used to mount the host machine's codebase to the container's codebase. So , if we change the codebase on the host machine, it will automatically be reflected in the container.
+  # volumes is used to mount the host machine's codebase to the container's codebase. So , if we change the codebase on the host machine, it will automatically be reflected in the container.
     
-    # ak cheez sure hai ki node_modules ka folder hamare container k andar nahi jaayega, but i want ki, baki jo code hai vo mere container k ander jaaye, with the line of code "- ./backend:/app" , maine bola ki backend folder k ander jitne bhi code hai , wo sync kar do mere container k ander app folder k saat. but problem hai ki backend folder main jo node_modules hai, wo chala jaayega mere container k ander bhi, toh problem ho skati hai isliye hamne 2nd line of code "backend_node_modules:/app/node_modules" bhi de di. 
+  # ak cheez sure hai ki node_modules ka folder hamare container k andar nahi jaayega, but i want ki, baki jo code hai vo mere container k ander jaaye, with the line of code "- ./backend:/app" , maine bola ki backend folder k ander jitne bhi code hai , wo sync kar do mere container k ander app folder k saat. but problem hai ki backend folder main jo node_modules hai, wo chala jaayega mere container k ander bhi, toh problem ho skati hai isliye hamne 2nd line of code "backend_node_modules:/app/node_modules" bhi de di. 
     
-    # iska matlab hai ki, backend folder k andar node_modules ka folder to use karega hi, par usko ignore karega container k andar as it is, usko sync na kare. The overall concept is backend folder k andar jitna bhi content hai wo le aao, but app folder k andar ka node modules khud se maintain karna.
-
-
-    # The first volume mounts the backend folder from the host machine
-    # into the /app folder inside the container.
-    #
-    # Therefore, when we change our source code on the host machine,
-    # those changes are immediately reflected inside the container.
-    #
-    # But there is one problem:
-    # ./backend also contains node_modules.
-    #
-    # We don't want the host machine's node_modules to be used inside
-    # the container because the dependencies installed on the host
-    # may be different from the dependencies/environment required
-    # inside the container.
-    #
-    # That's why we use a second volume:
-    #
-    # backend_node_modules:/app/node_modules
-    #
-    # This creates a separate Docker volume for /app/node_modules.
-    #
-    # Because this volume is mounted specifically at /app/node_modules,
-    # it takes precedence over the node_modules directory that would
-    # otherwise come from ./backend:/app.
-    #
-    # So the overall idea is:
-    #
-    # ./backend:/app
-    # → Mount the entire backend codebase into /app.
-    #
-    # backend_node_modules:/app/node_modules
-    # → Keep /app/node_modules separate from the host's node_modules.
-    #
-    # In other words:
-    # "Bring the backend code into /app, but maintain node_modules
-    # separately inside a Docker volume."
+  # iska matlab hai ki, backend folder k andar node_modules ka folder to use karega hi, par usko ignore karega container k andar as it is, usko sync na kare. The overall concept is backend folder k andar jitna bhi content hai wo le aao, but app folder k andar ka node modules khud se maintain karna.
+  # The first volume mounts the backend folder from the host machine
+  # into the /app folder inside the container.
+  #
+  # Therefore, when we change our source code on the host machine,
+  # those changes are immediately reflected inside the container.
+  #
+  # But there is one problem:
+  # ./backend also contains node_modules.
+  #
+  # We don't want the host machine's node_modules to be used inside
+  # the container because the dependencies installed on the host
+  # may be different from the dependencies/environment required
+  # inside the container.
+  #
+  # That's why we use a second volume:
+  #
+  # backend_node_modules:/app/node_modules
+  #
+  # This creates a separate Docker volume for /app/node_modules.
+  #
+  # Because this volume is mounted specifically at /app/node_modules,
+  # it takes precedence over the node_modules directory that would
+  # otherwise come from ./backend:/app.
+  #
+  # So the overall idea is:
+  #
+  # ./backend:/app
+  # → Mount the entire backend codebase into /app.
+  #
+  # backend_node_modules:/app/node_modules
+  # → Keep /app/node_modules separate from the host's node_modules.
+  #
+  # In other words:
+  # "Bring the backend code into /app, but maintain node_modules
+  # separately inside a Docker volume."
 
 
     command: npx nodemon -L server.js
