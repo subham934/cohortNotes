@@ -1105,7 +1105,7 @@ now, we need to update the files on user-pod, so we will work on this feature to
 
 Lets understand the architecture, there is a sandbox service, and when we request on api/sandbox/start, it create a new pod, and inside this pod, we have a vite-development-server that runs inside a container and also we get a previewURL, we also create a service so that the pod that was created could receive some requests. 
 
-Now, we need develop a feature ki jo vite ka development server hain, yeh jin files pe run ho rha hain un files ko hum change kar paye. Jo vite-development-server hain wo chal raha hain `workspace` folder mein. To verify, check on sandbox>template>dockerfile. Now, in the user-pod we have one container, but we will create one more container, which will be express-server and we'll call it "Agent". Jo vite-development-server hain wo chal raha hain `workspace` folder k ander, aur jo `workspace` folder hain wo hain container k ander. Toh jo `Agent` wala container hain `workspace` wala container kaise access karega, cause, generally aisa toh nahi hota,toh aisa hoga bhi nahi, so, what we are gonna do is, we wont create `workspace` folder inside container, instead  of that , the `workspace` folder will be mounted directly inside the `user-pod`. we will give access of the `workspace` folder to the `agent` container and the vite-container will also have access to the `workspace` folder. Hamare pass do container hain, aur inn dono container ke paas `workspace` folder ka access hoga. Jo `workspace` folder ka content hain, that content will be accessible by both the containers.
+Now, we need develop a feature ki jo vite ka development server hain, yeh jin files pe run ho rha hain un files ko hum change kar paye. Jo vite-development-server hain wo chal raha hain `workspace` folder mein. To verify, check on sandbox>template>dockerfile. Now, in the user-pod we have one container, but we will create one more container, which will be express-server and we'll call it "Agent". Jo vite-development-server hain wo chal raha hain `workspace` folder k ander, aur jo `workspace` folder hain wo hain container k ander. Toh jo `Agent` wala container hain `workspace` wala container kaise access karega, cause, generally aisa toh nahi hota,toh aisa hoga bhi nahi, so, what we are gonna do is, we wont create `workspace` folder inside container, instead  of that , the `workspace` folder will be mounted directly inside the `user-pod`. we will give access of the `workspace` folder to the `agent` container and the `vite-container` will also have access to the `workspace` folder. Hamare pass do container hain, aur inn dono container ke paas `workspace` folder ka access hoga. Jo `workspace` folder ka content hain, that content will be accessible by both the containers.
 
 
 the vite-dev-server will read the content of `workspace`, which has the react-jsx file, and will be serving it in previewUrl. 
@@ -1114,5 +1114,424 @@ the vite-dev-server will read the content of `workspace`, which has the react-js
 The `agent` is an express-server , so it will give API and with this API, we can read file, list file, update file, create new file, delete file inside `workspace` folder. It is done with `VOLUMES`. `VOLUMES` k andar jitni bhi files hone wali hain, wo store hone wali hain POD k andar hi , aur POD ko delete karne se wo files bhi delete ho jayengi. 
 
 
-Hamare pass ak template image hota hain aur uski help se vite ka devlopment server banta hain, aur similarly, jo agent container hain, usko create karne k liye ak aur image create karni padegi.
+Hamare pass ak template image hota hain aur uski help se vite ka devlopment server banta hain, aur similarly, jo agent container hain, usko create karne k liye ak aur image create karni padegi, jiska naam hoga agent.
 
+Jo agent hoga, wo workspace folder k andar files ki modify karega ,aur jo workspace folder hain wo dono container share kar raha hain, toh jb ye files modify ho jayengi, toh unko live update karne k liye hum ek command chalayenge jo vite-dev-server ko restart karegi, so, that it can read the modified files.
+
+
+Now, lets create the `Agent` , for that create a new folder inside sandbox as "agent". 
+
+sandbox>agent> npm init -y
+sandbox>agent> npm i morgan express
+sandbox>agent> npm i -D nodemon
+
+make changes in package.json file
+
+--------------------------
+sandbox>agent>package.json
+--------------------------
+
+{
+  "name": "agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -L server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "express": "^5.2.1",
+    "morgan": "^1.12.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
+
+
+=> Now, what we are creating is an Agent, this Agent will have some API to read, list, update, create, delete files. we will use this API to modify the files in `workspace` folder. 
+
+---------------------------
+sandbox>agent>src>app.js
+---------------------------
+
+import express from "express"
+import morgan from "morgan"
+import fs from "fs";
+
+
+
+const WORKING_DIR = "/workspace" // this is the working directory, because it is the only folder that is accessible to this agent and also the container
+
+
+const app = express()
+
+app.use(morgan("dev"))
+
+app.get("/", (req, res)=>{
+    res.status(200).json({
+        message: "Hello from Sandbox agent!!",
+        status: "success"
+    })
+})
+
+app.get("/list-files", async (req, res)=>{
+    const elements = await fs.promises.readdir(WORKING_DIR);
+    return res.status(200).json({
+        message: "Elements in working directory",
+        elements
+    })
+})
+
+
+export default app
+
+
+-----------------------
+sandbox>agent>server.js
+-----------------------
+
+
+import app from "./src/app.js"
+
+
+app.listen(5000, ()=>{
+    console.log(`Sandbox agent is running on port ${5000}`)
+})
+
+
+=> Now, lets convent the agent into a docker image, for that we need a dockerfile and .dockerignore
+
+
+
+-----------------------
+sandbox>agent>dockerfile
+-----------------------
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
+
+
+
+---------------------------
+sandbox>agent>.dockerignore
+---------------------------
+
+node_modules
+.env
+
+
+Now, lets create an image::
+
+D:\cohort\cohortNotes\day-170\sandbox\agent> docker build -t agent:latest .
+
+
+now, that the image is created, we will run the image::
+docker run -p 8080:3000 agent:latest
+
+
+we will see the response as:: Sandbox agent is running on port 3000
+
+now, when we try to access the api that we have just created using localhost:8080/list-files, we will see the response as::
+
+Error: ENOENT: no such file or directory, scandir '/workspace'
+    at async Object.readdir (node:internal/fs/promises:950:18)
+    at async file:///app/src/app.js:22:22
+    
+-> with the help of docker, when we create an image of `agent`, the entire code will be stored inside app folder(check dockerfile),   the `WORKDIR /app` means the code of `agent` will be stored in `app` folder of the container. We want to access the code of `workspace` and for that only, we have done as `const WORKING_DIR = "/workspace"` inside app.js. This `workspace` folder still dont exist, so we need to create the `workspace` folder. For that we make the below changes in dockerfile. Also, please stop the agent container first.
+
+
+--------------------------
+sandbox>agent>dockerfile
+--------------------------
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+RUN mkdir /workspace
+
+CMD ["node", "server.js"]
+
+now, create the `agent` image again and run the image::
+
+D:\cohort\cohortNotes\day-170\sandbox\agent> docker build -t agent:latest .
+docker run -p 8080:3000 agent:latest
+
+now, if we check the container of the agent in a docker desktop, we will see that in `/app` folder, we have the code of `agent` and in `/workspace` folder, we have the empty folder. 
+
+if we check in browser with the link http://localhost:8080/list-files, we will get the response as::
+
+{
+    "message": "Elements in working directory",
+    "elements": []
+}
+
+=> Now, our `agent` is almost ready, but there is a problem, if  deploy the `agent` with the code we have written till now, then the `agent` wont access the `workspace` folder of the POD, instead of POD's `workspace` folder, it will only have access to the `agent` container's `/workspace` folder.We want to sync the `agent` workspace with the POD's `workspace` folder. Similarly, for the `vite-dev-server`, we want to sync the `vite-dev-server`'s `workspace` folder with the POD's `workspace` folder. The `vite-dev-server` container is running the vite-dev-server on the `workspace` folder(check template/dockerfile). Now, we want the `workspace` folder, which is inside the POD, to be sync with `agent` container's `/workspace` folder and `vite-dev-server` container's `/workspace` folder.  So that if the `agent` makes any changes in its `workspace`, the same changes will be reflected in the POD's `workspace` folder and similarly the `vite-dev-server` will also be able to read the changes made by the `agent` in the `workspace` folder and get synced with its `workspace` folder.  Now, let's implement this in kubernetes.
+
+At first , let's deploy the `agent`. We have already created an image of `agent`. Now , the sandbox-server which creates the POD, has `vite-dev-server` and also it must have `agent` container. for that let's make some changes in code::
+
+
+-------------------------------------
+sandbox/server/src/kubernetes/pod.js
+-------------------------------------
+
+import { k8sCoreV1Api } from './config.js';
+
+export async function createPod(sandboxId) {
+  const podManifest = {
+    metadata: {
+      name: `sandbox-pod-${sandboxId}`,
+      labels: {
+        app: 'sandbox',
+        sandboxId: sandboxId,
+      },
+    },
+    spec: {
+      containers: [
+        {
+          image: 'template', // this is the image name called "template"
+          imagePullPolicy: 'IfNotPresent',
+          name: 'sandbox-container',
+          ports: [{ containerPort: 5173, name: 'http' }],
+          resources: {
+            limits: { cpu: '500m', memory: '1Gi' },
+            requests: { cpu: '250m', memory: '500Mi' },
+          },
+        },
+        // with this code, the `agent` container will be created, along with the `template` container
+        {
+          image: "agent",
+          imagePullPolicy: "IfNotPresent",
+          name: "agent-container",
+          ports: [{containerPort: 3000, name: "http"}],
+          resources:{
+            limits: { cpu: "500m", memory: "1Gi"},
+            requests: { cpu: "250m", memory: "500Mi"}
+          }
+        }
+      ],
+
+    },
+  };
+
+  const response = await k8sCoreV1Api.createNamespacedPod({
+    namespace: 'default',
+    body: podManifest,
+  });
+
+  return response;
+}
+
+=> now , both the containers are created but they are not synced , for that we need to add `VOLUMES` to the POD called `workspace`
+
+-------------------------------------
+sandbox/server/src/kubernetes/pod.js
+-------------------------------------
+
+import { k8sCoreV1Api } from './config.js';
+
+export async function createPod(sandboxId) {
+  const podManifest = {
+    metadata: {
+      name: `sandbox-pod-${sandboxId}`,
+      labels: {
+        app: 'sandbox',
+        sandboxId: sandboxId,
+      },
+    },
+    spec: {
+      volumes: [
+        {
+          name: 'workspace_volume',
+          emptyDir: {},
+        },
+      // with this code, we have created a volume named 'workspace_volume', we have not synced it yet, till now, `vite-dev-server` /workspace is different and the `agent` /workspace is different, now we need to sync it
+      ],
+      containers: [
+        {
+          image: 'template', // this is the image name called "template"
+          imagePullPolicy: 'IfNotPresent',
+          name: 'sandbox-container',
+          ports: [{ containerPort: 5173, name: 'http' }],
+          resources: {
+            limits: { cpu: '500m', memory: '1Gi' },
+            requests: { cpu: '250m', memory: '500Mi' },
+          },
+        },
+        // with this code, the `agent` container will be created, along with the `template` container
+        {
+          image: 'agent',
+          imagePullPolicy: 'IfNotPresent',
+          name: 'agent-container',
+          ports: [{ containerPort: 3000, name: 'http' }],
+          resources: {
+            limits: { cpu: '500m', memory: '1Gi' },
+            requests: { cpu: '250m', memory: '500Mi' },
+          },
+        },
+      ],
+    },
+  };
+
+  const response = await k8sCoreV1Api.createNamespacedPod({
+    namespace: 'default',
+    body: podManifest,
+  });
+
+  return response;
+}
+
+   // with this code, we have created a volume named 'workspace_volume', we have not synced it yet, till now, `vite-dev-server` /workspace is different and the `agent` /workspace is different, now we need to sync it, the 'workspace_volume' is empty folder, to sync it, we have done 'volumeMounts' in the below code::
+
+
+-------------------------------------
+sandbox/server/src/kubernetes/pod.js
+-------------------------------------
+
+import { k8sCoreV1Api } from './config.js';
+
+export async function createPod(sandboxId) {
+  const podManifest = {
+    metadata: {
+      name: `sandbox-pod-${sandboxId}`,
+      labels: {
+        app: 'sandbox',
+        sandboxId: sandboxId,
+      },
+    },
+    spec: {
+      volumes: [
+        {
+          name: 'workspace-volume',
+          emptyDir: {},
+        },
+      ],
+      containers: [
+        {
+          image: 'template', // this is the image name called "template"
+          imagePullPolicy: 'IfNotPresent',
+          name: 'sandbox-container',
+          ports: [{ containerPort: 5173, name: 'http' }],
+          resources: {
+            limits: { cpu: '500m', memory: '1Gi' },
+            requests: { cpu: '250m', memory: '500Mi' },
+          },
+
+          // with the below volumeMounts, we have synced the 'workspace-volume' with the 'vite-dev-server' workspace
+          volumeMounts: [
+            {
+              name: 'workspace-volume',
+              mountPath: '/workspace',
+            },
+          ],
+        },
+          // with this code, the `agent` container will be created, along with the `template` container
+        { 
+          image: 'agent',
+          imagePullPolicy: 'IfNotPresent',
+          name: 'agent-container',
+          ports: [{ containerPort: 3000, name: 'http' }],
+          resources: {
+            limits: { cpu: '500m', memory: '1Gi' },
+            requests: { cpu: '250m', memory: '500Mi' },
+          },
+          // with the below volumeMounts, we have synced the 'workspace-volume' with the 'agent' workspace
+          volumeMounts: [
+            {
+              name: 'workspace-volume',
+              mountPath: '/workspace',
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  const response = await k8sCoreV1Api.createNamespacedPod({
+    namespace: 'default',
+    body: podManifest,
+  });
+
+  return response;
+}
+
+
+The syncing part is done, now, there is one problem, how will we send request to that agent, previously, we have created router-server , service, *.preview.localhost and all they could do is give response to previewURL. with the help of previewURL only we could access the vite dev server running on 5173 port. Now, we'll do it for *.agent.localhost
+
+Let's make changes in ingress
+
+----------------------------------------
+k8s/ingress.yml
+----------------------------------------
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: codespace-ingress
+  labels:
+    app.kubernetes.io/name: codespace-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: '/api/sandbox'
+            backend:
+              service:
+                name: sandbox-service
+                port:
+                  number: 80
+
+    - host: '*.preview.localhost'
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: router-service
+                port:
+                  number: 80
+
+    - host: '*.agent.localhost'
+      http:
+        paths:
+          - pathType: Prefix
+            path: '/'
+            backend:
+              service:
+                name: router-service
+                port:
+                  number: 80
+
+
+Our router-server will handle both the pod1.preview.localhost and pod1.agent.localhost URL's.
+
+=> The user-pod has both the `'vite-dev-server` and `'agent'` containers running inside it, and for this pod we have created a service at /server/src/kubernetes/service.js . the `'vite-dev-server` runs on port:5173 and `agent` runs on port:3000

@@ -10,6 +10,13 @@ export async function createPod(sandboxId) {
       },
     },
     spec: {
+      // with this code, we have created a volume named 'workspace-volume', we have not synced it yet, till now, `vite-dev-server` /workspace is different and the `agent` /workspace is different, now we need to sync it
+      volumes: [
+        {
+          name: 'workspace-volume',
+          emptyDir: {},
+        },
+      ],
       containers: [
         {
           image: 'template', // this is the image name called "template"
@@ -20,6 +27,29 @@ export async function createPod(sandboxId) {
             limits: { cpu: '500m', memory: '1Gi' },
             requests: { cpu: '250m', memory: '500Mi' },
           },
+          volumeMounts: [
+            {
+              name: 'workspace-volume',
+              mountPath: '/workspace',
+            },
+          ],
+        },
+        // with this code, the `agent` container will be created, along with the `template` container
+        {
+          image: 'agent',
+          imagePullPolicy: 'IfNotPresent',
+          name: 'agent-container',
+          ports: [{ containerPort: 3000, name: 'http' }],
+          resources: {
+            limits: { cpu: '500m', memory: '1Gi' },
+            requests: { cpu: '250m', memory: '500Mi' },
+          },
+          volumeMounts: [
+            {
+              name: 'workspace-volume',
+              mountPath: '/workspace',
+            },
+          ],
         },
       ],
     },
@@ -32,6 +62,3 @@ export async function createPod(sandboxId) {
 
   return response;
 }
-
-
-//when we execute this code, we will create a pod which will have the image called "template" 
