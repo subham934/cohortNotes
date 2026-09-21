@@ -4409,4 +4409,108 @@ When we do a GET request with the URL :: http://localhost:8080/list-files, we wi
 }
 //=====================================================================================
 
-Now, we'll see how to
+Now, we'll see how to read files, for that we'll do a GET request on http://localhost:8080/read-files?files=/index.html,/style.css,/script.js , we'll get the below response::
+
+
+{
+    "message": "Files read successfully",
+    "files": [
+        {
+            "/workspace//index.html": "hello html"
+        },
+        {
+            "/workspace//style.css": "hello css"
+        },
+        {
+            "/workspace//script.js": "hello js"
+        }
+    ]
+}
+
+we'll make a tiny changes in the code of /read-files::
+
+
+------------------------
+sandbox/agent/src/app.js
+------------------------
+
+/**
+ * @route GET /read-files
+ * @description Reads the content of all files specified in the query parameter 'files' and returns their content as a JSON object.
+ * - eg. /read-files?files=file1.txt,/src/file2.txt
+ */
+// With this API, when we send the names/paths of files in the files query parameter, the server reads those files and returns their contents as JSON.
+
+app.get('/read-files', async (req, res) => {
+  const files = req.query.files;
+
+  if (!files) {
+    return res.status(400).json({
+      message: 'No files specified in query parameter',
+      status: 'error',
+    });
+  }
+
+  const fileList = files.split(',');
+
+  const results = await Promise.all(
+    fileList.map(async (file) => {
+      //   const filePath = `${WORKING_DIR}/${file}`;
+      const filePath = path.join(WORKING_DIR, file);
+      try {
+        const content = await fs.promises.readFile(filePath, 'utf-8');
+        return { [filePath.replace(WORKING_DIR, '')]: content };
+      } catch (error) {
+        return {
+          [filePath.replace(WORKING_DIR, '')]:
+            `Error reading file: ${error.message}`,
+        };
+      }
+    })
+  );
+
+  return res.status(200).json({
+    message: 'Files read successfully',
+    files: results,
+  });
+});
+
+//=====================================================================================
+
+Now, we'll update files, for that we'll do a PATCH request on http://localhost:8080/update-files in postman with below data as raw format::
+
+{
+    "updates":[
+        {
+            "file": "/index.html",
+            "content": "html"
+        },
+        {
+            "file": "/style.css",
+            "content": "css"
+        },
+        {
+            "file": "/script.js",
+            "content": "js"
+        }
+    ]
+}
+
+
+we'll get the below response:
+
+
+{
+    "message": "Files updated successfully",
+    "results": [
+        {
+            "/workspace/index.html": "File updated successfully"
+        },
+        {
+            "/workspace/style.css": "File updated successfully"
+        },
+        {
+            "/workspace/script.js": "File updated successfully"
+        }
+    ]
+}

@@ -9,8 +9,7 @@ const app = express();
 
 app.use(morgan('dev'));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+ 
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -57,7 +56,7 @@ app.get('/list-files', async (req, res) => {
 
     return files;
   };
-  
+
   try {
     const files = await listFiles(WORKING_DIR, WORKING_DIR);
     res.status(200).json({
@@ -101,7 +100,7 @@ app.get('/read-files', async (req, res) => {
       } catch (error) {
         return {
           [filePath.replace(WORKING_DIR, '')]:
-            `Error reading file: ${err.message}`,
+            `Error reading file: ${error.message}`,
         };
       }
     })
