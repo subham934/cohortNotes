@@ -2472,8 +2472,7 @@ readFile()          readFile()
          JSON response
 ```
 
-================================================== 2. PATCH /update-files
-======================
+# ================================================== 2. PATCH /update-files
 
 PURPOSE:
 
@@ -2941,8 +2940,7 @@ results
 
 JSON response
 
-================================================== 3. POST /create-files
-=====================
+# ================================================== 3. POST /create-files
 
 PURPOSE:
 
@@ -3285,8 +3283,7 @@ Example:
 ]
 }
 
-================================================== 4. COMPARING ALL THREE APIs
-===========================
+# ================================================== 4. COMPARING ALL THREE APIs
 
 The three APIs are:
 
@@ -3368,8 +3365,7 @@ FILESYSTEM OPERATION:
 
 fs.promises.writeFile()
 
-================================================== 5. IMPORTANT DIFFERENCE BETWEEN CREATE AND UPDATE
-=================================================
+# ================================================== 5. IMPORTANT DIFFERENCE BETWEEN CREATE AND UPDATE
 
 This is important.
 
@@ -3407,8 +3403,7 @@ If strict create-only behavior is required, use:
 
 flag: 'wx'
 
-================================================== 6. WHY PROMISE.ALL() IS USED
-============================
+# ================================================== 6. WHY PROMISE.ALL() IS USED
 
 All three APIs can process multiple files in one request.
 
@@ -3466,8 +3461,7 @@ await Promise.all(...)
 
 you get an array containing the resolved values of all the individual operations.
 
-================================================== 7. HOW THE THREE APIs WORK TOGETHER
-===================================
+# ================================================== 7. HOW THE THREE APIs WORK TOGETHER
 
 These APIs form the basic file-management system of the Sandbox Service.
 
@@ -3561,8 +3555,7 @@ Result:
 
 NewComponent.jsx is created if it doesn't already exist.
 
-================================================== 8. COMPLETE ARCHITECTURE
-========================
+# ================================================== 8. COMPLETE ARCHITECTURE
 
 ```
                 USER / CLIENT
@@ -3595,8 +3588,7 @@ READ
 UPDATE
 CREATE
 
-================================================== 9. COMMON PATTERN IN ALL THREE APIs
-===================================
+# ================================================== 9. COMMON PATTERN IN ALL THREE APIs
 
 All three APIs follow a similar pattern:
 
@@ -3635,8 +3627,7 @@ Results
 v
 JSON response
 
-================================================== 10. MOST IMPORTANT FUNCTIONS TO REMEMBER
-========================================
+# ================================================== 10. MOST IMPORTANT FUNCTIONS TO REMEMBER
 
 READ FILE:
 
@@ -3686,8 +3677,7 @@ Meaning:
 
 "Wait for this Promise to resolve before continuing this async function."
 
-================================================== 11. IMPORTANT SECURITY ISSUE — PATH TRAVERSAL
-=============================================
+# ================================================== 11. IMPORTANT SECURITY ISSUE — PATH TRAVERSAL
 
 This is extremely important for a Sandbox Service.
 
@@ -3729,8 +3719,7 @@ should NOT be allowed to access a file outside WORKING_DIR.
 
 Therefore, before exposing these APIs to untrusted users, the server should validate and normalize paths and make sure the final path remains inside WORKING_DIR.
 
-================================================== 12. FINAL MENTAL MODEL
-======================
+# ================================================== 12. FINAL MENTAL MODEL
 
 Think of these APIs like a file manager for the user's sandbox:
 
@@ -4411,106 +4400,285 @@ When we do a GET request with the URL :: http://localhost:8080/list-files, we wi
 
 Now, we'll see how to read files, for that we'll do a GET request on http://localhost:8080/read-files?files=/index.html,/style.css,/script.js , we'll get the below response::
 
-
 {
-    "message": "Files read successfully",
-    "files": [
-        {
-            "/workspace//index.html": "hello html"
-        },
-        {
-            "/workspace//style.css": "hello css"
-        },
-        {
-            "/workspace//script.js": "hello js"
-        }
-    ]
+"message": "Files read successfully",
+"files": [
+{
+"/workspace//index.html": "hello html"
+},
+{
+"/workspace//style.css": "hello css"
+},
+{
+"/workspace//script.js": "hello js"
+}
+]
 }
 
-we'll make a tiny changes in the code of /read-files::
+here, we are getting /workspace//index.html { extra / }, we'll make a tiny changes in the code of /read-files:
 
+    1.  we can use the path.join() method to join the paths of the files to be read
+    2.  we will remove the /workspace too and only show the relative path of the file
 
-------------------------
-sandbox/agent/src/app.js
-------------------------
+---
 
-/**
- * @route GET /read-files
- * @description Reads the content of all files specified in the query parameter 'files' and returns their content as a JSON object.
- * - eg. /read-files?files=file1.txt,/src/file2.txt
- */
-// With this API, when we send the names/paths of files in the files query parameter, the server reads those files and returns their contents as JSON.
+## sandbox/agent/src/app.js
+
+/\*\*
+
+- @route GET /read-files
+- @description Reads the content of all files specified in the query parameter 'files' and returns their content as a JSON object.
+- - eg. /read-files?files=file1.txt,/src/file2.txt
+    \*/
+    // With this API, when we send the names/paths of files in the files query parameter, the server reads those files and returns their contents as JSON.
 
 app.get('/read-files', async (req, res) => {
-  const files = req.query.files;
+const files = req.query.files;
 
-  if (!files) {
-    return res.status(400).json({
-      message: 'No files specified in query parameter',
-      status: 'error',
-    });
-  }
+if (!files) {
+return res.status(400).json({
+message: 'No files specified in query parameter',
+status: 'error',
+});
+}
 
-  const fileList = files.split(',');
+const fileList = files.split(',');
 
-  const results = await Promise.all(
-    fileList.map(async (file) => {
-      //   const filePath = `${WORKING_DIR}/${file}`;
-      const filePath = path.join(WORKING_DIR, file);
-      try {
-        const content = await fs.promises.readFile(filePath, 'utf-8');
-        return { [filePath.replace(WORKING_DIR, '')]: content };
-      } catch (error) {
-        return {
-          [filePath.replace(WORKING_DIR, '')]:
-            `Error reading file: ${error.message}`,
-        };
-      }
-    })
-  );
+const results = await Promise.all(
+fileList.map(async (file) => {
+// const filePath = `${WORKING_DIR}/${file}`;
+const filePath = path.join(WORKING_DIR, file);
+try {
+const content = await fs.promises.readFile(filePath, 'utf-8');
+return { [filePath.replace(WORKING_DIR, '')]: content };
+} catch (error) {
+return {
+[filePath.replace(WORKING_DIR, '')]:
+`Error reading file: ${error.message}`,
+};
+}
+})
+);
 
-  return res.status(200).json({
-    message: 'Files read successfully',
-    files: results,
-  });
+return res.status(200).json({
+message: 'Files read successfully',
+files: results,
+});
 });
 
+Now, re run the image::
+
+D:\cohort\cohortNotes\day-171\sandbox\agent> docker build -t agent:latest .
+PS D:\cohort\cohortNotes\day-171\sandbox\agent> docker run -p 8080:3000 agent:latest
+
+now, we'll give a GET request on http://localhost:8080/read-files with the below query parameter::
+files=index.html,style.css,script.js
+
+we'll get the following output::
+
+{
+"message": "Files read successfully",
+"files": [
+{
+"/index.html": "hello html"
+},
+{
+"/style.css": "hello css"
+},
+{
+"/script.js": "hello js"
+}
+]
+}
 //=====================================================================================
 
 Now, we'll update files, for that we'll do a PATCH request on http://localhost:8080/update-files in postman with below data as raw format::
 
 {
-    "updates":[
-        {
-            "file": "/index.html",
-            "content": "html"
-        },
-        {
-            "file": "/style.css",
-            "content": "css"
-        },
-        {
-            "file": "/script.js",
-            "content": "js"
-        }
-    ]
+"updates":[
+{
+"file": "/index.html",
+"content": "html"
+},
+{
+"file": "/style.css",
+"content": "css"
+},
+{
+"file": "/script.js",
+"content": "js"
 }
-
+]
+}
 
 we'll get the below response:
 
+{
+"message": "Files updated successfully",
+"results": [
+{
+"/workspace/index.html": "File updated successfully"
+},
+{
+"/workspace/style.css": "File updated successfully"
+},
+{
+"/workspace/script.js": "File updated successfully"
+}
+]
+}
+
+// Now, all four of our API is working fine, The first API is listing all the files, The second one is creating the file, The third API is reading the files, The fourth API is updating the files, but there is an issue with creating a file in deep nested directory::
+
+// For example, if we try to create a file in the /nested/directory path, it will fail because the nested directory does not exist, for that, we need to create the directory first, or we can use the mkdir library to create the directory
+
+---
+
+## sandbox/agent/src/app.js
+
+/\*\*
+
+- @route POST /create-files
+- @description Creates new files with the content specified in the request body. The request body should contain a property 'files' with a JSON Array of objects, each object should have a 'file' property specifying the file path (relative to the working directory) and a 'content' property specifying the content for the new file.
+  \*/
+  // This API allows the client to create new files by sending their file paths and content in the request body.
+
+app.post('/create-files', async (req, res) => {
+const files = req.body.files;
+
+if (!files || !Array.isArray(files)) {
+return res.status(400).json({
+message:
+'Invalid request body. Expected a JSON object with a "files" property containing an array of file contents.',
+status: 'error',
+});
+}
+
+const results = await Promise.all(
+files.map(async (fileObj) => {
+const { file, content } = fileObj;
+const filePath = path.join(WORKING_DIR, file);
+
+      try {
+        await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.promises.writeFile(filePath, content, 'utf-8');
+        return {
+          [filePath]: 'File created successfully',
+        };
+      } catch (err) {
+        return {
+          [filePath]: `Error creating file: ${err.message}`,
+        };
+      }
+    })
+
+);
+
+return res.status(200).json({
+message: 'Files created successfully',
+results,
+});
+});
+
+export default app;
+
+now , when we run the agent with the below data with POST request at URL http://localhost:8080/create-files:
 
 {
-    "message": "Files updated successfully",
-    "results": [
-        {
-            "/workspace/index.html": "File updated successfully"
-        },
-        {
-            "/workspace/style.css": "File updated successfully"
-        },
-        {
-            "/workspace/script.js": "File updated successfully"
-        }
-    ]
+"files": [
+{
+"file": "/src/index.html",
+"content": "hello html file"
+},
+{
+"file": "/style.css",
+"content": "hello css"
 }
+]
+}
+
+we will get the following response::
+
+{
+"message": "Files created successfully",
+"results": [
+{
+"/workspace/src/index.html": "File created successfully"
+},
+{
+"/workspace/style.css": "File created successfully"
+}
+]
+}
+
+// we can update the files and read them as well, try it on your own! Its done now.
+
+// now, our `agent` is finally deployed, the `agent` has API's with which it can create/update/read/list the files, now , we will reset our cluster and see how the `vite-dev-server` can be accessed by `AI Agent`.
+
+// after that let's install our ingress-controller
+// kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml
+
+then run the following code::
+kubectl apply -f ./k8s
+
+now, create a POST request with URL http://localhost/api/sandbox/start, we will get a preview URL::"http://01a0d419-63d1-715b-9021-a2a34f279613.preview.localhost"
+
+now, create a GET request on http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/list-files
+
+we'll get the following output::
+
+{
+"message": "Files listed successfully",
+"files": [
+".dockerignore",
+".gitignore",
+"README.md",
+"dockerfile",
+"eslint.config.js",
+"index.html",
+"package-lock.json",
+"package.json",
+"public/favicon.svg",
+"public/icons.svg",
+"src/App.css",
+"src/App.jsx",
+"src/assets/hero.png",
+"src/assets/react.svg",
+"src/assets/vite.svg",
+"src/index.css",
+"src/main.jsx",
+"vite.config.js"
+]
+}
+
+This output is file content of the `vite-dev-server`, this is the frontend code of the react server. Now, we will need to get the details of `src/App.jsx` for updating the code. For that, we will do a GET request on `http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/read-files?files=src/App.jsx`
+
+we'll get the following output::
+
+{
+"message": "Files read successfully",
+"files": [
+{
+"/src/App.jsx": "import { useState } from 'react'\nimport heroImg from './assets/hero.png'\nimport reactLogo from './assets/react.svg'\nimport viteLogo from './assets/vite.svg'\nimport './App.css'\n\nfunction App() {\n const [count, setCount] = useState(0)\n\n return (\n <>\n <section id=\"center\">\n <div className=\"hero\">\n <img src={heroImg} className=\"base\" width=\"170\" height=\"179\" alt=\"\" />\n <img src={reactLogo} className=\"framework\" alt=\"React logo\" />\n <img src={viteLogo} className=\"vite\" alt=\"Vite logo\" />\n </div>\n <div>\n <h1>Get started</h1>\n <p>\n Edit <code>src/App.jsx</code> and save to test <code>HMR</code>\n </p>\n </div>\n <button\n type=\"button\"\n className=\"counter\"\n onClick={() => setCount((count) => count + 1)}\n >\n Count is {count}\n </button>\n </section>\n\n <div className=\"ticks\"></div>\n\n <section id=\"next-steps\">\n <div id=\"docs\">\n <svg className=\"icon\" role=\"presentation\" aria-hidden=\"true\">\n <use href=\"/icons.svg#documentation-icon\"></use>\n </svg>\n <h2>Documentation</h2>\n <p>Your questions, answered</p>\n <ul>\n <li>\n <a href=\"https://vite.dev/\" target=\"\_blank\">\n <img className=\"logo\" src={viteLogo} alt=\"\" />\n Explore Vite\n </a>\n </li>\n <li>\n <a href=\"https://react.dev/\" target=\"\_blank\">\n <img className=\"button-icon\" src={reactLogo} alt=\"\" />\n Learn more\n </a>\n </li>\n </ul>\n </div>\n <div id=\"social\">\n <svg className=\"icon\" role=\"presentation\" aria-hidden=\"true\">\n <use href=\"/icons.svg#social-icon\"></use>\n </svg>\n <h2>Connect with us</h2>\n <p>Join the Vite community</p>\n <ul>\n <li>\n <a href=\"https://github.com/vitejs/vite\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#github-icon\"></use>\n </svg>\n GitHub\n </a>\n </li>\n <li>\n <a href=\"https://chat.vite.dev/\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#discord-icon\"></use>\n </svg>\n Discord\n </a>\n </li>\n <li>\n <a href=\"https://x.com/vite_js\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#x-icon\"></use>\n </svg>\n X.com\n </a>\n </li>\n <li>\n <a href=\"https://bsky.app/profile/vite.dev\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#bluesky-icon\"></use>\n </svg>\n Bluesky\n </a>\n </li>\n </ul>\n </div>\n </section>\n\n <div className=\"ticks\"></div>\n <section id=\"spacer\"></section>\n </>\n )\n}\n\nexport default App\n"
+}
+]
+}
+
+This is the content of the file `App.jsx`. I'll take this file and make changes in it. For that, I'll do a PATCH request on `http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/update-files` and modify some content.
+
+Here is the modified content to send the PATCH request, i've just changed the `Get started` to `The Cohort` ::
+
+{
+"updates":[
+{
+"file": "/src/App.jsx",
+"content": "import { useState } from 'react'\nimport heroImg from './assets/hero.png'\nimport reactLogo from './assets/react.svg'\nimport viteLogo from './assets/vite.svg'\nimport './App.css'\n\nfunction App() {\n const [count, setCount] = useState(0)\n\n return (\n <>\n <section id=\"center\">\n <div className=\"hero\">\n <img src={heroImg} className=\"base\" width=\"170\" height=\"179\" alt=\"\" />\n <img src={reactLogo} className=\"framework\" alt=\"React logo\" />\n <img src={viteLogo} className=\"vite\" alt=\"Vite logo\" />\n </div>\n <div>\n <h1>The Cohort</h1>\n <p>\n Edit <code>src/App.jsx</code> and save to test <code>HMR</code>\n </p>\n </div>\n <button\n type=\"button\"\n className=\"counter\"\n onClick={() => setCount((count) => count + 1)}\n >\n Count is {count}\n </button>\n </section>\n\n <div className=\"ticks\"></div>\n\n <section id=\"next-steps\">\n <div id=\"docs\">\n <svg className=\"icon\" role=\"presentation\" aria-hidden=\"true\">\n <use href=\"/icons.svg#documentation-icon\"></use>\n </svg>\n <h2>Documentation</h2>\n <p>Your questions, answered</p>\n <ul>\n <li>\n <a href=\"https://vite.dev/\" target=\"\_blank\">\n <img className=\"logo\" src={viteLogo} alt=\"\" />\n Explore Vite\n </a>\n </li>\n <li>\n <a href=\"https://react.dev/\" target=\"\_blank\">\n <img className=\"button-icon\" src={reactLogo} alt=\"\" />\n Learn more\n </a>\n </li>\n </ul>\n </div>\n <div id=\"social\">\n <svg className=\"icon\" role=\"presentation\" aria-hidden=\"true\">\n <use href=\"/icons.svg#social-icon\"></use>\n </svg>\n <h2>Connect with us</h2>\n <p>Join the Vite community</p>\n <ul>\n <li>\n <a href=\"https://github.com/vitejs/vite\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#github-icon\"></use>\n </svg>\n GitHub\n </a>\n </li>\n <li>\n <a href=\"https://chat.vite.dev/\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#discord-icon\"></use>\n </svg>\n Discord\n </a>\n </li>\n <li>\n <a href=\"https://x.com/vite_js\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#x-icon\"></use>\n </svg>\n X.com\n </a>\n </li>\n <li>\n <a href=\"https://bsky.app/profile/vite.dev\" target=\"\_blank\">\n <svg\n className=\"button-icon\"\n role=\"presentation\"\n aria-hidden=\"true\"\n >\n <use href=\"/icons.svg#bluesky-icon\"></use>\n </svg>\n Bluesky\n </a>\n </li>\n </ul>\n </div>\n </section>\n\n <div className=\"ticks\"></div>\n <section id=\"spacer\"></section>\n </>\n )\n}\n\nexport default App\n"
+}
+
+    ]
+
+}
+
+We can see the changes happening on the corresponding `preview URL`, here it is `http://01a0d419-63d1-715b-9021-a2a34f279613.preview.localhost`. So, whatever changes we make on the `agent` will be visible on the `preview URL`.
+
+Now, we will create an `AI Agent` and with the help of it , the API's will be used to updated and created files and folders.
