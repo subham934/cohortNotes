@@ -1753,8 +1753,10 @@ then create a POST request on http://localhost/api/sandbox/start, we'll get a pr
 with the preview link, create a GET request at link http://01a0c368-a8f9-73c9-9dbd-5c40c86ea57a.agent.localhost/list-files, we get the details of the files, the template has. Here , Today, we'll create read files, update files, create files API.
 
 ---
+------------------------
+sandbox/agent/src/app.js
+------------------------
 
-## sandbox/agent/src/app.js
 
 import express from 'express';
 import morgan from 'morgan';
@@ -3781,8 +3783,10 @@ The explaination of all the 3 API's are properly done above, however, there is a
 like, we have a `public` folder and an `src` folder, but the /list-files API doesn't give me the details of the files inside `public` folder and `src` folder, instead it gives me the details of the files inside `workspace`. so the content inside the `public` and `src` is not shown , only the folder names are shown , for that we'll need to make changes on that API and the code is below::
 
 ---
+=========================
+sandbox/agent/src/app.js
+=========================
 
-## sandbox/agent/src/app.js
 
 /\*\*
 
@@ -4639,9 +4643,9 @@ we will get the following response::
 then run the following code::
 kubectl apply -f ./k8s
 
-now, create a POST request with URL http://localhost/api/sandbox/start, we will get a preview URL::"http://01a0d419-63d1-715b-9021-a2a34f279613.preview.localhost"
+now, create a POST request with URL http://localhost/api/sandbox/start, we will get a preview URL::"http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.preview.localhost"
 
-now, create a GET request on http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/list-files 
+now, create a GET request on http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.agent.localhost/list-files 
 
 we'll get the following output::
 
@@ -4670,7 +4674,7 @@ we'll get the following output::
 }
 
 
-This output is file content of the `vite-dev-server`, this is the frontend code of the react server. Now, we will need to get the details of `src/App.jsx` for updating the code. For that, we will do a GET request on `http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/read-files?files=src/App.jsx`
+This output is file content of the `vite-dev-server`, this is the frontend code of the react server. Now, we will need to get the details of `src/App.jsx` for updating the code. For that, we will do a GET request on `http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.agent.localhost/read-files?files=src/App.jsx`
 
 we'll get the following output::
 
@@ -4684,7 +4688,7 @@ we'll get the following output::
 }
 
 
-This is the content of the file `App.jsx`. I'll take this file and make changes in it. For that, I'll do a PATCH request on `http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/update-files` and modify some content.
+This is the content of the file `App.jsx`. I'll take this file and make changes in it. For that, I'll do a PATCH request on `http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.agent.localhost/update-files` and modify some content.
 
 Here is the modified content to send the PATCH request, i've just changed the `Get started` to `The Cohort` ::
 
@@ -4699,7 +4703,7 @@ Here is the modified content to send the PATCH request, i've just changed the `G
 }
 
 
-We can see the changes happening on the corresponding `preview URL`, here it is `http://01a0d419-63d1-715b-9021-a2a34f279613.preview.localhost`. So, whatever changes we make on the `agent` will be visible on the `preview URL`.
+We can see the changes happening on the corresponding `preview URL`, here it is `http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.preview.localhost`. So, whatever changes we make on the `agent` will be visible on the `preview URL`.
 
 Now, we will create an `AI Agent` and with the help of it , the API's will be used to updated and created files and folders.
 
@@ -4764,7 +4768,7 @@ export const listFiles = tool(
     console.log('using list files tool');
     console.log('==========================================');
     const response = await axios.get(
-      'http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/list-files' // we will hit this API to list all the files in container
+      'http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.agent.localhost/list-files' // we will hit this API to list all the files in container
     );
 
     console.log('==========================================');
@@ -4787,8 +4791,8 @@ export const readFiles = tool(
     console.log('==========================================');
     console.log('using read files tool with files', files);
     console.log('==========================================');
-    const response = await axios.post(
-      `http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/read-files?files=` +
+    const response = await axios.get(
+      `http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.agent.localhost/read-files?files=` +
         files.join(',') // we will hit this API to read all the files in container
     );
     console.log('==========================================');
@@ -4816,7 +4820,7 @@ export const updateFiles = tool(
     console.log('using update files tool with files', files);
     console.log('==========================================');
     const response = await axios.patch(
-      `http://01a0d419-63d1-715b-9021-a2a34f279613.agent.localhost/update-files`,
+      `http://01a0e819-5ff5-74b2-98d6-0bfe45860ea2.agent.localhost/update-files`,
       {
         updates: files,
       }
@@ -4896,3 +4900,14 @@ await agent.invoke({
         }
     ]
 })
+
+
+
+now, what i'll do is copy the .env file from ai-orchastration folder to agents folder. then I'll run the below command
+
+ai-orchestration/src/agents> node code.agent.js
+
+
+
+
+
