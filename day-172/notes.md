@@ -1750,9 +1750,9 @@ kubectl apply -f ./k8s
 
 then create a POST request on http://localhost/api/sandbox/start, we'll get a previewURL, wait for 5mins and click on it, and we will get our react-vite app running.
 
-with the preview link, create a GET request at link http://01a0c368-a8f9-73c9-9dbd-5c40c86ea57a.agent.localhost/list-files, we get the details of the files, the template has. Here , Today, we'll create read files, update files, create files API.
+with the preview link, create a GET request at link http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/list-files, we get the details of the files, the template has. Here , Today, we'll create read files, update files, create files API.
 
----
+
 ------------------------
 sandbox/agent/src/app.js
 ------------------------
