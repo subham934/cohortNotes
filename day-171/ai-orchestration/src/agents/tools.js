@@ -8,7 +8,7 @@ export const listFiles = tool(
     console.log('using list files tool');
     console.log('==========================================');
     const response = await axios.get(
-      `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/list-files` // we will hit this API to list all the files in container
+      `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/list-files` // we will hit this API to list all the files in container
     );
 
     console.log('==========================================');
@@ -27,12 +27,12 @@ export const listFiles = tool(
 );
 
 export const readFiles = tool(
-  async ({ files }) => {
+  async ({ files:[] }) => {
     console.log('==========================================');
     console.log('using read files tool with files', files);
     console.log('==========================================');
     const response = await axios.get(
-      `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/read-files?files=` +
+      `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/read-files?files=` +
         files.join(',') // we will hit this API to read all the files in container
     );
     console.log('==========================================');
@@ -40,7 +40,7 @@ export const readFiles = tool(
     console.log('==========================================');
     return JSON.stringify(response.data); // we return files
   },
-    {
+      {
         name: "read_files",
         description: "Read the contents of specified files. This is useful for understanding the content of files that are relevant to the task at hand.",
         schema: z.object({
@@ -55,7 +55,7 @@ export const updateFiles = tool(
     console.log('using update files tool with files', files);
     console.log('==========================================');
     const response = await axios.patch(
-      `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/update-files`,
+      `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/update-files`,
       {
         updates: files,
       }

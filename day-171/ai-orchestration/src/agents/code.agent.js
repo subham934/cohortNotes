@@ -39,9 +39,8 @@ import { listFiles, readFiles, updateFiles } from './tools.js';
 import { createAgent } from 'langchain';
 
 const model = new ChatMistralAI({
-//   model: "mistral-medium-latest",
+  // model: "mistral-medium-latest",
   model: 'open-mistral-7b',
-// model: "mistral-large-2407",
   apiKey: process.env.MISTRALAI_API_KEY,
   temperature: 0.7,
 });
@@ -55,7 +54,7 @@ await agent.invoke({
   messages: [
     {
       role: 'user',
-      content: 'update the theme of the project to light',
+      content: 'create a simple portfolio project using react and css, no image needed',
     },
   ],
 });

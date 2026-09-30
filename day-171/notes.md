@@ -4642,9 +4642,9 @@ we will get the following response::
 then run the following code::
 kubectl apply -f ./k8s
 
-now, create a POST request with URL http://localhost/api/sandbox/start, we will get a preview URL::"http://01a0e8e3-efe8-7580-b200-40d538f81fc7.preview.localhost"
+now, create a POST request with URL http://localhost/api/sandbox/start, we will get a preview URL::"http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.preview.localhost"
 
-now, create a GET request on http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/list-files 
+now, create a GET request on http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/list-files 
 
 we'll get the following output::
 
@@ -4673,7 +4673,7 @@ we'll get the following output::
 }
 
 
-This output is file content of the `vite-dev-server`, this is the frontend code of the react server. Now, we will need to get the details of `src/App.jsx` for updating the code. For that, we will do a GET request on `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/read-files?files=src/App.jsx`
+This output is file content of the `vite-dev-server`, this is the frontend code of the react server. Now, we will need to get the details of `src/App.jsx` for updating the code. For that, we will do a GET request on `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/read-files?files=src/App.jsx`
 
 we'll get the following output::
 
@@ -4687,7 +4687,7 @@ we'll get the following output::
 }
 
 
-This is the content of the file `App.jsx`. I'll take this file and make changes in it. For that, I'll do a PATCH request on `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/update-files` and modify some content.
+This is the content of the file `App.jsx`. I'll take this file and make changes in it. For that, I'll do a PATCH request on `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/update-files` and modify some content.
 
 Here is the modified content to send the PATCH request, i've just changed the `Get started` to `The Cohort` ::
 
@@ -4702,7 +4702,7 @@ Here is the modified content to send the PATCH request, i've just changed the `G
 }
 
 
-We can see the changes happening on the corresponding `preview URL`, here it is `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.preview.localhost`. So, whatever changes we make on the `agent` will be visible on the `preview URL`.
+We can see the changes happening on the corresponding `preview URL`, here it is `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.preview.localhost`. So, whatever changes we make on the `agent` will be visible on the `preview URL`.
 
 Now, we will create an `AI Agent` and with the help of it , the API's will be used to updated and created files and folders.
 
@@ -4767,7 +4767,7 @@ export const listFiles = tool(
     console.log('using list files tool');
     console.log('==========================================');
     const response = await axios.get(
-      'http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/list-files' // we will hit this API to list all the files in container
+      'http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/list-files' // we will hit this API to list all the files in container
     );
 
     console.log('==========================================');
@@ -4791,7 +4791,7 @@ export const readFiles = tool(
     console.log('using read files tool with files', files);
     console.log('==========================================');
     const response = await axios.get(
-      `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/read-files?files=` +
+      `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/read-files?files=` +
         files.join(',') // we will hit this API to read all the files in container
     );
     console.log('==========================================');
@@ -4819,7 +4819,7 @@ export const updateFiles = tool(
     console.log('using update files tool with files', files);
     console.log('==========================================');
     const response = await axios.patch(
-      `http://01a0e8e3-efe8-7580-b200-40d538f81fc7.agent.localhost/update-files`,
+      `http://01a0ed43-e2f2-76ee-b5dd-b9e4914426b8.agent.localhost/update-files`,
       {
         updates: files,
       }
@@ -4882,6 +4882,8 @@ import "dotenv/config"
 const model = new ChatMistralAI({
   model: 'mistral-medium-latest',
   apiKey: process.env.MISTRAL_API_KEY,
+  temperature: 0.7,
+
 });
 
 
@@ -4908,5 +4910,5 @@ ai-orchestration/src/agents> node code.agent.js
 
 
 
-
+Now, we can see that our code is working at optimal condition.
 
