@@ -1,0 +1,49 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+
+build:
+    
+  artifacts:
+  # here we are providing list of images that we want to build, we need to provide the same name of the image that is there in the deployment files in k8s.
+  # context is the path to the code that we want to build the image from, we can provide path of multiple folders
+  # sync is used to sync the code changes to the container, if we update the code then we don't need to build the image manually, skaffold will do it for us
+  # docker is used to build the image, here we provide the path to the dockerfile and the context
+  - image: ai-orchestration
+    context: ai-orchestration # kis folder k ander humko docker file mil jayegi
+    docker:
+      dockerfile: dockerfile
+    sync: # it means if we do any changes in the folder src/** then sync will update the image automatically
+      infer:
+        - "src/**"
+        
+
+  - image: agent
+    context: sandbox/agent
+    docker:
+      dockerfile: dockerfile
+
+  - image: router
+    context: sandbox/router
+    docker:
+      dockerfile: dockerfile
+
+  - image: sandbox
+    context: sandbox/server
+    docker:
+      dockerfile: dockerfile
+
+  - image: template
+    context: sandbox/template
+    docker:
+      dockerfile: dockerfile
+
+manifests: # kubernetes ko kya deploy karna hai
+  rawYaml:
+    - k8s/ai-deployment.yml
+    - k8s/ai-service.yml
+    - k8s/sandbox-deployment.yml
+    - k8s/sandbox-service.yml
+    - k8s/ingress.yml
+    - k8s/router-deployment.yml
+    - k8s/router-service.yml
+    - k8s/rbac.yml
