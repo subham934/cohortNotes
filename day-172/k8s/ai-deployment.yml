@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app:  ai-server
+        app: ai-server
     spec:
       containers:
       - image:  ai-orchestration
@@ -35,7 +35,7 @@ spec:
             path: /api/status/healthz
             port: 3000
           initialDelaySeconds: 30
-          timeoutSeconds: 10   
+          timeoutSeconds: 10     
         ports:
         - containerPort:  3000
           name:  ai-server-port
