@@ -22,8 +22,19 @@ We can create scenes, add objects, camera, lights and many more.
 
 
 //============================================
-// Chapter 1
+// Chapter 2
 //============================================
+
+Texture: Wrapper around the geometry, using which we can apply color, image, etc on the object
+6 types of texture:
+color, metalness, roughness, normal, displacement, ao(ambient occlusion)
+
+
+How to apply textures?
+-> Load texture, threejs texture loader karke ak ek cheez deta hain. 
+-> We need to apply it on the geometry.
+
+
 //============================================
 // Chapter 1
 //============================================
