@@ -4912,66 +4912,62 @@ ai-orchestration/src/agents> node code.agent.js
 
 Now, we can see that our code is working at optimal condition.
 
-//==============================================================
-// DAY-172
+//============================================================== 
+// DAY-172 
 //==============================================================
 
-So, yesterday, we have seen how our AI agent was able to write code, it was able to create application and give us a beautiful outcome.Today, we'll see that how that model could create a better UI,we'll give some system instructions   
+So, yesterday, we have seen how our AI agent was able to write code, it was able to create application and give us a beautiful outcome.Today, we'll see that how that model could create a better UI,we'll give some system instructions
 
 => As of now , we were creating images manually, and deploy k8s files, now, we will delete all the images from docker-desktop and use skaffold. skaffold is a development tool which automates the process of building, pushing and deploying the application. It continuously monitors your source code and automatically rebuilds, redeploys, and restarts your application when changes are detected.
 
-=> In our project, we have `ai-orchestration` which has a server and our `sandbox` folder has 4 folders within it . Now, inside ai-orchestration we'll create a file::
+=> In our project, we have ai-orchestration which has a server and our sandbox folder has 4 folders within it . Now, inside ai-orchestration we'll create a file::
 
-//==============================
-ai-orchestration>.dockerignore
+//============================== 
+ai-orchestration>.dockerignore 
 //==============================
 
-node_modules
+node_modules 
 .env
 
-then we'll install nodemon inside ai-orchestration:
-ai-orchestration> npm i -D nodemon
+then we'll install nodemon inside ai-orchestration: ai-orchestration> npm i -D nodemon
 
 now that nodemon is installed, we will make some changes in package.json
 
-//==============================
-ai-orchestration>package.json
-//==============================
+//============================== ai-orchestration>package.json //============================== 
+
+
+
 {
-  "dependencies": {
-    "@langchain/google-genai": "^2.3.2",
-    "@langchain/langgraph": "^1.4.17",
-    "@langchain/mistralai": "^1.2.0",
-    "axios": "^1.20.0",
-    "dotenv": "^18.0.3",
-    "express": "^5.2.1",
-    "langchain": "^1.5.12",
-    "morgan": "^1.12.1",
-    "zod": "^4.6.5"
-  },
-  "name": "ai-orchestration",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -L server.js",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "devDependencies": {
-    "nodemon": "^3.1.14"
-  }
+    "dependencies": {
+        "@langchain/google-genai": "^2.3.2",
+        "@langchain/langgraph": "^1.4.17",
+        "@langchain/mistralai": "^1.2.0",
+        "axios": "^1.20.0",
+        "dotenv": "^18.0.3",
+        "express": "^5.2.1",
+        "langchain": "^1.5.12",
+        "morgan": "^1.12.1",
+        "zod": "^4.6.5"
+    },
+    "name": "ai-orchestration",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo "Error: no test specified" && exit 1",
+        "dev": "nodemon -L server.js",
+        "start": "node server.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "devDependencies": {
+        "nodemon": "^3.1.14"
+    }
 }
 
-Finally, lets create our dockerfile
-//==============================
-ai-orchestration> dockerfile
-//==============================
-FROM node:20-alpine
+Finally, lets create our dockerfile //============================== ai-orchestration> dockerfile //============================== FROM node:20-alpine
 
 WORKDIR /app
 
@@ -4985,13 +4981,11 @@ EXPOSE 3000
 
 CMD ["npm","run","dev"]
 
+Now, we need to create a deployment file & service file for ai-orchestration
 
-Now, we need to create a deployment file & service file for `ai-orchestration` 
-
+//============================== 
+day-172>k8s>ai-deployment.yml 
 //==============================
-day-172>k8s>ai-deployment.yml
-//==============================
-
 
 apiVersion: apps/v1
 kind: Deployment
@@ -5007,7 +5001,7 @@ spec:
   template:
     metadata:
       labels:
-        app:  ai-server
+        app: ai-server
     spec:
       containers:
       - image:  ai-orchestration
@@ -5030,14 +5024,13 @@ spec:
             path: /api/status/healthz
             port: 3000
           initialDelaySeconds: 30
-          timeoutSeconds: 10   
+          timeoutSeconds: 10     
         ports:
         - containerPort:  3000
-          name: ai-server-port
-        
+          name:  ai-server-port
 
-//========================
-day-172>k8s>ai-service.yml
+//======================== 
+day-172>k8s>ai-service.yml 
 //========================
 
 kind: Service
@@ -5045,24 +5038,19 @@ apiVersion: v1
 metadata:
   name:  ai-service
   labels:
-    name:  ai-service
+    name: ai-service
 spec:
   selector:
     app:  ai-server
-  type:   ClusterIP
+  type:   ClusterIP 
   ports:
   - name:  ai-http
     port:  80
     targetPort:  3000
 
-
 we'll also make changes in ingress.yml
 
-
-//========================
-day-172>k8s>ingress.yml
-//========================
-
+//======================== day-172>k8s>ingress.yml //========================
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -5113,66 +5101,42 @@ spec:
                 port:
                   number: 80
 
+Since for the livenessProbe we have an API as /api/status/healthz, so that API must be created now,
 
-
-
-Since for the livenessProbe we have an API as `/api/status/healthz`, so that API must be created now,
-
-
-//==============================
-ai-orchestration > src > app.js
+//============================== 
+ai-orchestration > src > app.js 
 //==============================
 
-import express from "express";
-import morgan from "morgan";
-
+import express from "express"; import morgan from "morgan";
 
 const app = express()
 
-app.use(morgan("dev"))
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(morgan("dev")) app.use(express.json()) app.use(express.urlencoded({extended: true}))
 
+app.get("/api/ai/healthz", (req, res) => { res.status(200).json({ message: "AI Orchestration service is healthy", status: "ok" }) })
 
-app.get("/api/ai/healthz", (req, res) => {
-    res.status(200).json({
-        message: "AI Orchestration service is healthy",
-        status: "ok"
-    })
-})
-
-app.get("/api/status/healthz", (req, res)=>{
-    res.status(200).json({
-        status: "ok"
-    })
-})
+app.get("/api/status/healthz", (req, res)=>{ res.status(200).json({ status: "ok" }) })
 
 export default app;
 
-So now, the image of `ai-orchestration` will be created by skaffold . We don't need to build it ourself, skaffold does it for us and deploy the image aswell. Now, lets create skaffold.yml file in the root folder i.e., day-172, we use skaffold so that our development process is abit faster, and we dont need to manually build or deploy images. 
+So now, the image of ai-orchestration will be created by skaffold . We don't need to build it ourself, skaffold does it for us and deploy the image aswell. Now, lets create skaffold.yml file in the root folder i.e., day-172, we use skaffold so that our development process is abit faster, and we dont need to manually build or deploy images.
 
+//============================== 
+day-172 > skaffold.yml 
 //==============================
-day-172 > skaffold.yml
-//==============================
-
 apiVersion: skaffold/v4beta13
 kind: Config
 
 build:
-    
   artifacts:
-  # here we are providing list of images that we want to build, we need to provide the same name of the image that is there in the deployment files in k8s.
-  # context is the path to the code that we want to build the image from, we can provide path of multiple folders
-  # sync is used to sync the code changes to the container, if we update the code then we don't need to build the image manually, skaffold will do it for us
-  # docker is used to build the image, here we provide the path to the dockerfile and the context
+
   - image: ai-orchestration
-    context: ai-orchestration # kis folder k ander humko docker file mil jayegi
+    context: ai-orchestration
     docker:
       dockerfile: dockerfile
-    sync: # it means if we do any changes in the folder src/** then sync will update the image automatically
+    sync:
       infer:
         - "src/**"
-        
 
   - image: agent
     context: sandbox/agent
@@ -5194,7 +5158,7 @@ build:
     docker:
       dockerfile: dockerfile
 
-manifests: # kubernetes ko kya deploy karna hai
+manifests:
   rawYaml:
     - k8s/ai-deployment.yml
     - k8s/ai-service.yml
@@ -5205,14 +5169,48 @@ manifests: # kubernetes ko kya deploy karna hai
     - k8s/router-service.yml
     - k8s/rbac.yml
 
-=> Now, reset the cluster in docker-desktop
-=> rename the file from sandbox.service.yml to sandbox-service.yml, then install skaffold by using winget:
-winget install Google.Skaffold #i'm not sure about it, AI installed it for me
+=> Now, reset the cluster in docker-desktop => rename the file from sandbox.service.yml to sandbox-service.yml, then install skaffold by using winget: winget install Google.Skaffold #i'm not sure about it, AI installed it for me
 
 now, go to day-172> skaffold dev
 
-=> after we run the command `skaffold dev` it creates all the images and starts deploying them
+=> after we run the command skaffold dev it creates all the images and starts deploying them
 
-=> since we have reset the cluster, the ingress-controller needed to be installed again and then we need to run `kubectl apply -f ./k8s`
+=> since we have reset the cluster, the ingress-controller needed to be installed again and then we need to run kubectl apply -f ./k8s
 
-//==============================
+=> Now, if we comment out the /api/status/healthz in ai-orchestration>src>app.js and run skaffold dev, then it will show a 404 error immediately. This is because all our files are in sync.
+
+//=========================================================================
+
+
+So, yesterday, we have created an AI agent and created some tools, we are gonna use it today, we will use postman to create a project. Let's fix some codes before. In our preview yesterday, we saw it refreshed automatically, so to stop that we use `watch` as below::
+
+
+
+//=====================================
+day-172>sandbox>template>vite.config.js
+//=====================================
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server:{
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: true, // the vite-deployment-server that on user-pod, runs on localhost:5173, the request that comes to this pod is from pod1.preview.localhost, so the request pod1.preview.localhost is different from localhost:5173, so we need to allow the request from pod1.preview.localhost, so we set allowedHosts: true, so that the request from pod1.preview.localhost is allowed.
+
+  },
+
+  // the reload was getting triggered because when we update the file using `fs`, it releases multiple events stating `the file is changed`, so the vite development server which is watching for the file changes detects these events and triggers the reload
+    watch: {
+    usePolling: true,
+    interval: 300,
+    ignored: [ 'node_modules' ]
+  } 
+})
+
+
+
+// now we will need to create image, for that run  `skaffold dev` in the root folder i.e., day-172

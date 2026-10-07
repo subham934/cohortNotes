@@ -9,6 +9,12 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
+app.get("/api/status/healthz", (req, res) => {
+    res.status(200).json({
+        status: "ok"
+    })
+})
+
 app.get("/api/ai/healthz", (req, res) => {
     res.status(200).json({
         message: "AI Orchestration service is healthy",
@@ -16,10 +22,5 @@ app.get("/api/ai/healthz", (req, res) => {
     })
 })
 
-app.get("/api/status/healthz", (req, res)=>{
-    res.status(200).json({
-        status: "ok"
-    })
-})
 
 export default app;

@@ -27,15 +27,30 @@ const textureLoader = new THREE.TextureLoader(loadingManager);
 const texture = textureLoader.load(
   'https://images.unsplash.com/photo-1778534075150-8a5c0636b1b0?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   () => {
-    console.log('Texture Loaded');
+    console.log('Loaded');
   },
   () => {
-    console.log('Texture Loading');
+    console.log('Progress');
   },
   () => {
-    console.log('Texture Error');
+    console.log('Error');
   }
 );
+
+// texture.repeat.x = 3;
+// texture.repeat.y = 2;
+
+
+// texture.wrapS = THREE.MirroredRepeatWrapping;
+// texture.wrapT = THREE.RepeatWrapping;
+
+// texture.offset.x = 1;
+// texture.rotation = Math.PI * 0.25;
+
+texture.minFilter = THREE.LinearFilter;
+texture.magFilter = THREE.NearestFilter;
+
+
 
 const texture2 = textureLoader.load(
   'https://images.unsplash.com/photo-1790619451922-feced14b555c?q=80&w=928&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
@@ -43,6 +58,7 @@ const texture2 = textureLoader.load(
 
 const rockTextureColor = textureLoader.load('./texture.jpg');
 
+// texture.colorSpace = THREE.SRGBColorSpace;
 rockTextureColor.colorSpace = THREE.SRGBColorSpace;
 
 const size = {

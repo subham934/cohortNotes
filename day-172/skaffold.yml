@@ -5,13 +5,12 @@ build:
   artifacts:
 
   - image: ai-orchestration
-    context: ai-orchestration 
+    context: ai-orchestration
     docker:
       dockerfile: dockerfile
     sync:
       infer:
         - "src/**"
-        
 
   - image: agent
     context: sandbox/agent
