@@ -16,7 +16,7 @@ spec:
                 name: sandbox-service
                 port:
                   number: 80
-                  
+    
     - http:
         paths:
           - pathType: Prefix
@@ -25,7 +25,7 @@ spec:
               service:
                 name: ai-service
                 port:
-                  number: 80
+                  number: 80              
 
     - host: '*.preview.localhost'
       http:

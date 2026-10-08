@@ -5214,3 +5214,185 @@ export default defineConfig({
 
 
 // now we will need to create image, for that run  `skaffold dev` in the root folder i.e., day-172
+
+
+
+// wait for 5 mins and crearte a POST request on URL `http://localhost/api/sandbox/start`, we will get the below response::
+{
+    "message": "Sandbox environment created successfully",
+    "status": "ok",
+    "sandboxId": "01a116e8-4a89-76f0-99fa-dfaec8e5335e",
+    "previewUrl": "http://01a116e8-4a89-76f0-99fa-dfaec8e5335e.preview.localhost"
+}
+
+// wait for 5 more mins and click on preview URL, we might not get the preview URL loaded as skaffold is building image but with random tags causing problem, for that we make below changes in skaffold.yml
+
+
+//=====================
+day-172>skaffold.yml
+//=====================
+apiVersion: skaffold/v4beta13
+kind: Config
+
+build:
+  tagPolicy:
+    sha256: {}
+
+  artifacts:
+
+  - image: ai-orchestration
+    context: ai-orchestration
+    docker:
+      dockerfile: dockerfile
+    sync:
+      infer:
+        - "src/**"
+
+  - image: agent
+    context: sandbox/agent
+    docker:
+      dockerfile: dockerfile
+
+  - image: router
+    context: sandbox/router
+    docker:
+      dockerfile: dockerfile
+
+  - image: sandbox
+    context: sandbox/server
+    docker:
+      dockerfile: dockerfile
+
+  - image: template
+    context: sandbox/template
+    docker:
+      dockerfile: dockerfile
+
+manifests:
+  rawYaml:
+    - k8s/ai-deployment.yml
+    - k8s/ai-service.yml
+    - k8s/sandbox-deployment.yml
+    - k8s/sandbox-service.yml
+    - k8s/ingress.yml
+    - k8s/router-deployment.yml
+    - k8s/router-service.yml
+    - k8s/rbac.yml
+
+//=====================
+
+
+now , delete the previous images and run `skaffold dev` again, also delete the sandbox-pod-01a116e8-4a89-76f0-99fa-dfaec8e5335e
+
+// wait for 5 mins and crearte a POST request on URL `http://localhost/api/sandbox/start`, we will get the below response::
+{
+    "message": "Sandbox environment created successfully",
+    "status": "ok",
+    "sandboxId": "01a11700-2c94-74a7-baf4-f88adcbbd7e6",
+    "previewUrl": "http://01a11700-2c94-74a7-baf4-f88adcbbd7e6.preview.localhost"
+}
+
+
+// wait for 5 more mins and click on preview URL. we will get the template.
+
+// now let's create somemore things, at-first we'll create an API which is based on AI-agent. inside ai-orchestration>src>agents>code.agent.js, we have an agent, now we'll export that agent 
+
+//======================================= 
+ai-orchestration>src>agents>code.agent.js
+//======================================= 
+
+import 'dotenv/config';
+import { ChatMistralAI } from '@langchain/mistralai';
+import { listFiles, readFiles, updateFiles } from './tools.js';
+import { createAgent } from 'langchain';
+
+const model = new ChatMistralAI({
+  // model: "mistral-medium-latest",
+  model: 'open-mistral-7b',
+  apiKey: process.env.MISTRALAI_API_KEY,
+  temperature: 0.7,
+});
+
+const agent = createAgent({
+  model,
+  tools: [listFiles, readFiles, updateFiles],
+});
+
+export default agent;
+
+
+Inside `tool.js` , we have the url's hard-coded, we need to change the sandboxId as per today's URL.Now, we'll create a router file.
+
+
+//=========================================
+ai-orchestration>src>routes>agent.routes.js
+//=========================================
+
+
+import { Router } from 'express';
+
+const agentRouter = Router();
+
+
+
+export default agentRouter;
+
+
+
+Now, i'll import this `agent.routes.js` inside app.js
+
+//=========================
+ai-orchestration>src>app.js
+//=========================
+
+import express from "express";
+import morgan from "morgan";
+import agentRouter from "./routes/agent.routes.js";
+
+const app = express()
+
+app.use(morgan("dev"))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
+
+app.get("/api/status/healthz", (req, res) => {
+    res.status(200).json({
+        status: "ok"
+    })
+})
+
+app.get("/api/ai/healthz", (req, res) => {
+    res.status(200).json({
+        message: "AI Orchestration service is healthy",
+        status: "ok"
+    })
+})
+
+app.use("/api/ai/agent", agentRouter);
+
+export default app;
+
+
+
+//=========================================
+ai-orchestration>src>routes>agent.routes.js
+//=========================================
+
+import { Router } from 'express';
+import agent from '../agents/code.agent.js';
+
+const agentRouter = Router();
+
+agentRouter.post('/invoke', async (req, res) => {
+  try {
+    const { messages } = req.body;
+    const response = await agent.invoke({ messages });
+    res.json({ response });
+  } catch (error) {
+    console.log(' Error invoking agent: ', error);
+    res.status(500).json({ error: 'Failed to invoke agent' });
+  }
+});
+
+export default agentRouter;
