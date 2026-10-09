@@ -4933,8 +4933,9 @@ then we'll install nodemon inside ai-orchestration: ai-orchestration> npm i -D n
 
 now that nodemon is installed, we will make some changes in package.json
 
-//============================== ai-orchestration>package.json //============================== 
-
+//============================== 
+ai-orchestration>package.json 
+//============================== 
 
 
 {
@@ -4967,7 +4968,11 @@ now that nodemon is installed, we will make some changes in package.json
     }
 }
 
-Finally, lets create our dockerfile //============================== ai-orchestration> dockerfile //============================== FROM node:20-alpine
+Finally, lets create our dockerfile 
+//============================== 
+ai-orchestration> dockerfile 
+//============================== 
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -5050,7 +5055,10 @@ spec:
 
 we'll also make changes in ingress.yml
 
-//======================== day-172>k8s>ingress.yml //========================
+//======================== 
+day-172>k8s>ingress.yml 
+//========================
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -5203,7 +5211,7 @@ export default defineConfig({
 
   },
 
-  // the reload was getting triggered because when we update the file using `fs`, it releases multiple events stating `the file is changed`, so the vite development server which is watching for the file changes detects these events and triggers the reload
+  // the reload was getting triggered because when we update the file using `nodejs fs`, it releases multiple events stating `the file is changed`, so the vite development server which is watching for the file changes detects these events and triggers the reload
     watch: {
     usePolling: true,
     interval: 300,
@@ -5288,13 +5296,12 @@ now , delete the previous images and run `skaffold dev` again, also delete the s
 {
     "message": "Sandbox environment created successfully",
     "status": "ok",
-    "sandboxId": "01a11700-2c94-74a7-baf4-f88adcbbd7e6",
-    "previewUrl": "http://01a11700-2c94-74a7-baf4-f88adcbbd7e6.preview.localhost"
+    "sandboxId": "01a11cb4-e69b-7137-8a74-480f4f3cf989",
+    "previewUrl": "http://01a11cb4-e69b-7137-8a74-480f4f3cf989.preview.localhost"
 }
 
-
 // wait for 5 more mins and click on preview URL. we will get the template.
-
+// delete the .env file inside ai-orchestration>src>agents
 // now let's create somemore things, at-first we'll create an API which is based on AI-agent. inside ai-orchestration>src>agents>code.agent.js, we have an agent, now we'll export that agent 
 
 //======================================= 
@@ -5386,8 +5393,8 @@ const agentRouter = Router();
 
 agentRouter.post('/invoke', async (req, res) => {
   try {
-    const { messages } = req.body;
-    const response = await agent.invoke({ messages });
+    const { message } = req.body;
+    const response = await agent.invoke({ messages : [{role: 'user', content: message}]});
     res.json({ response });
   } catch (error) {
     console.log(' Error invoking agent: ', error);
@@ -5396,3 +5403,9 @@ agentRouter.post('/invoke', async (req, res) => {
 });
 
 export default agentRouter;
+
+
+
+// Now, if we delete all our previous image and re-run `skaffold dev` we will see that 
+
+// Now, create a POST request on postman in http://localhost/api/ai/agent/invoke and pass the body as { "message": "Create a snake game tech stack we have is react js with vite use css for styling"}
