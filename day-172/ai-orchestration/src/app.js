@@ -13,7 +13,7 @@ app.get('/api/status/healthz', (req, res) => {
 });
 
 //Routes
-app.use("/api/ai/agent", agentRouter);
+app.use("/api/ai", agentRouter);
 
 
 export default app;

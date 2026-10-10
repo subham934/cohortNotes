@@ -39,8 +39,8 @@ import { listFiles, readFiles, updateFiles } from './tools.js';
 import { createAgent } from 'langchain';
 
 const model = new ChatMistralAI({
-  // model: "mistral-medium-latest",
-  model: 'open-mistral-7b',
+  model: "open-mistral-7b", // doesn't reliably call tools
+  // model: 'mistral-large-latest', // proper function-calling support
   apiKey: process.env.MISTRALAI_API_KEY,
   temperature: 0.7,
 });

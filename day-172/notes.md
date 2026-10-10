@@ -5376,7 +5376,7 @@ app.get("/api/ai/healthz", (req, res) => {
     })
 })
 
-app.use("/api/ai/agent", agentRouter);
+app.use("/api/ai", agentRouter);
 
 export default app;
 
@@ -5406,6 +5406,84 @@ export default agentRouter;
 
 
 
-// Now, if we delete all our previous image and re-run `skaffold dev` we will see that 
+// Now, if we delete all our previous image and re-run `skaffold dev` we will see that `sandbox-deployment` & `router-deployment` are running but the `ai-deployment` is not because we have deleted the .env file from `ai-orchestration>src>agents` so, we are missing the mistral-api-key
 
-// Now, create a POST request on postman in http://localhost/api/ai/agent/invoke and pass the body as { "message": "Create a snake game tech stack we have is react js with vite use css for styling"}
+// so, now we will see how to store mistral-api-key or other secrets, for that we need to go to the root folder i.e., day-172 and run the following command::
+
+D:\cohort\cohortNotes\day-172> kubectl create secret generic ai-secret --from-literal=MISTRAL_API_KEY=mstrl_OXNdUy1ps492S4o9Snf5P81YnilPGokw_2okMbi
+
+
+to delete the secret we can write as ::
+D:\cohort\cohortNotes\day-172> kubectl delete secret ai-secret
+
+after this, we need to make changes in ai-deployment.yml, we will just add the env
+
+
+//=================================================
+D:\cohort\cohortNotes\day-172\k8s\ai-deployment.yml
+//=================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  ai-deployment
+  labels:
+    name:  ai-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-server
+  template:
+    metadata:
+      labels:
+        app: ai-server
+    spec:
+      containers:
+      - image:  ai-orchestration
+        name:  ai-server
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "128M"
+          limits:
+            cpu: "500m"
+            memory: "256M"
+        env:
+        - name: MISTRAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ai-secret
+              key: MISTRAL_API_KEY    
+        livenessProbe:
+          httpGet:
+            path: /api/status/healthz
+            port: 3000
+          initialDelaySeconds: 90
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/status/healthz
+            port: 3000
+          initialDelaySeconds: 30
+          timeoutSeconds: 10     
+        ports:
+        - containerPort:  3000
+          name:  ai-server-port
+        
+        
+=> Now, we will see that our `sandbox-deployment` & `router-deployment` & `ai-deployment` are running successfully.
+
+
+
+// Now, create a POST request on postman in http://localhost/api/ai/invoke and pass the body as { "message": "Create a snake game tech stack we have is react js with vite use css for styling"}
+
+=> we will not be able to see the changes in the place where `skaffold dev` is running because our entire codebase is running on `kubernetes-cluster`, the problem is that the `tools.js` has the API's hard-coded and it looks like `http://01a11cb4-e69b-7137-8a74-480f4f3cf989.agent.localhost/list-files`. Nothing of this kind of code exist on cluster that has 'localhost' in it. To make sure our `AI Agent` can hit the `user pod`, we need to make some changes::
+
+
+// we need to make changes in `tools.js` to make it hit the user pod:
+
+//========================================= 
+D:\cohort\cohortNotes\day-172\ai-orchestration\src\agents\tools.js
+//========================================= 
+
