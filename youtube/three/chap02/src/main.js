@@ -1,8 +1,17 @@
 import './style.css';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const size = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
 
 // scene
 const scene = new THREE.Scene();
+
+// const clock = new THREE.Clock();
+const timer = new THREE.Timer();
 
 // 3D object - Mesh
 
@@ -17,36 +26,23 @@ const material = new THREE.MeshBasicMaterial({
 // Mesh:
 const cube = new THREE.Mesh(geometry, material);
 
-// cube.position.x = 3;
-// cube.position.y = 1;
-// cube.position.z = -2;
-
-// cube.position.set(3, 1, -2);
-// cube.position.set(1, 2, -1);
-
-// cube.scale.x = 2;
-// cube.scale.y = 2;
-// cube.scale.z = 1;
-// cube.scale.set(2,2,2);
-
-// cube.rotation.x = Math.PI * 0.25;
-// cube.rotation.y = Math.PI * 0.25;
-// cube.rotation.z = Math.PI * 0.25;
-// cube.rotation.set(Math.PI * 0.25, Math.PI * 0.25, Math.PI * 0.25);
-
 // Add mesh to scene:
 scene.add(cube);
 
 // camera
 const camera = new THREE.PerspectiveCamera(
   75,
-  window.innerWidth / window.innerHeight,
+  size.width / size.height,
   0.1,
   100
 );
 
-camera.position.z = 3;
+// const camera = new THREE.OrthographicCamera(
+//     -2, 2, 2, -2, 0.1, 100
+// );
 
+camera.position.z = 3;
+camera.lookAt(0,0,0);
 // renderer
 const canvas = document.querySelector('#webgl');
 const renderer = new THREE.WebGLRenderer({
@@ -54,7 +50,36 @@ const renderer = new THREE.WebGLRenderer({
 });
 
 // renderer size
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(size.width, size.height);
 
-// renderer ko on kardo
-renderer.render(scene, camera);
+const controls = new OrbitControls(camera, renderer.domElement);
+
+window.addEventListener('resize', () => {
+  size.width = window.innerWidth;
+  size.height = window.innerHeight;
+
+  // update camera
+  camera.aspect = size.width / size.height;
+  camera.updateProjectionMatrix();
+
+  // update renderer
+  renderer.setSize(size.width, size.height);
+});
+
+function animate() {
+  timer.update();
+  // orbit controls update
+  controls.update();
+  const delta = timer.getDelta();
+
+  // cube animation
+  cube.rotation.x += delta * 0.2;
+  cube.rotation.y += delta * 0.2;
+
+  // renderer ko on kardo
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
+}
+
+animate();
