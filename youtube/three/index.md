@@ -1589,13 +1589,499 @@ How to apply textures:: Texture ko load karna padega, threejs humko ak textureLo
 
 ```js
 
+const textureLoader = new THREE.TextureLoader();
+
+const texture = textureLoader.load("https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D");
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  // color: 0xff0000,
+  // wireframe: true,
+  map: texture,
+});
+
+```
+=> with this above code, we can apply the texture to the cube. The texture will be applied to the surface of the cube and it will look more realistic. We can also use different types of textures to create different effects on the surface of the cube.
+
+
+
+```js
+const texture = textureLoader.load("https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D", () => {
+  console.log("Texture loaded successfully");
+}, ()=>{
+  console.log("Texture loading in progress...");
+}, (error) => {
+  console.error("Error loading texture:", error);
+});
+
+```
+
+textureLoader.load() function takes four arguments:
+1. URL of the texture image.
+2. onLoad callback function: This function is called when the texture is loaded successfully.
+3. onProgress callback function: This function is called while the texture is loading.  
+4. onError callback function: This function is called if there is an error while loading the texture.
+
+
+
+// if we want to load a different type of texture, we can use the following code:
+```js
+const texture2 = textureLoader.load("https://images.unsplash.com/photo-1499195333224-3ce974eecb47?q=80&w=1051&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D", () => {
+  console.log("Texture loaded successfully");
+}, ()=>{
+  console.log("Texture loading in progress...");
+}, (error) => {
+  console.error("Error loading texture:", error);
+});
+
+
+const material = new THREE.MeshBasicMaterial({
+  // color: 0xff0000,
+  // wireframe: true,
+  // map: texture,
+  map: texture2,
+});
+
+
+```
+=> with the help of one textureLoader, we can load multiple textures and apply them
+
+
+-> we have 6 different types of textures, to load all of them onto the cube we will need 6 different images. we need to load all the textures using the textureLoader and then apply them to the material. So, to load all the textures, use the onLoad, onProgress and onError callbacks, which is tiring, we can use the following code:
+
+```js
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onStart = () => {
+  console.log("Loading started");
+};
+
+loadingManager.onLoad = () => {
+  console.log("All textures loaded successfully");
+};
+
+loadingManager.onError = (url) => {
+  console.error(`Error loading: ${url}`);
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+
+
+const texture = textureLoader.load("https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D");
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  // color: 0xff0000,
+  // wireframe: true,
+  map: texture,
+});
+
+```
+=> check out console, it will show the loading status of the texture. It will show "Loading started" when the loading starts, "All textures loaded successfully" when all the textures are loaded successfully and "Error loading: URL" if there is an error while loading the texture.
+
+
+To find texture images, we can use the following websites:
+1. https://polyhaven.com/ on top we'll see textures, click on it and we'll see a lot of textures, we can download them for free. As of now, i'll just download the diffuse texture, which is the color texture. The other textures are optional, we can use them if we want to create more realistic materials. For now, i'll just use the diffuse texture.
+
+download the texture and put it in the public folder of our project. Now, we can use the texture in our code. The path to the texture will be relative to the public folder. So, if we put the texture in the public folder, we can use it like this:
+
+
+
+
+
+
+```js
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onStart = () => {
+  console.log("Loading started");
+};
+
+loadingManager.onLoad = () => {
+  console.log("All textures loaded successfully");
+};
+
+loadingManager.onError = (url) => {
+  console.error(`Error loading: ${url}`);
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+
+
+const rockTextureColor = textureLoader.load("./texture.jpg")
+
+//this is done to make sure that the texture is displayed correctly on the screen, as the default color space is linear, which can cause the texture to look washed out or too dark. By setting the color space to sRGB, we ensure that the colors are displayed correctly and look more natural.
+rockTextureColor.colorSpace = THREE.SRGBColorSpace
+
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  // color: 0xff0000,
+  // wireframe: true,
+  map: rockTextureColor,
+});
+
+
+
+```
+
+use all the textures that we have downloaded from polyhaven.com, and apply them to the cube by self.
+
+
+=> To repeat the texture on the cube, we can use the following code:
+```js
+
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onStart = () => {
+  console.log("Loading started");
+};
+
+loadingManager.onLoad = () => {
+  console.log("All textures loaded successfully");
+};
+
+loadingManager.onError = (url) => {
+  console.error(`Error loading: ${url}`);
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+
+
+const texture = textureLoader.load(
+  'https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'
+);
+// here, we said to repeat the texture 3 times in the x direction and 2 times in the y direction. It will not repeat the texture by default, so we need to set the wrapS and wrapT properties to THREE.RepeatWrapping. This will make the texture repeat in both directions.
+texture.repeat.x = 3;
+texture.repeat.y = 2;
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+// MirroredRepeatWrapping will make the texture repeat in a mirrored way, so that the texture will be flipped every time it repeats. This can be useful for creating seamless textures.
+// texture.wrapT = THREE.MirroredRepeatWrapping;
+// texture.wrapS = THREE.MirroredRepeatWrapping;
+
+// texture.offset.x = 0.5; and texture.offset.y = 0.5 // this will offset the texture by 0.5 in the x and y direction, so that the texture will start from the middle of the texture image. This can be useful for creating seamless textures.
+texture.offset.x = 0.5;
+texture.offset.y = 0.5;
+
+const rockTextureColor = textureLoader.load("./texture.jpg")
+
+//this is done to make sure that the texture is displayed correctly on the screen, as the default color space is linear, which can cause the texture to look washed out or too dark. By setting the color space to sRGB, we ensure that the colors are displayed correctly and look more natural.
+rockTextureColor.colorSpace = THREE.SRGBColorSpace
+texture.colorSpace = THREE.SRGBColorSpace
+
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  // color: 0xff0000,
+  // wireframe: true,
+  map: texture,
+});
+
+
+
+```
+
+Filtering: The pixels of texture dont match with the pixels of the geometry, so we need to filter the texture to make it look better. There are two types of filtering:
+1. Linear Filtering: It is the default filtering method, it will make the texture look smooth, but it will also make the texture look blurry when we zoom in. It is good for textures that are not too detailed.
+2. Nearest Filtering: It will make the texture look pixelated, but it will also make the texture look sharp when we zoom in. It is good for textures that are very detailed.
+
+Minification: It is the process of reducing the size of the texture when it is far away from the camera. It is done to improve performance, as it will reduce the number of pixels that need to be rendered. There are two types of minification:
+1. Linear Minification: It is the default minification method, it will make the texture look smooth, but it will also make the texture look blurry when we zoom out. It is good for textures that are not too detailed.
+2. Nearest Minification: It will make the texture look pixelated, but it will also make the texture look sharp when we zoom out. It is good for textures that are very detailed.
+
+Magnification: It is the process of increasing the size of the texture when it is close to the camera. It is done to improve performance, as it will reduce the number of pixels that need to be rendered. There are two types of magnification:
+1. Linear Magnification: It is the default magnification method, it will make the texture look smooth, but it will also make the texture look blurry when we zoom in. It is good for textures that are not too detailed.
+2. Nearest Magnification: It will make the texture look pixelated, but it will also make the texture look sharp when we zoom in. It is good for textures that are very detailed.
+
+```js
+texture.minFilter = THREE.LinearFilter;
+texture.magFilter = THREE.NearestFilter;
 ```
 
 
+
+The entire code is as below::
+
+```js
+import './style.css';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import GUI from 'lil-gui';
+
+const gui = new GUI();
+
+const property = {
+  color: '#ff0000',
+};
+
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onStart = () => {
+  console.log('Loading started');
+};
+
+loadingManager.onLoad = () => {
+  console.log('All textures loaded successfully');
+};
+
+loadingManager.onError = (url) => {
+  console.error(`Error loading: ${url}`);
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+
+// const texture = textureLoader.load("https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D", () => {
+//   console.log("Texture loaded successfully");
+// }, ()=>{
+//   console.log("Texture loading in progress...");
+// }, (error) => {
+//   console.error("Error loading texture:", error);
+// });
+
+// const texture2 = textureLoader.load("https://images.unsplash.com/photo-1499195333224-3ce974eecb47?q=80&w=1051&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D", () => {
+//   console.log("Texture loaded successfully");
+// }, ()=>{
+//   console.log("Texture loading in progress...");
+// }, (error) => {
+//   console.error("Error loading texture:", error);
+// });
+
+const texture = textureLoader.load(
+  'https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'
+);
+
+
+
+// texture.repeat.x = 3;
+// texture.repeat.y = 2;
+// texture.wrapS = THREE.RepeatWrapping;
+// texture.wrapT = THREE.RepeatWrapping;
+// // texture.wrapT = THREE.MirroredRepeatWrapping;
+// // texture.wrapS = THREE.MirroredRepeatWrapping;
+// texture.offset.x = 0.5;
+// texture.offset.y = 0.5;
+
+texture.minFilter = THREE.LinearFilter;
+texture.magFilter = THREE.NearestFilter;
+
+const rockTextureColor = textureLoader.load('./texture.jpg');
+
+//this is done to make sure that the texture is displayed correctly on the screen, as the default color space is linear, which can cause the texture to look washed out or too dark. By setting the color space to sRGB, we ensure that the colors are displayed correctly and look more natural.
+rockTextureColor.colorSpace = THREE.SRGBColorSpace;
+texture.colorSpace = THREE.SRGBColorSpace;
+
+const size = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
+
+// scene
+const scene = new THREE.Scene();
+
+// const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+
+// 3D object - Mesh
+
+// Geometry:
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  // color: 0xff0000,
+  // wireframe: true,
+  // map: texture,
+  map: texture,
+});
+
+// Mesh:
+const cube = new THREE.Mesh(geometry, material);
+
+// gui.add(cube.position, "x").min(-3).max(3).step(0.1).name("Position X")
+// gui.add(cube.position, "y").min(-3).max(3).step(0.1).name("Position Y")
+// gui.add(cube.position, "z").min(-3).max(3).step(0.1).name("Position Z")
+
+// gui.add(cube, "visible").name("Visible")
+// gui.add(material, "wireframe").name("Wireframe")
+// gui.addColor(property, "color").onChange(() => {
+//   material.color.set(property.color)
+// }).name("Color")
+
+const positionFolder = gui.addFolder('Position');
+positionFolder
+  .add(cube.position, 'x')
+  .min(-3)
+  .max(3)
+  .step(0.1)
+  .name('Position X');
+positionFolder
+  .add(cube.position, 'y')
+  .min(-3)
+  .max(3)
+  .step(0.1)
+  .name('Position Y');
+positionFolder
+  .add(cube.position, 'z')
+  .min(-3)
+  .max(3)
+  .step(0.1)
+  .name('Position Z');
+
+const rotationFolder = gui.addFolder('Rotation');
+rotationFolder
+  .add(cube.rotation, 'x')
+  .min(-Math.PI)
+  .max(Math.PI)
+  .step(0.01)
+  .name('Rotation X');
+rotationFolder
+  .add(cube.rotation, 'y')
+  .min(-Math.PI)
+  .max(Math.PI)
+  .step(0.01)
+  .name('Rotation Y');
+rotationFolder
+  .add(cube.rotation, 'z')
+  .min(-Math.PI)
+  .max(Math.PI)
+  .step(0.01)
+  .name('Rotation Z');
+
+const materialFolder = gui.addFolder('Material');
+materialFolder.add(cube, 'visible').name('Visible');
+materialFolder.add(material, 'wireframe').name('Wireframe');
+materialFolder
+  .addColor(property, 'color')
+  .onChange(() => {
+    material.color.set(property.color);
+  })
+  .name('Color');
+
+// Add mesh to scene:
+scene.add(cube);
+
+// camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  size.width / size.height,
+  0.1,
+  100
+);
+
+camera.position.z = 3;
+camera.lookAt(0, 0, 0);
+// renderer
+const canvas = document.querySelector('#webgl');
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+});
+
+// renderer size
+renderer.setSize(size.width, size.height);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+
+window.addEventListener('resize', () => {
+  size.width = window.innerWidth;
+  size.height = window.innerHeight;
+
+  // update camera
+  camera.aspect = size.width / size.height;
+  camera.updateProjectionMatrix();
+
+  // update renderer
+  renderer.setSize(size.width, size.height);
+});
+
+function animate() {
+  timer.update();
+  // orbit controls update
+  controls.update();
+  const delta = timer.getDelta();
+
+  // cube animation
+  cube.rotation.x += delta * 0.2;
+  cube.rotation.y += delta * 0.2;
+
+  // renderer ko on kardo
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+```
+Mipmapping: It is a technique used to improve the performance and quality of textures when they are viewed at a distance. It works by creating multiple versions of the texture at different resolutions, and using the appropriate version based on the distance from the camera. This reduces aliasing and improves performance, as lower resolution textures require less memory and processing power.
+
+Texture Optimization: It is important to optimize textures for performance. Large textures can slow down rendering and increase memory usage. Here are some tips for optimizing textures:
+1. Use compressed texture formats (like JPEG or PNG) to reduce file size.
+2. Keep the size of textures as small as possible while maintaining quality. keep it at power of 2 (like 256x256, 512x512, 1024x1024, etc.) for better performance.
+
+
+
 //==================================
-Chapter 6 - Debug UI
+Chapter 8 - Materials
 //==================================
 
+
+
+
+
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
 //==================================
 Chapter 6 - Debug UI
 //==================================
