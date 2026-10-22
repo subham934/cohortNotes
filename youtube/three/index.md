@@ -962,7 +962,12 @@ const renderer = new THREE.WebGLRenderer({
 // renderer size
 renderer.setSize(size.width, size.height);
 
+// OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
+
+// It gives a smooth transition when we stop controlling, we can check similar effects using orbit-controls
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
 
 window.addEventListener('resize', () => {
   size.width = window.innerWidth;
@@ -998,3 +1003,398 @@ animate();
 
 
 ```
+
+//================================
+Chapter 5 (Geometry)
+//================================
+
+There are multiple geometries that can be used to create 3D objects. Some of the most common geometries are:
+
+- BoxGeometry: Creates a cube
+- SphereGeometry: Creates a sphere
+- PlaneGeometry: Creates a plane
+- CircleGeometry: Creates a circle
+- ConeGeometry: Creates a cone
+- CylinderGeometry: Creates a cylinder
+- TorusGeometry: Creates a torus
+
+How to use:
+
+```js
+
+import './style.css';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const size = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
+
+// scene
+const scene = new THREE.Scene();
+
+// const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+
+// 3D object - Mesh
+
+// Geometry:
+// const geometry = new THREE.BoxGeometry(1, 1, 1);
+// const geometry = new THREE.SphereGeometry( 15, 32, 16 );
+// const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
+const geometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16 );
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  color: 0xff0000,
+  wireframe: true
+});
+
+// Mesh:
+const cube = new THREE.Mesh(geometry, material);
+
+// Add mesh to scene:
+scene.add(cube);
+
+// camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  size.width / size.height,
+  0.1,
+  100
+);
+
+// const camera = new THREE.OrthographicCamera(
+//     -2, 2, 2, -2, 0.1, 100
+// );
+// camera position and lookAt function is used to set the camera position and the point it is looking at. In this case, we are setting the camera position to (0, 0, 3) and making it look at the origin (0, 0, 0).
+camera.position.z = 3;
+camera.lookAt(0,0,0);
+// renderer
+const canvas = document.querySelector('#webgl');
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+});
+
+// renderer size
+renderer.setSize(size.width, size.height);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+// It gives a smooth transition when we stop controlling, we can check similar effects using orbit-controls
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+
+
+window.addEventListener('resize', () => {
+  size.width = window.innerWidth;
+  size.height = window.innerHeight;
+
+  // update camera
+  camera.aspect = size.width / size.height;
+  camera.updateProjectionMatrix();
+
+  // update renderer
+  renderer.setSize(size.width, size.height);
+});
+
+function animate() {
+  timer.update();
+  // orbit controls update
+  controls.update();
+  const delta = timer.getDelta();
+
+  // cube animation
+  // cube.rotation.x += delta * 0.2;
+  // cube.rotation.y += delta * 0.2;
+
+  // renderer ko on kardo
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+```
+
+
+// To create our own custom geometry , we need to do the following things::
+
+```js
+
+const geometry = new THREE.BufferGeometry();
+
+const count = 50;
+
+// Array of positions
+const positionsArray = new Float32Array(count * 3 * 3);
+
+// Loop to add random positions
+for (let i = 0; i < count * 3 * 3; i++) {
+  positionsArray[i] = (Math.random() - 0.5) * 10; // our range is -5 to 5 , 3 d space mai.
+}
+
+geometry.setAttribute(
+  'position',
+  new THREE.BufferAttribute(positionsArray, 3)
+);
+```
+
+
+the entire code is as below::
+
+```js
+
+import './style.css';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const size = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
+
+// scene
+const scene = new THREE.Scene();
+
+// const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+
+// 3D object - Mesh
+
+// Geometry:
+// const geometry = new THREE.BoxGeometry(1, 1, 1);
+// const geometry = new THREE.SphereGeometry( 15, 32, 16 );
+// const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
+// const geometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16 );
+
+const geometry = new THREE.BufferGeometry();
+
+const count = 50;
+
+// Array of positions
+const positionsArray = new Float32Array(count * 3 * 3);
+
+// Loop to add random positions
+for (let i = 0; i < count * 3 * 3; i++) {
+  positionsArray[i] = (Math.random() - 0.5) * 10; // our range is -5 to 5 , 3 d space mai.
+}
+
+geometry.setAttribute(
+  'position',
+  new THREE.BufferAttribute(positionsArray, 3)
+);
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  color: 0xff0000,
+  wireframe: true
+});
+
+// Mesh:
+const cube = new THREE.Mesh(geometry, material);
+
+// Add mesh to scene:
+scene.add(cube);
+
+// camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  size.width / size.height,
+  0.1,
+  100
+);
+
+// const camera = new THREE.OrthographicCamera(
+//     -2, 2, 2, -2, 0.1, 100
+// );
+
+camera.position.z = 3;
+camera.lookAt(0,0,0);
+// renderer
+const canvas = document.querySelector('#webgl');
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+});
+
+// renderer size
+renderer.setSize(size.width, size.height);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+
+
+window.addEventListener('resize', () => {
+  size.width = window.innerWidth;
+  size.height = window.innerHeight;
+
+  // update camera
+  camera.aspect = size.width / size.height;
+  camera.updateProjectionMatrix();
+
+  // update renderer
+  renderer.setSize(size.width, size.height);
+});
+
+function animate() {
+  timer.update();
+  // orbit controls update
+  controls.update();
+  const delta = timer.getDelta();
+
+  // cube animation
+  // cube.rotation.x += delta * 0.2;
+  // cube.rotation.y += delta * 0.2;
+
+  // renderer ko on kardo
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+```
+
+
+# Three.js — Custom Geometry Using BufferGeometry
+
+### 1. Create Geometry
+```js
+const geometry = new THREE.BufferGeometry();
+```
+- Creates an empty geometry.
+- We manually define its vertices instead of using built-in geometries like `BoxGeometry`.
+
+### 2. Define Triangle Count
+```js
+const count = 50;
+```
+- We want to create 50 triangles.
+- Each triangle has 3 vertices.
+- Each vertex has 3 coordinates: `x`, `y`, and `z`.
+
+**Total coordinates = 50 × 3 × 3 = 450**
+
+### 3. Create the Positions Array
+```js
+const positionsArray = new Float32Array(count * 3 * 3);
+```
+- Creates an array containing 450 floating-point numbers.
+- `Float32Array` stores numerical data efficiently for Three.js and the GPU.
+- Initially, all elements are `0`.
+
+### 4. Generate Random Positions
+```js
+for (let i = 0; i < count * 3 * 3; i++) {
+  positionsArray[i] = (Math.random() - 0.5) * 10;
+}
+```
+- `i = 0`: Starts at the first array index.
+- `i < 450`: Runs until all 450 elements are filled.
+- `i++`: Increases the index by 1 after each iteration.
+- `positionsArray[i]`: Stores a random number at the current index.
+
+**Random number formula:**
+```js
+(Math.random() - 0.5) * 10
+```
+- `Math.random()` generates a value from `0` (inclusive) to `1` (exclusive).
+- Subtracting `0.5` shifts the range around zero.
+- Multiplying by `10` produces values from `-5` (inclusive) to `5` (exclusive).
+
+This gives each coordinate a random position in 3D space.
+
+### 5. Assign Positions to Geometry
+```js
+geometry.setAttribute(
+  'position',
+  new THREE.BufferAttribute(positionsArray, 3)
+);
+```
+- `'position'`: Tells Three.js that this attribute contains vertex coordinates.
+- `positionsArray`: Supplies the 450 coordinate values.
+- `3`: Specifies that each vertex has 3 components: `x`, `y`, and `z`.
+
+### 6. How Triangles Are Formed
+
+Three.js groups the array values in two stages:
+
+1. Every 3 numbers → 1 vertex (`x`, `y`, `z`).
+2. Every 3 vertices → 1 triangle.
+
+Example:
+```js
+[
+  1, 2, 3,  // Vertex 1
+  4, 5, 6,  // Vertex 2
+  7, 8, 9   // Vertex 3
+]
+```
+These 9 numbers represent 3 vertices, which form 1 triangle.
+
+Therefore:
+- 450 numbers ÷ 3 = 150 vertices.
+- 150 vertices ÷ 3 = 50 triangles.
+
+### Complete Flow
+
+`BufferGeometry` → Create array → Generate random coordinates → Assign the `position` attribute → Three.js renders triangles using consecutive groups of 3 vertices.
+
+**Important:** The loop generates coordinates; it does not create triangles itself. The vertices' order determines which three vertices form each triangle. To display the geometry, create a mesh with a material and add it to the scene.
+
+
+
+
+//==================================
+Chapter 6 - Debug UI
+//==================================
+
+// Bina code ko chere , hum debug kar sakte hain apne UI ko, it is like remote console that controls our UI.
+
+npm i lil-gui
+
+
+The changes we have made are as below::
+```js
+
+import GUI from "lil-gui"
+const gui = new GUI()
+
+
+
+gui.add(cube.position, "x").min(-3).max(3).step(0.01).name("Position X")
+gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("Position Y")
+gui.add(cube.position, "z").min(-3).max(3).step(0.01).name("Position Z")
+
+
+```
+
+
+with this above code, we can control the position of the cube using the GUI. We can change the position of the cube in real time by moving the sliders in the GUI.
+
+
+
+
+
+
+//==================================
+Chapter 6 - Debug UI
+//==================================
+
+//==================================
+Chapter 6 - Debug UI
+//==================================
+
+//==================================
+Chapter 6 - Debug UI
+//==================================
+
+//==================================
+Chapter 6 - Debug UI
+//==================================
+
+//==================================
+Chapter 6 - Debug UI
+//==================================
