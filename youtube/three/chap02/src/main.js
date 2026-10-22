@@ -45,7 +45,7 @@ const texture = textureLoader.load(
   'https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'
 );
 
-
+const matcapTexture = textureLoader.load('./image.png');
 
 // texture.repeat.x = 3;
 // texture.repeat.y = 2;
@@ -82,12 +82,18 @@ const timer = new THREE.Timer();
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 // Material:
-const material = new THREE.MeshBasicMaterial({
-  // color: 0xff0000,
-  // wireframe: true,
-  // map: texture,
-  map: texture,
+// const material = new THREE.MeshBasicMaterial({
+//   // color: 0xff0000,
+//   // wireframe: true,
+//   // map: texture,
+//   map: texture,
+// });
+
+const material = new THREE.MeshMatcapMaterial({
+  matcap: matcapTexture,
 });
+
+
 
 // Mesh:
 const cube = new THREE.Mesh(geometry, material);

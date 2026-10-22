@@ -2028,64 +2028,97 @@ Chapter 8 - Materials
 //==================================
 
 
+till now, we have only seen MeshBasicMaterial, which is a material that does not react to light. It is a simple material that is used for basic rendering. It is not affected by lights in the scene, and it does not cast or receive shadows. It is useful for creating simple objects that do not require lighting effects.
+
+
+type `material` on docs and read it.
+
+MeshBasicMaterial
+MeshDepthMaterial
+MeshDistanceMaterial
+MeshLembertMaterial
+MeshMatCapMaterial
+MeshStandardMaterial
+ShaderMaterial
+
+go to google and type `matcap textures`, select a texture, download it and put it in the public folder of your project. Now, we can use the texture in our code. The path to the texture will be relative to the public folder. So, if we put the texture in the public folder, we can use it like this:
+
+just now, we have how to load a texture and apply it to a material. Now, we will see how to use different types of materials in Three.js. We will start with MeshMatCapMaterial, which is a material that uses a matcap texture to simulate lighting and shading effects. It is a simple material that is used for basic rendering. It is not affected by lights in the scene, and it does not cast or receive shadows. It is useful for creating simple objects that do not require lighting effects.
+
 
 
 
 ```js
 
-```
-```js
+const matcapTexture = textureLoader.load('./image.png');
+
+const material = new THREE.MeshMatcapMaterial({
+  matcap: matcapTexture,
+});
 
 ```
-```js
 
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
-```js
-
-```
 //==================================
-Chapter 6 - Debug UI
+Chapter 9 - Lighting
 //==================================
 
+Lighting is the only thing that can make our scene realistic.
+
+Ambient Light: It is a light that illuminates all objects in the scene equally. It does not cast shadows and does not have a direction. It is useful for creating a base level of lighting in the scene.
+
+Directional Light: It is
+Point Light:
+Spot Light:
+Hamisphere Light:
+RectAreaLight:
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
+```js
+
+```
 //==================================
 Chapter 6 - Debug UI
 //==================================
