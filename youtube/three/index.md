@@ -2066,19 +2066,71 @@ Lighting is the only thing that can make our scene realistic.
 
 Ambient Light: It is a light that illuminates all objects in the scene equally. It does not cast shadows and does not have a direction. It is useful for creating a base level of lighting in the scene.
 
-Directional Light: It is
-Point Light:
-Spot Light:
-Hamisphere Light:
-RectAreaLight:
+Directional Light: It is  a light that illuminates all objects in the scene from a specific direction. It casts shadows and has a direction. It is useful for creating sunlight or other directional light sources.
+
+Point Light: It is a light that illuminates all objects in the scene from a specific point in space. It casts shadows and has a direction. It is useful for creating light sources like lamps or candles.
+
+Spot Light: It is a light that illuminates all objects in the scene from a specific point in space, but it has a cone shape. It casts shadows and has a direction. It is useful for creating light sources like flashlights or spotlights.
+
+Hamisphere Light: It is a light that illuminates all objects in the scene from a specific point in space, but it has a gradient shape. It casts shadows and has a direction. It is useful for creating light sources like the sky or the sun.
+
+RectAreaLight: It is a light that illuminates all objects in the scene from a specific area in space. It casts shadows and has a direction. It is useful for creating light sources like windows or screens.
+
+
+jaise humne cube ko scene k andar add kiya, waise hi hum light ko bhi scene k andar add karte hain. 
+Humne, MashStandardMaterial ka use kiya hain, jo ki light ke saath react karta hain. Agar humne MeshBasicMaterial ka use kiya hota, to light ka koi effect nahi dikhta.
+
 ```js
+// Lights
+// in the parameter of the light, we can set the color and intensity of the light. 
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+const material = new THREE.MeshStandardMaterial({
+  color: 0xff0000,
+});
 
 ```
+
+=> We can increase the intensity of the ambient light to make the cube brighter. We can also change the color of the ambient light to make the cube look different. We can also add more lights to the scene to create different effects.
+
+
+=> Now, lets see how to add a directional light to the scene. 
 ```js
+// in the parameter of the light, we can set the color and intensity of the light. 
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+directionalLight.position.set(-2, -4, 2);
+scene.add(directionalLight);
+
+
+// with the help of the helper, we can see the direction of the light and the position of the light in the scene.
+const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
+scene.add(directionalLightHelper);
+
+
+const material = new THREE.MeshStandardMaterial({
+  color: 0xff0000,
+});
 
 ```
-```js
 
+
+=> Now, lets see how to add a point light to the scene.
+
+```js
+// Point Light
+// in the parameter of the light, we can set the color, intensity and distance of the light. The 4th parameter is the decay, which is the amount of light that is lost over distance. The higher the decay, the faster the light will fade away. The default value is 1, which means that the light will fade away at a normal rate. If we set it to 2, the light will fade away faster, and if we set it to 0.5, the light will fade away slower.
+const pointLight = new THREE.PointLight(0x00ff00, 300, 6, 2);
+pointLight.position.set(1,2,3);
+scene.add(pointLight);
+
+// with the help of the helper, we can see the direction of the light and the position of the light in the scene.
+const pointLightHelper = new THREE.PointLightHelper(pointLight);
+scene.add(pointLightHelper);
+
+const material = new THREE.MeshStandardMaterial({
+  color: 0xff0000,
+});
 ```
 ```js
 

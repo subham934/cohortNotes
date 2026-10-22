@@ -76,6 +76,36 @@ const scene = new THREE.Scene();
 // const clock = new THREE.Clock();
 const timer = new THREE.Timer();
 
+// Lights
+
+// // Ambient Light
+// in the parameter of the light, we can set the color and intensity of the light. 
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// scene.add(ambientLight);
+
+// // Directional Light
+// // in the parameter of the light, we can set the color and intensity of the light. 
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+// directionalLight.position.set(-2, -4, 2);
+// scene.add(directionalLight);
+
+// // with the help of the helper, we can see the direction of the light and the position of the light in the scene.
+// const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
+// scene.add(directionalLightHelper);
+
+// Point Light
+// in the parameter of the light, we can set the color, intensity and distance of the light. The 4th parameter is the decay, which is the amount of light that is lost over distance. The higher the decay, the faster the light will fade away. The default value is 1, which means that the light will fade away at a normal rate. If we set it to 2, the light will fade away faster, and if we set it to 0.5, the light will fade away slower.
+const pointLight = new THREE.PointLight(0x00ff00, 300, 6, 2);
+pointLight.position.set(1,2,3);
+scene.add(pointLight);
+
+// with the help of the helper, we can see the direction of the light and the position of the light in the scene.
+const pointLightHelper = new THREE.PointLightHelper(pointLight);
+scene.add(pointLightHelper);
+
+
+
+
 // 3D object - Mesh
 
 // Geometry:
@@ -83,30 +113,24 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 // Material:
 // const material = new THREE.MeshBasicMaterial({
-//   // color: 0xff0000,
+//   color: 0xff0000,
 //   // wireframe: true,
 //   // map: texture,
-//   map: texture,
+//   // map: texture,
 // });
 
-const material = new THREE.MeshMatcapMaterial({
-  matcap: matcapTexture,
+// const material = new THREE.MeshMatcapMaterial({
+//   matcap: matcapTexture,
+// });
+
+const material = new THREE.MeshStandardMaterial({
+  color: 0xff0000,
 });
-
-
 
 // Mesh:
 const cube = new THREE.Mesh(geometry, material);
 
-// gui.add(cube.position, "x").min(-3).max(3).step(0.1).name("Position X")
-// gui.add(cube.position, "y").min(-3).max(3).step(0.1).name("Position Y")
-// gui.add(cube.position, "z").min(-3).max(3).step(0.1).name("Position Z")
 
-// gui.add(cube, "visible").name("Visible")
-// gui.add(material, "wireframe").name("Wireframe")
-// gui.addColor(property, "color").onChange(() => {
-//   material.color.set(property.color)
-// }).name("Color")
 
 const positionFolder = gui.addFolder('Position');
 positionFolder
