@@ -1374,14 +1374,223 @@ gui.add(cube.position, "z").min(-3).max(3).step(0.01).name("Position Z")
 
 with this above code, we can control the position of the cube using the GUI. We can change the position of the cube in real time by moving the sliders in the GUI.
 
+```js 
+ cube.position.set(0.7, -0.6, 1);
+
+```
+with this above code, we can set the initial position of the cube. The GUI will still work and we can change the position of the cube in real time by moving the sliders in the GUI.
+
+
+```js 
+gui.add(cube, "visible").name("Visible")
+
+```
+this above code will add a checkbox in the GUI, which will allow us to toggle the visibility of the cube. If we uncheck the checkbox, the cube will disappear from the scene. If we check the checkbox, the cube will reappear in the scene.
+
+
+```js 
+gui.add(material, "wireframe").name("Wireframe")
+
+```
+this above code will add a checkbox in the GUI, which will allow us to toggle the wireframe mode of the cube. If we check the checkbox, the cube will be rendered in wireframe mode. If we uncheck the checkbox, the cube will be rendered in solid mode.
 
 
 
+```js 
 
+const property = {
+  color: "#ff0000",
+}
+
+gui.addColor(property, "color").onChange(() => {
+  material.color.set(property.color)
+}).name("Color")
+
+```
+Iss code main pehle maine ak object banaya, kyunki GUI ke liye humein ek object chahiye hota hain, jismein hum apne properties ko define karte hain. Yahan maine ek property banayi hain "color" jismein initial value "#ff0000" (red) set kiya hain. Phir jab hum GUI ke through color change karte hain, to hum onChange event ke through material.color.set() function ko call karte hain, jismein hum property.color ko pass karte hain. Isse humare cube ka color change ho jaata hain jo color humne select kiya hain.
+
+
+
+```js 
+
+const positionFolder = gui.addFolder("Position")
+positionFolder.add(cube.position, "x").min(-3).max(3).step(0.1).name("Position X")
+positionFolder.add(cube.position, "y").min(-3).max(3).step(0.1).name("Position Y")
+positionFolder.add(cube.position, "z").min(-3).max(3).step(0.1).name("Position Z")
+
+const rotationFolder = gui.addFolder("Rotation")
+rotationFolder.add(cube.rotation, "x").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation X")
+rotationFolder.add(cube.rotation, "y").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation Y")
+rotationFolder.add(cube.rotation, "z").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation Z")
+
+const materialFolder = gui.addFolder("Material")
+materialFolder.add(cube, "visible").name("Visible")
+materialFolder.add(material, "wireframe").name("Wireframe")
+materialFolder.addColor(property, "color").onChange(() => {
+  material.color.set(property.color)
+}).name("Color")
+
+```
+
+everything is organized in folders, so we can easily find the properties we want to change. We have three folders, Position, Rotation and Material. Each folder contains the properties related to that folder. For example, the Position folder contains the properties related to the position of the cube, the Rotation folder contains the properties related to the rotation of the cube and the Material folder contains the properties related to the material of the cube.
+
+
+The final code is as below::
+
+```js
+
+import './style.css';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import GUI from "lil-gui"
+
+
+const gui = new GUI()
+
+const property = {
+  color: "#ff0000",
+}
+
+const size = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
+
+// scene
+const scene = new THREE.Scene();
+
+// const clock = new THREE.Clock();
+const timer = new THREE.Timer();
+
+// 3D object - Mesh
+
+// Geometry:
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+
+
+// Material:
+const material = new THREE.MeshBasicMaterial({
+  color: 0xff0000,
+  // wireframe: true
+});
+
+// Mesh:
+const cube = new THREE.Mesh(geometry, material);
+
+// gui.add(cube.position, "x").min(-3).max(3).step(0.1).name("Position X")
+// gui.add(cube.position, "y").min(-3).max(3).step(0.1).name("Position Y")
+// gui.add(cube.position, "z").min(-3).max(3).step(0.1).name("Position Z")
+
+
+// gui.add(cube, "visible").name("Visible")
+// gui.add(material, "wireframe").name("Wireframe")
+// gui.addColor(property, "color").onChange(() => {
+//   material.color.set(property.color)
+// }).name("Color")
+
+
+const positionFolder = gui.addFolder("Position")
+positionFolder.add(cube.position, "x").min(-3).max(3).step(0.1).name("Position X")
+positionFolder.add(cube.position, "y").min(-3).max(3).step(0.1).name("Position Y")
+positionFolder.add(cube.position, "z").min(-3).max(3).step(0.1).name("Position Z")
+
+const rotationFolder = gui.addFolder("Rotation")
+rotationFolder.add(cube.rotation, "x").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation X")
+rotationFolder.add(cube.rotation, "y").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation Y")
+rotationFolder.add(cube.rotation, "z").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation Z")
+
+const materialFolder = gui.addFolder("Material")
+materialFolder.add(cube, "visible").name("Visible")
+materialFolder.add(material, "wireframe").name("Wireframe")
+materialFolder.addColor(property, "color").onChange(() => {
+  material.color.set(property.color)
+}).name("Color")
+
+
+// Add mesh to scene:
+scene.add(cube);
+
+// camera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  size.width / size.height,
+  0.1,
+  100
+);
+
+
+
+camera.position.z = 3;
+camera.lookAt(0,0,0);
+// renderer
+const canvas = document.querySelector('#webgl');
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+});
+
+// renderer size
+renderer.setSize(size.width, size.height);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+
+
+window.addEventListener('resize', () => {
+  size.width = window.innerWidth;
+  size.height = window.innerHeight;
+
+  // update camera
+  camera.aspect = size.width / size.height;
+  camera.updateProjectionMatrix();
+
+  // update renderer
+  renderer.setSize(size.width, size.height);
+});
+
+function animate() {
+  timer.update();
+  // orbit controls update
+  controls.update();
+  const delta = timer.getDelta();
+
+  // cube animation
+  cube.rotation.x += delta * 0.2;
+  cube.rotation.y += delta * 0.2;
+
+  // renderer ko on kardo
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+
+```
 
 //==================================
-Chapter 6 - Debug UI
+Chapter 7 - Textures
 //==================================
+Texture is wrapper around geometry, it is like a skin that we can put on the geometry to make it look more realistic. It is an image that we can apply to the surface of a 3D object. It can be used to add color, patterns, and details to the surface of a 3D object. It can also be used to create special effects such as bump mapping, normal mapping, and displacement mapping.
+
+
+There are different types of textures that we can use in Three.js, some of them are:
+
+1. Color Texture: It is a texture that is used to add color to the surface of a 3D object. It is an image that is applied to the surface of a 3D object to give it color.
+2. Metalness Texture: It is a texture that is used to add metalness to the surface of a 3D object. It is an image that is applied to the surface of a 3D object to give it metalness.
+3. Roughness Texture: It is a texture that is used to add roughness to the surface of a 3D object. It is an image that is applied to the surface of a 3D object to give it roughness.
+4. Normal Texture: It is a texture that is used to add normal mapping to the surface of a 3D object. It is an image that is applied to the surface of a 3D object to give it normal mapping.
+5. Displacement Texture: It is a texture that is used to add displacement mapping to the surface of a 3D object. It is an image that is applied to the surface of a 3D object to give it displacement mapping.
+6. Ambient Occlusion Texture: It is a texture that is used to add ambient occlusion to the surface of a 3D object. It is an image that is applied to the surface of a 3D object to give it ambient occlusion.
+
+
+How to apply textures:: Texture ko load karna padega, threejs humko ak textureLoader karke ek cheez deta hain, textureLoader main URL pass karte hain and ye humko ak texture object return karta hain, jisko hum material main pass karte hain. 
+
+```js
+
+```
+
 
 //==================================
 Chapter 6 - Debug UI

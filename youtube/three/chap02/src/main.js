@@ -6,6 +6,11 @@ import GUI from "lil-gui"
 
 const gui = new GUI()
 
+const property = {
+  color: "#ff0000",
+}
+
+const textureLoader = new THREE.TextureLoader();
 
 const size = {
   width: window.innerWidth,
@@ -22,26 +27,7 @@ const timer = new THREE.Timer();
 
 // Geometry:
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-// const geometry = new THREE.SphereGeometry( 15, 32, 16 );
-// const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
-// const geometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16 );
 
-// const geometry = new THREE.BufferGeometry();
-
-// const count = 50;
-
-// // Array of positions
-// const positionsArray = new Float32Array(count * 3 * 3);
-
-// // Loop to add random positions
-// for (let i = 0; i < count * 3 * 3; i++) {
-//   positionsArray[i] = (Math.random() - 0.5) * 10; // our range is -5 to 5 , 3 d space mai.
-// }
-
-// geometry.setAttribute(
-//   'position',
-//   new THREE.BufferAttribute(positionsArray, 3)
-// );
 
 // Material:
 const material = new THREE.MeshBasicMaterial({
@@ -52,9 +38,34 @@ const material = new THREE.MeshBasicMaterial({
 // Mesh:
 const cube = new THREE.Mesh(geometry, material);
 
-gui.add(cube.position, "x").min(-3).max(3).step(0.01).name("Position X")
-gui.add(cube.position, "y").min(-3).max(3).step(0.01).name("Position Y")
-gui.add(cube.position, "z").min(-3).max(3).step(0.01).name("Position Z")
+// gui.add(cube.position, "x").min(-3).max(3).step(0.1).name("Position X")
+// gui.add(cube.position, "y").min(-3).max(3).step(0.1).name("Position Y")
+// gui.add(cube.position, "z").min(-3).max(3).step(0.1).name("Position Z")
+
+
+// gui.add(cube, "visible").name("Visible")
+// gui.add(material, "wireframe").name("Wireframe")
+// gui.addColor(property, "color").onChange(() => {
+//   material.color.set(property.color)
+// }).name("Color")
+
+
+const positionFolder = gui.addFolder("Position")
+positionFolder.add(cube.position, "x").min(-3).max(3).step(0.1).name("Position X")
+positionFolder.add(cube.position, "y").min(-3).max(3).step(0.1).name("Position Y")
+positionFolder.add(cube.position, "z").min(-3).max(3).step(0.1).name("Position Z")
+
+const rotationFolder = gui.addFolder("Rotation")
+rotationFolder.add(cube.rotation, "x").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation X")
+rotationFolder.add(cube.rotation, "y").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation Y")
+rotationFolder.add(cube.rotation, "z").min(-Math.PI).max(Math.PI).step(0.01).name("Rotation Z")
+
+const materialFolder = gui.addFolder("Material")
+materialFolder.add(cube, "visible").name("Visible")
+materialFolder.add(material, "wireframe").name("Wireframe")
+materialFolder.addColor(property, "color").onChange(() => {
+  material.color.set(property.color)
+}).name("Color")
 
 
 // Add mesh to scene:
