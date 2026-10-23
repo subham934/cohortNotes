@@ -2,6 +2,8 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import GUI from 'lil-gui';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { mix } from 'three/src/nodes/math/MathNode.js';
 
 const gui = new GUI();
 
@@ -47,15 +49,6 @@ const texture = textureLoader.load(
 
 const matcapTexture = textureLoader.load('./image.png');
 
-// texture.repeat.x = 3;
-// texture.repeat.y = 2;
-// texture.wrapS = THREE.RepeatWrapping;
-// texture.wrapT = THREE.RepeatWrapping;
-// // texture.wrapT = THREE.MirroredRepeatWrapping;
-// // texture.wrapS = THREE.MirroredRepeatWrapping;
-// texture.offset.x = 0.5;
-// texture.offset.y = 0.5;
-
 texture.minFilter = THREE.LinearFilter;
 texture.magFilter = THREE.NearestFilter;
 
@@ -70,6 +63,47 @@ const size = {
   height: window.innerHeight,
 };
 
+const gltfLoader = new GLTFLoader();
+
+let mixer;
+
+gltfLoader.load(
+  './newModel.glb',
+  (gltf) => {
+    const model = gltf.scene;
+
+    if(gltf.animations && gltf.animations.length > 0) {
+      console.log("Animation", gltf.animations)
+      mixer = new THREE.AnimationMixer(model);
+      
+      const action = mixer.clipAction(gltf.animations[6]);
+      // action.play();
+
+      // to play animation with name
+
+      const deathAnimation =  THREE.AnimationClip.findByName(gltf.animations, "Death")
+
+      if(deathAnimation){
+        const deathAction = mixer.clipAction(deathAnimation);
+        deathAction.play();
+      }
+    }
+
+    scene.add(model);
+    // we can scale the model to fit our scene appropriately
+    model.scale.set(0.3, 0.3, 0.3);
+
+    // console.log('GLTF model loaded successfully', gltf);
+    console.log('GLTF model loaded successfully');
+  },
+  () => {
+    console.log('GLTF model loading in progress...');
+  },
+  (error) => {
+    console.error('Error loading GLTF model:', error);
+  }
+);
+
 // scene
 const scene = new THREE.Scene();
 
@@ -79,41 +113,29 @@ const timer = new THREE.Timer();
 // Lights
 
 // // Ambient Light
-// in the parameter of the light, we can set the color and intensity of the light. 
+// in the parameter of the light, we can set the color and intensity of the light.
 // const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 // scene.add(ambientLight);
 
-// // Directional Light
-// // in the parameter of the light, we can set the color and intensity of the light. 
-// const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-// directionalLight.position.set(-2, -4, 2);
-// scene.add(directionalLight);
-
-// // with the help of the helper, we can see the direction of the light and the position of the light in the scene.
-// const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
-// scene.add(directionalLightHelper);
-
-// Point Light
-// const pointLight = new THREE.PointLight(0x00ff00, 300, 6, 2);
-// pointLight.position.set(1,2,3);
-// scene.add(pointLight);
-
-// with the help of the helper, we can see the direction of the light and the position of the light in the scene.
-// const pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
-// scene.add(pointLightHelper);
-
-
 // Spot Light: It is a light that is emitted from a single point in a specific direction, and it can be used to create a spotlight effect. The parameters of the light are color, intensity, distance, angle, penumbra, and decay. The position of the light can be set using the position property.
-const spotLight = new THREE.SpotLight(0x0000ff, 150, 10, Math.PI *0.2, 0.5, 2);
-spotLight.position.set(0, 2, 1);
-scene.add(spotLight);
-spotLight.target.position.set(0, 0, 0);
-scene.add(spotLight.target);
-// with the help of the helper, we can see the direction of the light and the position of the light in the scene.
-const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-scene.add(spotLightHelper);
+// const spotLight = new THREE.SpotLight(0x0000ff, 100, 3, Math.PI *0.2, 0.5, 2);
+// spotLight.position.set(0, 2, 1);
+// scene.add(spotLight);
+// spotLight.target.position.set(0, 0, 0);
+// scene.add(spotLight.target);
+// // with the help of the helper, we can see the direction of the light and the position of the light in the scene.
+// const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+// scene.add(spotLightHelper);
 
+// Hemisphere Light
+const hemisphereLight = new THREE.HemisphereLight(0x2222ff, 0x22ff22, 1000);
+scene.add(hemisphereLight);
 
+const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+  hemisphereLight,
+  0.3
+);
+scene.add(hemisphereLightHelper);
 
 // 3D object - Mesh
 
@@ -138,8 +160,6 @@ const material = new THREE.MeshStandardMaterial({
 
 // Mesh:
 const cube = new THREE.Mesh(geometry, material);
-
-
 
 const positionFolder = gui.addFolder('Position');
 positionFolder
@@ -192,7 +212,7 @@ materialFolder
   .name('Color');
 
 // Add mesh to scene:
-scene.add(cube);
+// scene.add(cube);
 
 // camera
 const camera = new THREE.PerspectiveCamera(
@@ -231,15 +251,15 @@ window.addEventListener('resize', () => {
 
 function animate() {
   timer.update();
-  // update the spot light helper to reflect the changes in the spot light's position and direction
-  spotLightHelper.update();
+
   // orbit controls update
   controls.update();
   const delta = timer.getDelta();
 
+  if (mixer) mixer.update(delta);
   // cube animation
-  cube.rotation.x += delta * 0.2;
-  cube.rotation.y += delta * 0.2;
+  // cube.rotation.x += delta * 0.2;
+  // cube.rotation.y += delta * 0.2;
 
   // renderer ko on kardo
   renderer.render(scene, camera);
