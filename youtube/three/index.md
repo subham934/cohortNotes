@@ -2132,9 +2132,63 @@ const material = new THREE.MeshStandardMaterial({
   color: 0xff0000,
 });
 ```
+
+
 ```js
 
+
+// Spot Light: It is a light that is emitted from a single point in a specific direction, and it can be used to create a spotlight effect. The parameters of the light are color, intensity, distance, angle, penumbra, and decay. The position of the light can be set using the position property.
+
+
+const spotLight = new THREE.SpotLight(0x0000ff, 150, 10, Math.PI *0.2, 0.5, 2);
+spotLight.position.set(0, 2, 1);
+scene.add(spotLight);
+
+// we can set the target of the spotlight to a specific position in the scene. The spotlight will point towards the target position. By default, the target position is (0, 0, 0), but we can change it to any position we want. In this case, we are setting the target position to (0, 0, 0), which is the center of the scene. This means that the spotlight will point towards the center of the scene.
+spotLight.target.position.set(0, 0, 0);
+scene.add(spotLight.target);
+
+
+// with the help of the helper, we can see the direction of the light and the position of the light in the scene.
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(spotLightHelper);
+
+
+
+const material = new THREE.MeshStandardMaterial({
+  color: 0xff0000,
+});
+
+
+// we will also need to update the spotlight helper in the animation loop, because the spotlight helper is not automatically updated when the spotlight is moved or rotated. We need to call the update() method of the spotlight helper in the animation loop to update its position and orientation based on the current position and orientation of the spotlight.
+
+
+
+function animate() {
+  timer.update();
+  // update the spot light helper to reflect the changes in the spot light's position and direction
+  spotLightHelper.update();
+  // orbit controls update
+  controls.update();
+  const delta = timer.getDelta();
+
+  // cube animation
+  cube.rotation.x += delta * 0.2;
+  cube.rotation.y += delta * 0.2;
+
+  // renderer ko on kardo
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
+}
+
+
 ```
+
+
+
+
+
 ```js
 
 ```

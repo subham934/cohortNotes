@@ -94,15 +94,24 @@ const timer = new THREE.Timer();
 // scene.add(directionalLightHelper);
 
 // Point Light
-// in the parameter of the light, we can set the color, intensity and distance of the light. The 4th parameter is the decay, which is the amount of light that is lost over distance. The higher the decay, the faster the light will fade away. The default value is 1, which means that the light will fade away at a normal rate. If we set it to 2, the light will fade away faster, and if we set it to 0.5, the light will fade away slower.
-const pointLight = new THREE.PointLight(0x00ff00, 300, 6, 2);
-pointLight.position.set(1,2,3);
-scene.add(pointLight);
+// const pointLight = new THREE.PointLight(0x00ff00, 300, 6, 2);
+// pointLight.position.set(1,2,3);
+// scene.add(pointLight);
 
 // with the help of the helper, we can see the direction of the light and the position of the light in the scene.
-const pointLightHelper = new THREE.PointLightHelper(pointLight);
-scene.add(pointLightHelper);
+// const pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
+// scene.add(pointLightHelper);
 
+
+// Spot Light: It is a light that is emitted from a single point in a specific direction, and it can be used to create a spotlight effect. The parameters of the light are color, intensity, distance, angle, penumbra, and decay. The position of the light can be set using the position property.
+const spotLight = new THREE.SpotLight(0x0000ff, 150, 10, Math.PI *0.2, 0.5, 2);
+spotLight.position.set(0, 2, 1);
+scene.add(spotLight);
+spotLight.target.position.set(0, 0, 0);
+scene.add(spotLight.target);
+// with the help of the helper, we can see the direction of the light and the position of the light in the scene.
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(spotLightHelper);
 
 
 
@@ -222,6 +231,8 @@ window.addEventListener('resize', () => {
 
 function animate() {
   timer.update();
+  // update the spot light helper to reflect the changes in the spot light's position and direction
+  spotLightHelper.update();
   // orbit controls update
   controls.update();
   const delta = timer.getDelta();
