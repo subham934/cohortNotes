@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import GUI from 'lil-gui';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { mix } from 'three/src/nodes/math/MathNode.js';
+
+import {HDRLoader} from 'three/addons/loaders/HDRLoader.js';
 
 const gui = new GUI();
 
@@ -27,21 +28,7 @@ loadingManager.onError = (url) => {
 
 const textureLoader = new THREE.TextureLoader(loadingManager);
 
-// const texture = textureLoader.load("https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D", () => {
-//   console.log("Texture loaded successfully");
-// }, ()=>{
-//   console.log("Texture loading in progress...");
-// }, (error) => {
-//   console.error("Error loading texture:", error);
-// });
 
-// const texture2 = textureLoader.load("https://images.unsplash.com/photo-1499195333224-3ce974eecb47?q=80&w=1051&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D", () => {
-//   console.log("Texture loaded successfully");
-// }, ()=>{
-//   console.log("Texture loading in progress...");
-// }, (error) => {
-//   console.error("Error loading texture:", error);
-// });
 
 const texture = textureLoader.load(
   'https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'
@@ -63,46 +50,17 @@ const size = {
   height: window.innerHeight,
 };
 
-const gltfLoader = new GLTFLoader();
 
-let mixer;
 
-gltfLoader.load(
-  './newModel.glb',
-  (gltf) => {
-    const model = gltf.scene;
+const hdrLoader = new HDRLoader();
 
-    if(gltf.animations && gltf.animations.length > 0) {
-      console.log("Animation", gltf.animations)
-      mixer = new THREE.AnimationMixer(model);
-      
-      const action = mixer.clipAction(gltf.animations[6]);
-      // action.play();
+hdrLoader.load("./envMap.hdr", (envMap)=>{
+  envMap.mapping = THREE.EquirectangularReflectionMapping;
+  scene.background = envMap;
+  scene.environment = envMap;
+})
 
-      // to play animation with name
 
-      const deathAnimation =  THREE.AnimationClip.findByName(gltf.animations, "Death")
-
-      if(deathAnimation){
-        const deathAction = mixer.clipAction(deathAnimation);
-        deathAction.play();
-      }
-    }
-
-    scene.add(model);
-    // we can scale the model to fit our scene appropriately
-    model.scale.set(0.3, 0.3, 0.3);
-
-    // console.log('GLTF model loaded successfully', gltf);
-    console.log('GLTF model loaded successfully');
-  },
-  () => {
-    console.log('GLTF model loading in progress...');
-  },
-  (error) => {
-    console.error('Error loading GLTF model:', error);
-  }
-);
 
 // scene
 const scene = new THREE.Scene();
@@ -114,28 +72,9 @@ const timer = new THREE.Timer();
 
 // // Ambient Light
 // in the parameter of the light, we can set the color and intensity of the light.
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-// scene.add(ambientLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
-// Spot Light: It is a light that is emitted from a single point in a specific direction, and it can be used to create a spotlight effect. The parameters of the light are color, intensity, distance, angle, penumbra, and decay. The position of the light can be set using the position property.
-// const spotLight = new THREE.SpotLight(0x0000ff, 100, 3, Math.PI *0.2, 0.5, 2);
-// spotLight.position.set(0, 2, 1);
-// scene.add(spotLight);
-// spotLight.target.position.set(0, 0, 0);
-// scene.add(spotLight.target);
-// // with the help of the helper, we can see the direction of the light and the position of the light in the scene.
-// const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-// scene.add(spotLightHelper);
-
-// Hemisphere Light
-const hemisphereLight = new THREE.HemisphereLight(0x2222ff, 0x22ff22, 1000);
-scene.add(hemisphereLight);
-
-const hemisphereLightHelper = new THREE.HemisphereLightHelper(
-  hemisphereLight,
-  0.3
-);
-scene.add(hemisphereLightHelper);
 
 // 3D object - Mesh
 
@@ -156,6 +95,9 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 const material = new THREE.MeshStandardMaterial({
   color: 0xff0000,
+  envMapIntensity: 6, 
+  roughness: 0.1,
+  metalness: 0.9,
 });
 
 // Mesh:
@@ -212,7 +154,7 @@ materialFolder
   .name('Color');
 
 // Add mesh to scene:
-// scene.add(cube);
+scene.add(cube);
 
 // camera
 const camera = new THREE.PerspectiveCamera(
@@ -256,7 +198,7 @@ function animate() {
   controls.update();
   const delta = timer.getDelta();
 
-  if (mixer) mixer.update(delta);
+  // if (mixer) mixer.update(delta);
   // cube animation
   // cube.rotation.x += delta * 0.2;
   // cube.rotation.y += delta * 0.2;
