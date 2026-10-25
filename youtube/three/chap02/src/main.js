@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import GUI from 'lil-gui';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-import {HDRLoader} from 'three/addons/loaders/HDRLoader.js';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 
 const gui = new GUI();
 
@@ -28,8 +28,6 @@ loadingManager.onError = (url) => {
 
 const textureLoader = new THREE.TextureLoader(loadingManager);
 
-
-
 const texture = textureLoader.load(
   'https://images.unsplash.com/photo-1597295014940-4145b62fdf41?q=80&w=1375&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'
 );
@@ -50,17 +48,13 @@ const size = {
   height: window.innerHeight,
 };
 
-
-
 const hdrLoader = new HDRLoader();
 
-hdrLoader.load("./envMap.hdr", (envMap)=>{
+hdrLoader.load('./envMap.hdr', (envMap) => {
   envMap.mapping = THREE.EquirectangularReflectionMapping;
   scene.background = envMap;
   scene.environment = envMap;
-})
-
-
+});
 
 // scene
 const scene = new THREE.Scene();
@@ -74,7 +68,6 @@ const timer = new THREE.Timer();
 // in the parameter of the light, we can set the color and intensity of the light.
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
-
 
 // 3D object - Mesh
 
@@ -95,7 +88,7 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 const material = new THREE.MeshStandardMaterial({
   color: 0xff0000,
-  envMapIntensity: 6, 
+  envMapIntensity: 6,
   roughness: 0.1,
   metalness: 0.9,
 });
