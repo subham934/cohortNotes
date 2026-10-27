@@ -39,8 +39,8 @@ import { listFiles, readFiles, updateFiles } from './tools.js';
 import { createAgent } from 'langchain';
 
 const model = new ChatMistralAI({
-  model: "open-mistral-7b", // doesn't reliably call tools
-  // model: 'mistral-large-latest', // proper function-calling support
+  // model: "mistral-medium-latest",
+  model: 'open-mistral-7b',
   apiKey: process.env.MISTRALAI_API_KEY,
   temperature: 0.7,
 });
@@ -50,13 +50,11 @@ const agent = createAgent({
   tools: [listFiles, readFiles, updateFiles],
 });
 
-export default agent;
-
-// await agent.invoke({
-//   messages: [
-//     {
-//       role: 'user',
-//       content: 'create a simple portfolio project using react and css, no image needed',
-//     },
-//   ],
-// });
+await agent.invoke({
+  messages: [
+    {
+      role: 'user',
+      content: 'create a simple portfolio project using react and css, no image needed',
+    },
+  ],
+});
