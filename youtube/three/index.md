@@ -3463,7 +3463,91 @@ const geometry = new THREE.PlaneGeometry( 1, 1, 32, 32 );
 
 ```
 
+
+-----------------------------------
+
+
+//==============================
+chap02/shaders/vertexShader.glsl
+//==============================
+void main(){
+   vec3 newPosition = position;
+   // newPosition.z += newPosition.x + newPosition.y;
+   newPosition.z += sin(newPosition.x * 3.0 + 1.5) ;
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+}
+
+// here, we are modifying the sine wave effect by changing its frequency and phase.
+
+
+sin(newPosition.x * 3.0 + 1.5)
+
+Yeh har vertex ke x-coordinate se ek number banata hai, phir sin us number ko -1 se +1 ke beech value mein badalta hai. Us value ko baad mein vertex ke z mein add kiya jaata hai.
+
+* 3.0: x badalne par sine ki value tez badalti hai, isliye mesh par zyada frequent waves banti hain.
++ 1.5: wave ka starting point shift karta hai. Frequency ya height nahi badalta.
+Misal ke liye x = 0 ho:
+
+0 * 3.0 + 1.5 = 1.5
+sin(1.5) ≈ 0.997
+
+Yaani is vertex ke z mein lagbhag +0.997 add hoga. Kisi doosre x par sine ka result alag hoga, toh us vertex ka z bhi alag amount se badlega.
+
+Ek line mein: 3.0 batata hai wave kitni jaldi repeat ho, 1.5 batata hai wave kahan se shuru ho; sin(...) un dono se har vertex ke z ka adjustment nikalta hai.
+-------------------------------
+
+To create a moving sine function, we do the below things::
+
+
+---------
+main.js
+---------
+
 ```javascript 
+
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader,
+  uniforms: {
+    uTime: { value: 0 }
+  },
+  side: THREE.DoubleSide,
+});
+
+
+function animate() {
+  timer.update();
+
+  // orbit controls update
+  controls.update();
+  const delta = timer.getDelta();
+
+  if(material){
+    material.uniforms.uTime.value += delta;
+  }
+
+  // cube animation
+  // cube.rotation.x += delta * 0.2;
+  // cube.rotation.y += delta * 0.2;
+
+  // renderer ko on kardo
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
+}
+
+//==============================
+chap02/shaders/vertexShader.glsl
+//==============================
+
+uniform float uTime;
+
+void main(){
+   vec3 newPosition = position;
+   // newPosition.z += newPosition.x + newPosition.y;
+   newPosition.z += sin(newPosition.x * 3.0 +  uTime) ;
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+}
 
 ```
 

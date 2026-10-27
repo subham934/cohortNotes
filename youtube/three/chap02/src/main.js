@@ -89,6 +89,9 @@ const geometry = new THREE.PlaneGeometry( 1, 1, 32, 32 );
 const material = new THREE.ShaderMaterial({
   vertexShader: vertexShader,
   fragmentShader: fragmentShader,
+  uniforms: {
+    uTime: { value: 0 }
+  },
   side: THREE.DoubleSide,
 });
 
@@ -190,7 +193,10 @@ function animate() {
   controls.update();
   const delta = timer.getDelta();
 
-  // if (mixer) mixer.update(delta);
+  if(material){
+    material.uniforms.uTime.value += delta;
+  }
+
   // cube animation
   // cube.rotation.x += delta * 0.2;
   // cube.rotation.y += delta * 0.2;
