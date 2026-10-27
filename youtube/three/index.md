@@ -3151,19 +3151,339 @@ Every frame, the GPU executes the shader instructions for each pixel, determinin
 CPU executes instructions sequentially, one after another, for each task.
 GPU executes instructions in parallel for many pixels simultaneously, making it highly efficient for graphics rendering.
 
-we write shaders using GLSL (OpenGL Shading Language). There are two main types of shaders:
+we write shaders using GLSL (OpenGL Shading Language). 
+
+We introduce shaders because we cant create complex visual effects using three.js alone. Shaders allow us to have fine-grained control over how each vertex and pixel is processed, enabling advanced visual effects like custom lighting, procedural textures, and post-processing effects.
+
+
+GLSL is strictly typed, meaning each variable must have a defined type, such as int, float, vec2, vec3, vec4, or mat4. It is designed to run efficiently on the GPU and has built-in functions for common graphics operations like vector math, texture sampling, and lighting calculations.
+
+Eg: vec2 a = vec2(1.0, 2.0)
+vec3 b = vec3(1.0, 2.0, 3.0);
+here, b.x = 1.0, b.y = 2.0, b.z = 3.0
+we can also set "RGB" values using vec3, for example:
+vec3 color = vec3(1.0, 0.0, 0.0); // Red color
+
+vec4 c = vec4(1.0, 2.0, 3.0, 4.0)
+c.x = 1.0;
+c.y = 2.0;
+c.z = 3.0;
+c.w = 4.0;
+
+sizzling: It is a term used to describe the process of compiling and executing shaders on the GPU, resulting in real-time rendering of graphics with high performance and visual effects.
+
+Eg: 
+vec3 a = vec3(1.0, 2.0, 3.0);
+vec3 color = a.brg; // Using swizzling to rearrange components
+color.x = 3.0;
+color.y = 1.0;
+color.z = 2.0;
+
+//=========================================
+
+shortcut:
+
+vec3 v = vec3(2.0, 3.0, 4.0);
+vec3 v1 = vec3(2.0); // this means all components (x, y, z) will be set to 2.0 like (2.0, 2.0, 2.0)
+vec4 v2 = vec4(v1, 5.0); // this means v2 will have components (2.0, 2.0, 2.0, 5.0)
+vec4 v3 = vec4(vec3(2.0), 5.0); // this means v3 will have components (2.0, 2.0, 2.0, 5.0)
+
+
+---------------------------------------------------
+---------------------
+Properties of Vectors 
+---------------------
+
+
+vec3 v1 = vec3(1.0, 2.0, 3.0);
+float length = length(v1); // calculates the length (magnitude) of the vector v1
+
+---------------------------------------------------
+normalize: It is a function that returns a vector with the same direction as the input vector but with a length of 1.
+
+Eg:
+vec3 v1 = vec3(1.0, 2.0, 3.0);
+vec3 v2 = normalize(v1); // v2 will have the same direction as v1 but with a length of 1.
+---------------------------------------------------
+
+Dot Product: It is a function that returns the scalar product of two vectors, which is a measure of how much one vector extends in the direction of another.
+
+Eg:
+vec3 v1 = vec3(1.0, 2.0, 3.0);
+vec3 v2 = vec3(4.0, 5.0, 6.0);
+float dotProduct = dot(v1, v2); // calculates the dot product of v1 and v2
+
+---------------------------------------------------
+
+Cross Product: It is a function that returns a vector that is perpendicular to the plane formed by two input vectors.
+
+Eg:
+vec3 v1 = vec3(1.0, 2.0, 3.0);
+vec3 v2 = vec3(4.0, 5.0, 6.0);
+vec3 crossProduct = cross(v1, v2); // calculates the cross product of v1 and v2
+
+---------------------------------------------------
+
+distance: It is a function that returns the distance between two points (vectors) in space.
+
+vec3 v1 = vec3(1.0, 2.0, 3.0);
+vec3 v2 = vec3(4.0, 5.0, 6.0);
+float dist = distance(v1, v2); // calculates the distance between v1 and v2
+
+---------------------------------------------------
+
+There are two main types of shaders:
 - Vertex Shader: Processes each vertex's position and other attributes.
 - Fragment Shader: Determines the color of each pixel.
 
+Vertex shader ka kaam hai geometry ko create karna, aur har vertex ke position aur attributes ko process karna.
+Fragment shader ka kaam hai har pixel ke color ko determine karna.
 
+---------------------------------------------------
+
+Data Types in GLSL:
+1. Attribute.: Har ek vertices k liye alag alag hota hai
+2. Uniform.: Har ek vertices k liye same hota hai
+3. Varying.: Vertex shader se fragment shader me data pass karne k liye use hota hai.
+
+Attribute sirf vertex shader me hi available hota hai. Fragment shader usko directly access nahi kar sakta. For that Varying ka use hota hai. Vertex shader me Attribute ka data Varying me store karke pass kiya jata hai, jise fragment shader me access kiya ja sakta hai.
+
+
+---------------------------------------------------
+
+To use shaders in threejs, we use shaderMaterial which allows us to define custom vertex and fragment shaders.
+
+```javascript 
+
+// with the below code, we will see a red cube rendered using custom shaders
+
+const vertex = `
+   void main(){
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+   }
+`;
+
+const fragment = `
+  void main() {
+    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0); // this will render the fragment in red color with full opacity
+  }
+`;
+
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertex,
+  fragmentShader: fragment,
+});
+
+```
+
+
+
+```javascript 
+// now , instead of box geometry, we will use plane geometry
+const geometry = new THREE.PlaneGeometry( 1, 1, 8, 8 );
+
+const vertex = `
+   void main(){
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+   }
+`;
+
+const fragment = `
+  void main() {
+    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0); // this will render the fragment in red color with full opacity
+  }
+`;
+
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertex,
+  fragmentShader: fragment,
+  side: THREE.DoubleSide,
+});
+
+
+```
+
+```javascript 
+const geometry = new THREE.PlaneGeometry( 1, 1, 8, 8 );
+
+const vertex = `
+   void main(){
+   vec3 newPosition = position;
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+   }
+`;
+
+const fragment = `
+  void main() {
+    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0); // this will render the fragment in red color with full opacity
+  }
+`;
+
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertex,
+  fragmentShader: fragment,
+  side: THREE.DoubleSide,
+});
+
+// here, we have taken a new variable 'newPosition' to manipulate the vertex position before passing it to gl_Position
+
+```
 
 
 
 ```javascript 
 
+const geometry = new THREE.PlaneGeometry( 1, 1, 8, 8 );
+
+const vertex = `
+   void main(){
+   vec3 newPosition = position;
+   newPosition.x += 2.0;
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+   }
+`;
+
+const fragment = `
+  void main() {
+    gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0); // this will render the fragment in red color with full opacity
+  }
+`;
+
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertex,
+  fragmentShader: fragment,
+  side: THREE.DoubleSide,
+});
+
+// here, we have manipulated the x-coordinate of the vertex position by adding 2.0 before passing it to gl_Position, what this does is it shifts the entire plane geometry 2 units to the right along the x-axis. we can do the same for y and z coordinates to move the geometry along those axes as well.
 
 
 
+const vertex = `
+   void main(){
+   vec3 newPosition = position;
+   newPosition.z += newPosition.x;
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+   }
+`;
+
+// here, we have manipulated the z-coordinate of the vertex position by adding the x-coordinate to it before passing it to gl_Position, what this does is it creates a diagonal displacement effect along the z-axis based on the x-coordinate of each vertex. Simple sabdoon main jaise x badhega, z bhi utna hi badhega aur axis thoda tilted ho jayega.
+// do this for y-coordinate as well if needed, for example: newPosition.z += newPosition.y;
+
+// we can also do a combined displacement along the z-axis based on both x and y coordinates
+   newPosition.z += newPosition.x + newPosition.y;
+```
+
+now, we will write shaders code in different files for better organization and maintainability.
+
+we will install the Vite plugin for GLSL to handle shader files.
+`npm install vite-plugin-glsl`
+
+now, create a vite.config.js file and paste the below code::
+
+//===================
+chap02/vite.config.js
+//===================
+
+
+import { defineConfig } from 'vite';
+import glsl from 'vite-plugin-glsl';
+
+export default defineConfig({
+  plugins: [
+    glsl({
+      include: [
+        '**/*.glsl',
+        '**/*.wgsl',
+        '**/*.vert',
+        '**/*.frag',
+        '**/*.vs',
+        '**/*.fs',
+      ],
+      exclude: undefined,
+      warnDuplicatedImports: true,
+      defaultExtension: 'glsl',
+      compress: false,
+    }),
+  ],
+});
+
+
+now, we'll create two more files called `vertexShader.glsl` and `fragmentShader.glsl` and paste the respective shader code into them.
+
+//==============================
+chap02/shaders/vertexShader.glsl
+//==============================
+
+void main(){
+   vec3 newPosition = position;
+   newPosition.z += newPosition.x + newPosition.y;
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+}
+
+//==============================
+chap02/shaders/fragmentShader.glsl
+//==============================
+
+void main() {
+    gl_FragColor = vec4( 0.3, 3.0, 5.5, 1.0); 
+}
+
+now, we'll import this to our main.js
+
+```javascript 
+import vertexShader from '../shaders/vertexShader.glsl';
+import fragmentShader from '../shaders/fragmentShader.glsl';
+
+
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader,
+  side: THREE.DoubleSide,
+});
+
+```
+
+// now, we will create a sine wave effect in the vertex shader
+
+//==============================
+chap02/shaders/vertexShader.glsl
+//==============================
+void main(){
+   vec3 newPosition = position;
+   // newPosition.z += newPosition.x + newPosition.y;
+   newPosition.z += sin(newPosition.x * 10.0);
+   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+}
+
+In the geometry, we'll increase the number of segments to make the sine wave effect more visible. This is why we changed the PlaneGeometry to have 32 segments along both width and height.
+
+```js
+const geometry = new THREE.PlaneGeometry( 1, 1, 32, 32 );
+
+```
+
+```javascript 
+
+```
+
+```javascript 
+
+```
+
+```javascript 
+
+```
+
+```javascript 
+
+```
+
+```javascript 
+
+```
+
+```javascript 
 
 ```
 

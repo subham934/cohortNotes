@@ -2,9 +2,11 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import GUI from 'lil-gui';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
+
+import vertexShader from '../shaders/vertexShader.glsl';
+import fragmentShader from '../shaders/fragmentShader.glsl';
 
 const gui = new GUI();
 
@@ -48,13 +50,13 @@ const size = {
   height: window.innerHeight,
 };
 
-const hdrLoader = new HDRLoader();
+// const hdrLoader = new HDRLoader();
 
-hdrLoader.load('./envMap.hdr', (envMap) => {
-  envMap.mapping = THREE.EquirectangularReflectionMapping;
-  scene.background = envMap;
-  scene.environment = envMap;
-});
+// hdrLoader.load('./envMap.hdr', (envMap) => {
+//   envMap.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.background = envMap;
+//   scene.environment = envMap;
+// });
 
 // scene
 const scene = new THREE.Scene();
@@ -72,25 +74,22 @@ scene.add(ambientLight);
 // 3D object - Mesh
 
 // Geometry:
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-
+// const geometry = new THREE.BoxGeometry(1, 1, 1);
+const geometry = new THREE.PlaneGeometry( 1, 1, 32, 32 );
 // Material:
-// const material = new THREE.MeshBasicMaterial({
+
+// const material = new THREE.MeshStandardMaterial({
 //   color: 0xff0000,
-//   // wireframe: true,
-//   // map: texture,
-//   // map: texture,
+//   envMapIntensity: 6,
+//   roughness: 0.1,
+//   metalness: 0.9,
 // });
 
-// const material = new THREE.MeshMatcapMaterial({
-//   matcap: matcapTexture,
-// });
 
-const material = new THREE.MeshStandardMaterial({
-  color: 0xff0000,
-  envMapIntensity: 6,
-  roughness: 0.1,
-  metalness: 0.9,
+const material = new THREE.ShaderMaterial({
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader,
+  side: THREE.DoubleSide,
 });
 
 // Mesh:
