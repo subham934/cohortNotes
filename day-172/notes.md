@@ -5298,8 +5298,8 @@ now , delete the previous images and run `skaffold dev` again, also delete the s
 {
     "message": "Sandbox environment created successfully",
     "status": "ok",
-    "sandboxId": "01a11cb4-e69b-7137-8a74-480f4f3cf989",
-    "previewUrl": "http://01a11cb4-e69b-7137-8a74-480f4f3cf989.preview.localhost"
+    "sandboxId": "01a1877e-bbe3-767e-9029-d196dd0932d9",
+    "previewUrl": "http://01a1877e-bbe3-767e-9029-d196dd0932d9.preview.localhost"
 }
 
 // wait for 5 more mins and click on preview URL. we will get the template.
@@ -5330,7 +5330,7 @@ const agent = createAgent({
 export default agent;
 
 
-Inside `tool.js` , we have the url's hard-coded, we need to change the sandboxId as per today's URL.Now, we'll create a router file.
+Inside `tool.js` , we have the url's hard-coded, we need to change the sandboxId as per today's URL. Now, we'll create a router file.
 
 
 //=========================================

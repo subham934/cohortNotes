@@ -50,11 +50,4 @@ const agent = createAgent({
   tools: [listFiles, readFiles, updateFiles],
 });
 
-await agent.invoke({
-  messages: [
-    {
-      role: 'user',
-      content: 'create a simple portfolio project using react and css, no image needed',
-    },
-  ],
-});
+export default agent;
