@@ -96,7 +96,7 @@ we will create a dockerfile and .dockerignore file inside the day-168/sandbox/se
 FROM node:20-alpine
 
 WORKDIR /app
-COPY package\*.json ./
+COPY package*.json ./
 RUN npm install
 COPY . .
 EXPOSE 3000
@@ -186,22 +186,21 @@ ports:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-name: codespace-ingress
-labels:
-app.kubernetes.io/name: codespace-ingress
+  name: codespace-ingress
+  labels:
+    app.kubernetes.io/name: codespace-ingress
 spec:
-ingressClassName: nginx
-rules:
-
-- http:
-  paths:
-  - pathType: Prefix
-    path: "/api/sandbox"
-    backend:
-    service:
-    name: sandbox-service
-    port:
-    number: 80
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/api/sandbox"
+        backend:
+          service:
+            name: sandbox-service
+            port: 
+              number: 80
 
 =================================
 
