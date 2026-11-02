@@ -366,7 +366,7 @@ now , inside sandbox/server/src folder , we will create one more folder called "
 
 ## sandbox/server/src/kubernetes/config.js
 
-import \* as K8sApi from '@kubernetes/client-node';
+import * as K8sApi from '@kubernetes/client-node';
 
 const kc = new K8sApi.KubeConfig();
 kc.loadFromDefault();
@@ -542,31 +542,27 @@ Message: Unknown API Status Code!
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-name: resource-manager # this is the name of the service account
+  name:  resource-manager
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-name: resource-manager
+  name: resource-manager
 rules:
-
 - apiGroups: [""]
   resources: ["pods", "services"]
   verbs: ["get", "list", "watch", "create", "delete"]
 
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-name: resource-manager-binding
+  name: resource-manager-binding
 subjects:
-
 - kind: ServiceAccount
   name: resource-manager
-  roleRef:
+roleRef:
   kind: Role
   name: resource-manager
   apiGroup: rbac.authorization.k8s.io
