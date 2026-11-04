@@ -783,7 +783,7 @@ since, in the livenessProbe and readinessProbe, we have given new API, we'll nee
 
 ---
 
-## sandbox/server/src/app.js
+## sandbox/router/src/app.js
 
 import express from "express";
 import morgan from "morgan";
@@ -853,31 +853,33 @@ we'll also need to make changes in ingress.yml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-name: codespace-ingress
-labels:
-app.kubernetes.io/name: codespace-ingress
+  name: codespace-ingress
+  labels:
+    app.kubernetes.io/name: codespace-ingress
 spec:
-ingressClassName: nginx
-rules:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/api/sandbox"
+        backend:
+          service:
+            name: sandbox-service
+            port: 
+              number: 80
 
-- http:
-  paths:
-  - pathType: Prefix
-    path: "/api/sandbox"
-    backend:
-    service:
-    name: sandbox-service
-    port:
-    number: 80 # new line of code for router
-- host: '\*.preview.localhost'
-  http:
-  paths: - pathType: Prefix
-  path: '/'
-  backend:
-  service:
-  name: router-service
-  port:
-  number: 80
+
+  - host: "*.preview.localhost"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: router-service
+            port: 
+              number: 80      
 
 what this ingress does it, any request coming to the wildcard ending with ".preview.localhost" will be forwarded to the router-service, which will then forward the request to the user-service.
 
