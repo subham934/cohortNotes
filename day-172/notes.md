@@ -1225,7 +1225,7 @@ sandboxId: sandboxId,
 spec: {
 volumes: [
 {
-name: 'workspace_volume',
+name: 'workspace-volume',
 emptyDir: {},
 },
 // with this code, we have created a volume named 'workspace_volume', we have not synced it yet, till now, `vite-dev-server` /workspace is different and the `agent` /workspace is different, now we need to sync it
