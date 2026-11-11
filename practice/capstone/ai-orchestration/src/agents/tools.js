@@ -4,25 +4,25 @@ import * as z from 'zod';
 
 export const listFiles = tool(
   async ({}) => {
-    console.log('=================================');
+    console.log('==========================================');
     console.log('using list files tool');
-    console.log('=================================');
-
+    console.log('==========================================');
     const response = await axios.get(
-      'http://01a1cb34-88bb-71ae-82eb-5110077962a5.agent.localhost/list-files'
+      'http://01a1cbfd-694c-70ad-8b87-3d47db12bddc.agent.localhost/list-files' // we will hit this API to list all the files in container
     );
 
-    console.log('=================================');
+    console.log('==========================================');
     console.log('response from list files tool', response.data);
-    console.log('=================================');
+    console.log('==========================================');
 
-    return JSON.stringify(response.data.files);
+    return JSON.stringify(response.data.files); // we return files
   },
+
   {
     name: 'list_files',
     description:
       'List all the files in the project directory. This is useful for understanding what files are available to work with.',
-    schema: z.object({}),
+    schema: z.object({}), // we also need to define a schema so that what kind of data our tool expects, and for that we use `npm i zod`, and then we define the schema of the tool.
   }
 );
 
@@ -33,7 +33,7 @@ export const readFiles = tool(
     console.log('=================================');
 
     const response = await axios.get(
-      'http://01a1cb34-88bb-71ae-82eb-5110077962a5.agent.localhost/read-files?files=' +
+      'http://01a1cbfd-694c-70ad-8b87-3d47db12bddc.agent.localhost/read-files?files=' +
         files.join(',')
     );
 
@@ -63,7 +63,7 @@ export const updateFiles = tool(
     console.log('=================================');
 
     const response = await axios.patch(
-      'http://01a1cb34-88bb-71ae-82eb-5110077962a5.agent.localhost/update-files',
+      'http://01a1cbfd-694c-70ad-8b87-3d47db12bddc.agent.localhost/update-files',
       {
         updates: files,
       }
