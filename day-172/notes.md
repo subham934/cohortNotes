@@ -1749,7 +1749,7 @@ then create a POST request on http://localhost/api/sandbox/start, we'll get a pr
 
 with the preview link, create a GET request at link http://01a0c368-a8f9-73c9-9dbd-5c40c86ea57a.agent.localhost/list-files, we get the details of the files, the template has. Here , Today, we'll create read files, update files, create files API.
 
----
+
 ------------------------
 sandbox/agent/src/app.js
 ------------------------
@@ -4911,7 +4911,7 @@ Now, we can see that our code is working at optimal condition.
 
 //============================================================== 
 // DAY-172 
-//==============================================================
+//============================================================== 
 
 So, yesterday, we have seen how our AI agent was able to write code, it was able to create application and give us a beautiful outcome.Today, we'll see that how that model could create a better UI,we'll give some system instructions
 

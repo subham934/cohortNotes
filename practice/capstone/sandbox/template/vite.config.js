@@ -9,4 +9,11 @@ export default defineConfig({
     port: 5173,
     allowedHosts: true,
   },
+
+  // the reload was getting triggered because when we update the file using `nodejs fs`, it releases multiple events stating `the file is changed`, so the vite development server which is watching for the file changes detects these events and triggers the reload
+  watch: {
+    usePolling: true,
+    interval: 300,
+    ignored: ['node_modules'],
+  },
 });
