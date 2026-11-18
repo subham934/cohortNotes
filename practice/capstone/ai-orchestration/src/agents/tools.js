@@ -27,7 +27,7 @@ export const listFiles = tool(
 );
 
 export const readFiles = tool(
-  async ({ files }) => {
+  async ({ files: [] }) => {
     console.log('=================================');
     console.log('using read files tool with files', files);
     console.log('=================================');
