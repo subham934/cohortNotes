@@ -5566,3 +5566,27 @@ export const updateFiles = tool(
         })
     }
 );
+
+
+
+
+//============================================
+## DAY-173
+//============================================
+
+Today, we will see how the AI is working, specifically how it interacts with the tools we have defined for reading and updating files. 
+=> In copilot, we have features where when AI is doing some changes or is reading a file, it will show us what it is doing in real-time, allowing us to understand the AI's actions and decisions. we'll implement similar functionality in our application to track the AI's interactions with the file system tools.
+
+now, we had an agent defined in the file code.agent.js , with the help of this agent, we could modify our code, create our frontend components, and interact with the file system using the tools we defined earlier. 
+
+=> we called this agent on agent.routes.js as response, now , we wnat the user experience to be better, we need to provide real-time feedback to the user about what the AI is doing, such as reading files, updating files, or making changes to the code. 
+
+
+
+
+
+Let's start coding,atfirst we need to reset the cluster, then install ingress controller then run `kubectl apply -f ./k8s`, then we need to set the ai-secret for the application to authenticate with the AI services.
+
+kubectl create secret generic ai-secret --from-literal=api-key=<YOUR_API_KEY>
+
+01a1eed3-7a43-778e-b2cc-1b721adb462e.preview.localhost

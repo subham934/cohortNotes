@@ -4,7 +4,8 @@ import { createAgent } from 'langchain';
 import 'dotenv/config';
 
 const model = new ChatGoogleGenerativeAI({
-  model: 'gemini-3.5-flash-lite',
+  // model: 'gemini-3.5-flash-lite',
+  model: 'gemini-2.0-flash',
   apiKey: process.env.GOOGLEAI_API_KEY,
   temperature: 0.7,
 });
