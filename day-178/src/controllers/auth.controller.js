@@ -1,4 +1,4 @@
-const { registerService } = require('../services/auth.service.js');
+const { registerService, loginService } = require('../services/auth.service.js');
 
 let registerController = async (req, res) => {
   let result = await registerService(req.body);
@@ -20,16 +20,33 @@ let registerController = async (req, res) => {
 
   res.status(201).json({
     message: 'User registered successfully',
-    accessToken,
-    refreshToken,
     user: newUser,
   });
 };
 
 let loginController = async (req, res) => {
   try {
-    // Login logic here
-    res.send('User logged in');
+    let result = await loginService(req.body);
+    let { isExisted, accessToken, refreshToken } = result;
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 10 * 60 * 1000, // 10 minutes
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    res.status(200).json({
+      message: 'User logged in successfully',
+      user: isExisted,
+    });
   } catch (error) {
     res.status(500).send(error.message);
   }

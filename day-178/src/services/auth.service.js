@@ -11,7 +11,7 @@ let registerService = async (data) => {
     let { name, email, password } = data;
 
     // Check if all required fields are provided
-    if (!email || !password) {
+    if (!name || !email || !password) {
       return res.status(400).send('All fields are required');
     }
 
@@ -38,4 +38,41 @@ let registerService = async (data) => {
   }
 };
 
-module.exports = { registerService };
+let loginService = async (data) => {
+  try {
+    // this is destructuring the data object to get email, and password
+    let { email, password } = data;
+
+    // Check if all required fields are provided
+    if (!email || !password) {
+      return res.status(400).send('All fields are required');
+    }
+
+    // Check if user not exists with the given email
+    let isExisted = await UserModel.findOne({ email });
+    if (!isExisted) {
+      return res.status(404).json({
+        message: 'User not found with this email',
+      });
+    }
+
+    // Check if the provided password matches the stored hashed password
+    let hashPass = bcrypt.compareSync(password, isExisted.password);
+    if (!hashPass) {
+      return res.status(401).json({
+        message: 'Invalid password',
+      });
+    }
+
+    // now, we will create token
+
+    let accessToken = generateAccessToken(isExisted._id);
+    let refreshToken = generateRefreshToken(isExisted._id);
+
+    return { isExisted, accessToken, refreshToken };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+module.exports = { registerService, loginService };
