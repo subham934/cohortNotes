@@ -1,28 +1,31 @@
-const UserModel = require("../models/user.model");
-const bcrypt = require('bcrypt');
+const { registerService } = require('../services/auth.service.js');
 
 let registerController = async (req, res) => {
-  try {
-    // Registration logic here
-    let {name, email, password} = req.body;
-    if(!email || !password ) {
-      return res.status(400).send('All fields are required');
-    }
+ let result = await registerService(req.body);
+ let { newUser, accessToken, refreshToken } = result;
 
-    let isExisted = await UserModel.findOne({ email });
-    if(isExisted) {
-      return res.status(409).send('User already exists with this email');
-    }
-    let hashPass = bcrypt.hashSync(password, 10);
-    let newUser = await UserModel.create({ name, email, password: hashPass });
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+    maxAge: 10 * 60 * 1000, // 10 minutes
+  });
 
-    
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
 
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+  res.status(201).json({
+    message: 'User registered successfully',
+    accessToken,
+    refreshToken,
+    user: newUser
+  });
+
 };
-
 
 let loginController = async (req, res) => {
   try {

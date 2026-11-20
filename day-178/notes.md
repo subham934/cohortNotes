@@ -36,7 +36,314 @@ Refresh Token VS Access Token
    - save in DB & cookies for secure storage.
 
 
+go to folder and run `npm init -y`
 
-siddy934_db_user
-hGw3JfrITj5qe64r
-mongodb+srv://<db_username>:hGw3JfrITj5qe64r@cluster0.psige9k.mongodb.net/
+install necessary packages and any other required dependencies using `npm install express dotenv jsonwebtoken cookie-parser bcrypt cors mongoose`.
+
+====================
+day-178/src/app.js
+====================
+
+let express = require("express");
+
+
+let app = express();
+app.use(express.json());
+
+
+module.exports = app;
+
+
+create a .env file and put the port number.
+
+============
+day-178/.env
+============
+
+PORT=3000
+
+=================
+day-178/server.js
+=================
+
+let app = require("./src/app");
+require("dotenv").config();
+
+
+let port = process.env.PORT || 4000; 
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+
+Now, we will create db.js inside the src/config folder to handle the database connection.
+
+====================
+day-178/src/config/db.js
+====================
+
+const { default: mongoose } = require("mongoose");
+
+let connectDB = async () => {
+  try {
+    await mongoose.connect("mongodb://0.0.0.0/test-artokens");
+    console.log("Mongodb connected");
+  } catch (error) {
+    console.log("error in connecting db", error);
+  }
+};
+
+module.exports = connectDB;
+
+=> now, we need to import and use the connectDB function in our server.js file to establish the database connection before starting the server.
+
+====================
+day-178/server.js
+====================
+
+let app = require("./src/app");
+let connectDB = require("./src/config/db");
+require("dotenv").config();
+
+connectDB();
+
+let port = process.env.PORT || 4000; 
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+=> now, when we start the server using `npx nodemon`, it will first establish a connection to the database and then start listening on the specified port.
+
+`Server is running on port 3000
+Mongodb connected`
+
+
+
+Now, lets create a model for our users. 
+
+
+====================
+day-178/src/models/user.model.js
+====================
+
+const { default: mongoose } = require('mongoose');
+
+let userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+    },
+    password: { type: String, required: true },
+    refreshToken: { type: String },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+let UserModel = mongoose.model('users', userSchema);
+
+module.exports = UserModel;
+
+
+=> Now, we will create routes for our user model. 
+
+====================
+day-178/src/routes/auth.routes.js
+====================
+
+let express = require('express');
+let router = express.Router();
+
+module.exports = router;
+
+
+=> we will import the user routes in our app.js file and use them with a specific route prefix.
+
+====================
+day-178/src/app.js
+====================
+
+let express = require("express");
+let authRoutes = require('./routes/auth.routes');
+
+
+let app = express();
+app.use(express.json());
+
+app.use('/api/auth', authRoutes);
+
+module.exports = app;
+
+
+
+now, for the routes, we will need to create controllers that handle the logic for each route. These controllers will be placed inside the `src/controllers` folder.
+
+
+====================
+day-178/src/controllers/auth.controller.js
+====================
+
+let registerController = async (req, res) => {
+ 
+};
+
+let loginController = async (req, res) => {
+
+};
+
+module.exports = { registerController, loginController };
+
+
+
+=> now , we will import the controllers in our `auth.routes.js` file and use them for the respective routes.
+
+====================
+day-178/src/routes/auth.routes.js
+====================
+
+let express = require('express');
+let router = express.Router();
+const {
+  registerController,
+  loginController,
+} = require('../controllers/auth.controller');
+router.post('/register', registerController);
+router.post('/login', loginController);
+module.exports = router;
+
+
+=> next, lets write the logic for our register and login controllers in `auth.controller.js`. We will use the `UserModel` to interact with the database and handle user registration and login.
+
+we will also need tokens for authentication, which we will generate using the `generateAccessToken` and `generateRefreshToken` utility functions. but atfirst , we will generate tokens inside the .env file and then use them in our utility functions.
+
+
+============
+day-178/.env
+============
+
+JWT_ACCESS_SECRET=your_secret_key_here
+JWT_REFRESH_SECRET=your_refresh_secret_key_here
+
+
+lets create utils folder and inside it, we will create a file named `generateTokens.js` where we will define our `generateAccessToken` and `generateRefreshToken` functions.
+
+====================
+day-178/src/utils/generateTokens.js
+====================
+
+const jwt = require('jsonwebtoken'); 
+
+let generateAccessToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_ACCESS_SECRET, { expiresIn: '10m' });
+};
+
+let generateRefreshToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '1d' });
+};
+
+module.exports = { generateAccessToken, generateRefreshToken };
+
+
+=> now, we will create a service file named `auth.service.js` inside the `src/services` folder where we will define the logic for user registration and token generation.
+
+====================================
+day-178/src/services/auth.service.js
+====================================
+
+const UserModel = require('../models/user.model');
+const bcrypt = require('bcrypt');
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require('../utils/generateTokens');
+
+let registerService = async (data) => {
+  try {
+    // Registration logic here
+    let { name, email, password } = data;
+
+    // Check if all required fields are provided
+    if (!email || !password) {
+      return res.status(400).send('All fields are required');
+    }
+
+    // Check if user already exists with the given email
+    let isExisted = await UserModel.findOne({ email });
+    if (isExisted) {
+      return res.status(409).json({
+        message: 'User already exists with this email',
+      });
+    }
+
+    // Hash the password before storing it in the database
+    let hashPass = bcrypt.hashSync(password, 10);
+    let newUser = await UserModel.create({ name, email, password: hashPass });
+
+    // now, we will create token
+
+    let accessToken = generateAccessToken(newUser._id);
+    let refreshToken = generateRefreshToken(newUser._id);
+
+    return { newUser, accessToken, refreshToken };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+module.exports = { registerService };
+
+
+
+now, we will put all the logic inside the `auth.controller.js` file where we will define the controllers for user registration and login.
+
+
+==========================================
+day-178/src/controllers/auth.controller.js
+==========================================
+
+
+const { registerService } = require('../services/auth.service.js');
+
+let registerController = async (req, res) => {
+ let result = await registerService(req.body);
+ let { newUser, accessToken, refreshToken } = result;
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+    maxAge: 10 * 60 * 1000, // 10 minutes
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
+
+  res.status(201).json({
+    message: 'User registered successfully',
+    accessToken,
+    refreshToken,
+    user: newUser
+  });
+
+};
+
+let loginController = async (req, res) => {
+  try {
+    // Login logic here
+    res.send('User logged in');
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+module.exports = { registerController, loginController };
