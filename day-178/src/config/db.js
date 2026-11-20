@@ -1,11 +1,11 @@
-const { default: mongoose } = require("mongoose");
+const { default: mongoose } = require('mongoose');
 
 let connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://0.0.0.0/test-artokens");
-    console.log("Mongodb connected");
+    await mongoose.connect('mongodb://0.0.0.0/test-artokens');
+    console.log('Mongodb connected');
   } catch (error) {
-    console.log("error in connecting db", error);
+    console.log('error in connecting db', error);
   }
 };
 

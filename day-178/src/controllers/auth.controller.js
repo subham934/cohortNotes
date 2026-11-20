@@ -1,8 +1,8 @@
 const { registerService } = require('../services/auth.service.js');
 
 let registerController = async (req, res) => {
- let result = await registerService(req.body);
- let { newUser, accessToken, refreshToken } = result;
+  let result = await registerService(req.body);
+  let { newUser, accessToken, refreshToken } = result;
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
@@ -22,9 +22,8 @@ let registerController = async (req, res) => {
     message: 'User registered successfully',
     accessToken,
     refreshToken,
-    user: newUser
+    user: newUser,
   });
-
 };
 
 let loginController = async (req, res) => {

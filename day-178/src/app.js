@@ -1,6 +1,5 @@
-let express = require("express");
+let express = require('express');
 let authRoutes = require('./routes/auth.routes');
-
 
 let app = express();
 app.use(express.json());
