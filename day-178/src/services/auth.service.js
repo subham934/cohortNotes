@@ -1,4 +1,5 @@
 const UserModel = require('../models/user.model');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const {
   generateAccessToken,
@@ -12,15 +13,13 @@ let registerService = async (data) => {
 
     // Check if all required fields are provided
     if (!name || !email || !password) {
-      return res.status(400).send('All fields are required');
+      throw new Error('All fields are required');
     }
 
     // Check if user already exists with the given email
     let isExisted = await UserModel.findOne({ email });
     if (isExisted) {
-      return res.status(409).json({
-        message: 'User already exists with this email',
-      });
+      throw new Error('User already exists with this email');
     }
 
     // Hash the password before storing it in the database
@@ -31,6 +30,10 @@ let registerService = async (data) => {
 
     let accessToken = generateAccessToken(newUser._id);
     let refreshToken = generateRefreshToken(newUser._id);
+
+    // with this below lines of code, we are saving the refresh token in the database for the newly created user
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
 
     return { newUser, accessToken, refreshToken };
   } catch (error) {
@@ -45,23 +48,22 @@ let loginService = async (data) => {
 
     // Check if all required fields are provided
     if (!email || !password) {
-      return res.status(400).send('All fields are required');
+      throw new Error('All fields are required');
     }
 
     // Check if user not exists with the given email
     let isExisted = await UserModel.findOne({ email });
     if (!isExisted) {
-      return res.status(404).json({
-        message: 'User not found with this email',
-      });
+      // return res.status(404).json({
+      //   message: 'User not found with this email',
+      // });
+      throw new Error('User not found with this email');
     }
 
     // Check if the provided password matches the stored hashed password
     let hashPass = bcrypt.compareSync(password, isExisted.password);
     if (!hashPass) {
-      return res.status(401).json({
-        message: 'Invalid password',
-      });
+      throw new Error('Invalid password');
     }
 
     // now, we will create token
@@ -69,10 +71,31 @@ let loginService = async (data) => {
     let accessToken = generateAccessToken(isExisted._id);
     let refreshToken = generateRefreshToken(isExisted._id);
 
+    // with this below lines of code, we are saving the refresh token in the database for the existing user
+    isExisted.refreshToken = refreshToken;
+    await isExisted.save();
+
     return { isExisted, accessToken, refreshToken };
   } catch (error) {
     throw new Error(error);
   }
 };
 
-module.exports = { registerService, loginService };
+let getAccessTokenService = async (refreshToken) => {
+  let decode = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+  if (!decode) {
+    throw new Error('Unauthorized');
+  }
+
+  let user = await UserModel.findById(decode.id);
+
+  if (refreshToken !== user.refreshToken) {
+    throw new Error('Unauthorized');
+  }
+
+  let accessToken = generateAccessToken(user._id);
+  return accessToken;
+};
+
+module.exports = { registerService, loginService, getAccessTokenService };

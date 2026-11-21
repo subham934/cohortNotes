@@ -361,7 +361,6 @@ const {
   generateAccessToken,
   generateRefreshToken,
 } = require('../utils/generateTokens');
-
 let registerService = async (data) => {
   try {
     // this is destructuring the data object to get name, email, and password
@@ -369,15 +368,13 @@ let registerService = async (data) => {
 
     // Check if all required fields are provided
     if (!name || !email || !password) {
-      return res.status(400).send('All fields are required');
+      throw new Error('All fields are required');
     }
 
     // Check if user already exists with the given email
     let isExisted = await UserModel.findOne({ email });
     if (isExisted) {
-      return res.status(409).json({
-        message: 'User already exists with this email',
-      });
+      throw new Error('User already exists with this email');
     }
 
     // Hash the password before storing it in the database
@@ -389,13 +386,16 @@ let registerService = async (data) => {
     let accessToken = generateAccessToken(newUser._id);
     let refreshToken = generateRefreshToken(newUser._id);
 
+
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
+
+
     return { newUser, accessToken, refreshToken };
   } catch (error) {
     throw new Error(error);
   }
 };
-
-
 
 let loginService = async (data) => {
   try {
@@ -404,29 +404,34 @@ let loginService = async (data) => {
 
     // Check if all required fields are provided
     if (!email || !password) {
-      return res.status(400).send('All fields are required');
+      throw new Error('All fields are required');
     }
 
     // Check if user not exists with the given email
     let isExisted = await UserModel.findOne({ email });
     if (!isExisted) {
-      return res.status(404).json({
-        message: 'User not found with this email',
-      });
+      // return res.status(404).json({
+      //   message: 'User not found with this email',
+      // });
+      throw new Error('User not found with this email');
     }
 
     // Check if the provided password matches the stored hashed password
     let hashPass = bcrypt.compareSync(password, isExisted.password);
     if (!hashPass) {
-      return res.status(401).json({
-        message: 'Invalid password',
-      });
+      throw new Error('Invalid password');
     }
 
     // now, we will create token
 
     let accessToken = generateAccessToken(isExisted._id);
     let refreshToken = generateRefreshToken(isExisted._id);
+
+    
+    isExisted.refreshToken = refreshToken;
+    await isExisted.save();
+
+
 
     return { isExisted, accessToken, refreshToken };
   } catch (error) {
@@ -467,8 +472,6 @@ let registerController = async (req, res) => {
 
   res.status(201).json({
     message: 'User registered successfully',
-    accessToken,
-    refreshToken,
     user: newUser,
   });
 };
@@ -494,8 +497,6 @@ let loginController = async (req, res) => {
 
     res.status(200).json({
       message: 'User logged in successfully',
-      accessToken,
-      refreshToken,
       user: isExisted,
     });
   } catch (error) {
@@ -538,8 +539,6 @@ we will get the response as such::
 
 {
     "message": "User registered successfully",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDA3M2UyMzNjNmIwNzJhYzZiYzNjOSIsImlhdCI6MTc5NTE5MTc3OCwiZXhwIjoxNzk1MTkyMzc4fQ.ogV7lOCFG3hDbK9D5Emn4ze8aM7Z4Lot6XVfbVMy5sM",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDA3M2UyMzNjNmIwNzJhYzZiYzNjOSIsImlhdCI6MTc5NTE5MTc3OCwiZXhwIjoxNzk1Mjc4MTc4fQ.CqKHE7FCVML28Cv3jikeEWoE6Y2WUjxY5aHex4GHP_E",
     "user": {
         "name": "Darwin",
         "email": "darwin@email.com",
@@ -552,7 +551,28 @@ we will get the response as such::
 }
 
 
-now,we will create a middleware to protect our home route by verifying the access token. This middleware will check if the access token is present in the cookies, verify it, and then attach the user information to the request object. If the token is invalid or missing, it will return an unauthorized response.
+we can also login by creating a POST request to the endpoint `http://localhost:3000/api/auth/login` with the user's email and password in the request body.
+{
+  "email": "darwin@email.com",
+  "password": "darwin123"
+}
+we will get the response as such:
+{
+    "message": "User logged in successfully",
+    "user": {
+        "name": "Darwin",
+        "email": "darwin@email.com",
+        "password": "$2b$10$pP0gy2aHE9BC8eLUIK8jBuNlLz9yeGWec4TQCh6.HONFrIOXXKB2C",
+        "_id": "6b0073e233c6b072ac6bc3c9",
+        "createdAt": "2026-11-20T16:22:58.239Z",
+        "updatedAt": "2026-11-20T16:22:58.239Z",
+        "__v": 0
+    }
+}
+
+=> now, we can register or login, and we will able to the access and refresh tokens in cookies.
+
+now,we need a protected route for which we will create a middleware to protect our home route by verifying the access token. This middleware will check if the access token is present in the cookies, verify it, and then attach the user information to the request object. If the token is invalid or missing, it will return an unauthorized response.
 
 =========================================
 day-178/src/middleware/auth.middleware.js 
@@ -593,3 +613,419 @@ let authMiddleware = async (req, res, next) => {
 
 module.exports = authMiddleware;
 
+=> now we need protected routes, so we will create a home route
+
+================================
+day-178/src/routes/home.route.js
+================================
+
+const express = require("express");
+const router = express.Router();
+
+router.get("/",  (req, res) => {
+  return res.status(200).json({ message: "Home fetched"});
+});
+
+module.exports = router;
+
+=> now, we need to link this to our app.js
+
+================================
+day-178/src/app.js
+================================
+
+let express = require('express');
+let cookieParser = require('cookie-parser');
+let authRoutes = require('./routes/auth.routes');
+let homeRoutes = require('./routes/home.routes'); 
+
+let app = express();
+app.use(express.json());
+app.use(cookieParser());
+
+app.use('/api/auth', authRoutes);
+app.use('/api/home', homeRoutes);
+
+module.exports = app;
+
+
+=> Now, we will create a GET request on URL http://localhost:3000/api/home in postman to test our protected route. Because we have loggedIn before, we already have the access token in our cookies, so we should be able to see:
+
+{
+    "message": "Home fetched"
+}
+
+
+=> Now, we will add the authMiddleware to the home route to make it a protected route. This will ensure that only authenticated users with a valid access token can access the home route. we will remove the accessToken from cookies and try to access the home route again, which should now return an unauthorized request error.
+
+
+================================
+day-178/src/routes/home.route.js
+================================
+
+const express = require("express");
+const router = express.Router();
+const authMiddleware = require("../middleware/auth.middleware");
+
+router.get("/", authMiddleware, (req, res) => {
+  return res.status(200).json({ message: "Home fetched"});
+});
+
+module.exports = router;
+
+
+=> now, we login again and access the home route with the valid access token in our cookies, which should allow us to successfully fetch the home route message.
+
+{
+    "message": "Home fetched"
+}
+
+
+
+=> till now, we have done register and login flow with access token and refresh token , then a middleware to protect routes using the access token, now if the access token expires, we will need to regenerate it . now, we will create the regenerate API where it will lead to regeneration of access token using the refresh token. 
+
+=> to create the regenerate API, we need to save the refresh token in the database when the user logs in or registers. This will allow us to verify the refresh token and generate a new access token when needed. for that we will now save the refresh token in the database when we register or login.
+
+
+================================
+day-178/src/services/auth.service.js
+================================
+
+
+const UserModel = require('../models/user.model');
+const bcrypt = require('bcrypt');
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require('../utils/generateTokens');
+
+let registerService = async (data) => {
+  try {
+    // this is destructuring the data object to get name, email, and password
+    let { name, email, password } = data;
+
+    // Check if all required fields are provided
+    if (!name || !email || !password) {
+      throw new Error('All fields are required');
+    }
+
+    // Check if user already exists with the given email
+    let isExisted = await UserModel.findOne({ email });
+    if (isExisted) {
+      throw new Error('User already exists with this email');
+    }
+
+    // Hash the password before storing it in the database
+    let hashPass = bcrypt.hashSync(password, 10);
+    let newUser = await UserModel.create({ name, email, password: hashPass });
+
+    // now, we will create token
+
+    let accessToken = generateAccessToken(newUser._id);
+    let refreshToken = generateRefreshToken(newUser._id);
+
+    // with this below lines of code, we are saving the refresh token in the database for the newly created user
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
+
+
+    return { newUser, accessToken, refreshToken };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+let loginService = async (data) => {
+  try {
+    // this is destructuring the data object to get email, and password
+    let { email, password } = data;
+
+    // Check if all required fields are provided
+    if (!email || !password) {
+      throw new Error('All fields are required');
+    }
+
+    // Check if user not exists with the given email
+    let isExisted = await UserModel.findOne({ email });
+    if (!isExisted) {
+      // return res.status(404).json({
+      //   message: 'User not found with this email',
+      // });
+      throw new Error('User not found with this email');
+    }
+
+    // Check if the provided password matches the stored hashed password
+    let hashPass = bcrypt.compareSync(password, isExisted.password);
+    if (!hashPass) {
+      throw new Error('Invalid password');
+    }
+
+    // now, we will create token
+
+    let accessToken = generateAccessToken(isExisted._id);
+    let refreshToken = generateRefreshToken(isExisted._id);
+
+    // with this below lines of code, we are saving the refresh token in the database for the existing user
+    isExisted.refreshToken = refreshToken;
+    await isExisted.save();
+
+
+
+    return { isExisted, accessToken, refreshToken };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+
+
+module.exports = { registerService, loginService };
+
+
+
+
+=>now that we have saved the refresh token in the database during registration and login, so , when we login or register, we will have the refresh token available in the database, we can create a service to regenerate the access token using the refresh token.
+
+
+step-1: at first, we take refresh token from cookies.
+step-2: we decode the refresh token to extract the user id.
+step-3: we find the user in the database using the extracted user id.we verify if the refresh token exists in the database for the extracted user id.
+step-4: if the refresh token is valid, we generate a new access token using the user id.
+step-5: return the new access token to the client cookies.
+
+we put all these steps into a service function called `getAccessTokenService` in our `auth.service.js` file. This service takes the refresh token, verifies it, checks it against the database, and generates a new access token if valid.
+
+
+====================================
+day-178/src/services/auth.service.js
+====================================
+
+const UserModel = require('../models/user.model');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require('../utils/generateTokens');
+
+let registerService = async (data) => {
+  try {
+    // this is destructuring the data object to get name, email, and password
+    let { name, email, password } = data;
+
+    // Check if all required fields are provided
+    if (!name || !email || !password) {
+      throw new Error('All fields are required');
+    }
+
+    // Check if user already exists with the given email
+    let isExisted = await UserModel.findOne({ email });
+    if (isExisted) {
+      throw new Error('User already exists with this email');
+    }
+
+    // Hash the password before storing it in the database
+    let hashPass = bcrypt.hashSync(password, 10);
+    let newUser = await UserModel.create({ name, email, password: hashPass });
+
+    // now, we will create token
+
+    let accessToken = generateAccessToken(newUser._id);
+    let refreshToken = generateRefreshToken(newUser._id);
+
+    // with this below lines of code, we are saving the refresh token in the database for the newly created user
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
+
+    return { newUser, accessToken, refreshToken };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+let loginService = async (data) => {
+  try {
+    // this is destructuring the data object to get email, and password
+    let { email, password } = data;
+
+    // Check if all required fields are provided
+    if (!email || !password) {
+      throw new Error('All fields are required');
+    }
+
+    // Check if user not exists with the given email
+    let isExisted = await UserModel.findOne({ email });
+    if (!isExisted) {
+      // return res.status(404).json({
+      //   message: 'User not found with this email',
+      // });
+      throw new Error('User not found with this email');
+    }
+
+    // Check if the provided password matches the stored hashed password
+    let hashPass = bcrypt.compareSync(password, isExisted.password);
+    if (!hashPass) {
+      throw new Error('Invalid password');
+    }
+
+    // now, we will create token
+
+    let accessToken = generateAccessToken(isExisted._id);
+    let refreshToken = generateRefreshToken(isExisted._id);
+
+    // with this below lines of code, we are saving the refresh token in the database for the existing user
+    isExisted.refreshToken = refreshToken;
+    await isExisted.save();
+
+    return { isExisted, accessToken, refreshToken };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+let getAccessTokenService = async (refreshToken) => {
+  let decode = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+  if (!decode) {
+    throw new Error('Unauthorized');
+  }
+
+  let user = await UserModel.findById(decode.id);
+
+  if (refreshToken !== user.refreshToken) {
+    throw new Error('Unauthorized');
+  }
+
+  let accessToken = generateAccessToken(user._id);
+  return accessToken;
+};
+
+module.exports = { registerService, loginService, getAccessTokenService };
+
+
+we will use the getAccessTokenService to generate a new access token using the refresh token stored in the user's cookies.lets make some changes in auth.controller.js to handle this properly.
+
+==========================================
+day-178/src/controllers/auth.controller.js
+==========================================
+
+const { registerService, loginService, getAccessTokenService } = require('../services/auth.service.js');
+
+let registerController = async (req, res) => {
+  let result = await registerService(req.body);
+  let { newUser, accessToken, refreshToken } = result;
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+    maxAge: 10 * 60 * 1000, // 10 minutes
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  });
+
+  res.status(201).json({
+    message: 'User registered successfully',
+    user: newUser,
+  });
+};
+
+let loginController = async (req, res) => {
+  try {
+    let result = await loginService(req.body);
+    let { isExisted, accessToken, refreshToken } = result;
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 10 * 60 * 1000, // 10 minutes
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    res.status(200).json({
+      message: 'User logged in successfully',
+      user: isExisted,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+let getAccessTokenController = async (req, res) => {
+  try {
+    let refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'Unauthorized request' });
+    }
+
+    let accessToken = await getAccessTokenService(refreshToken);
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: false,
+      maxAge: 10 * 60 * 1000, // 10 minutes
+    });
+
+    return res.status(200).json({ message: 'Access token generated successfully' });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
+
+module.exports = { registerController, loginController, getAccessTokenController };
+
+now, import this in your auth.routes.js file and add a route for it.
+
+==========================
+src/routes/auth.routes.js
+==========================
+
+let express = require('express');
+let router = express.Router();
+const {
+  registerController,
+  loginController,
+  getAccessTokenController,
+} = require('../controllers/auth.controller');
+
+
+router.get("/get-accessToken", getAccessTokenController);
+
+router.post('/register', registerController);
+router.post('/login', loginController);
+
+module.exports = router;
+
+
+
+
+=> Now, when i login , i can see the accessToken and refreshToken in cookies. now, when we do the GET request on GET http://localhost:3000/api/home, we will see the response as ::
+{
+    "message": "Home fetched"
+}
+
+=> now, when we delete the access token and  do the GET request on GET http://localhost:3000/api/home, we get::
+{
+    "message": "Unauthorized request"
+}
+
+=> we will call the regeration API, for that we make a GET request to GET http://localhost:3000/api/auth/get-accessToken. If the refresh token is valid, a new access token will be generated and set in the cookies. we will get the response as ::
+{
+    "message": "Access token generated successfully"
+}
+
+
+=> Till i have refresh token valid, I can keep generating new access tokens using the regeneration API.
