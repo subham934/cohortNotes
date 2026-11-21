@@ -41,7 +41,7 @@ go to folder and run `npm init -y`
 install necessary packages and any other required dependencies using `npm install express dotenv jsonwebtoken cookie-parser bcrypt cors mongoose`.
 
 ====================
-day-178/src/app.js
+day-178/arTokens/src/app.js
 ====================
 
 let express = require("express");
@@ -57,13 +57,13 @@ module.exports = app;
 create a .env file and put the port number.
 
 ============
-day-178/.env
+day-178/arTokens/.env
 ============
 
 PORT=3000
 
 =================
-day-178/server.js
+day-178/arTokens/server.js
 =================
 
 let app = require("./src/app");
@@ -80,7 +80,7 @@ app.listen(port, () => {
 Now, we will create db.js inside the src/config folder to handle the database connection.
 
 ====================
-day-178/src/config/db.js
+day-178/arTokens/src/config/db.js
 ====================
 
 const { default: mongoose } = require("mongoose");
@@ -99,7 +99,7 @@ module.exports = connectDB;
 => now, we need to import and use the connectDB function in our server.js file to establish the database connection before starting the server.
 
 ====================
-day-178/server.js
+day-178/arTokens/server.js
 ====================
 
 let app = require("./src/app");
@@ -125,7 +125,7 @@ Now, lets create a model for our users.
 
 
 ====================
-day-178/src/models/user.model.js
+day-178/arTokens/src/models/user.model.js
 ====================
 
 const { default: mongoose } = require('mongoose');
@@ -154,7 +154,7 @@ module.exports = UserModel;
 => Now, we will create routes for our user model. 
 
 ====================
-day-178/src/routes/auth.routes.js
+day-178/arTokens/src/routes/auth.routes.js
 ====================
 
 let express = require('express');
@@ -166,7 +166,7 @@ module.exports = router;
 => we will import the user routes in our app.js file and use them with a specific route prefix.
 
 ====================
-day-178/src/app.js
+day-178/arTokens/src/app.js
 ====================
 
 let express = require("express");
@@ -186,7 +186,7 @@ now, for the routes, we will need to create controllers that handle the logic fo
 
 
 ====================
-day-178/src/controllers/auth.controller.js
+day-178/arTokens/src/controllers/auth.controller.js
 ====================
 
 let registerController = async (req, res) => {
@@ -204,7 +204,7 @@ module.exports = { registerController, loginController };
 => now , we will import the controllers in our `auth.routes.js` file and use them for the respective routes.
 
 ====================
-day-178/src/routes/auth.routes.js
+day-178/arTokens/src/routes/auth.routes.js
 ====================
 
 let express = require('express');
@@ -224,7 +224,7 @@ we will also need tokens for authentication, which we will generate using the `g
 
 
 ============
-day-178/.env
+day-178/arTokens/.env
 ============
 
 JWT_ACCESS_SECRET=your_secret_key_here
@@ -234,7 +234,7 @@ JWT_REFRESH_SECRET=your_refresh_secret_key_here
 lets create utils folder and inside it, we will create a file named `generateTokens.js` where we will define our `generateAccessToken` and `generateRefreshToken` functions.
 
 ====================
-day-178/src/utils/generateTokens.js
+day-178/arTokens/src/utils/generateTokens.js
 ====================
 
 const jwt = require('jsonwebtoken'); 
@@ -253,7 +253,7 @@ module.exports = { generateAccessToken, generateRefreshToken };
 => now, we will create a service file named `auth.service.js` inside the `src/services` folder where we will define the logic for user registration and token generation.
 
 ====================================
-day-178/src/services/auth.service.js
+day-178/arTokens/src/services/auth.service.js
 ====================================
 
 const UserModel = require('../models/user.model');
@@ -304,7 +304,7 @@ now, we will put all the logic inside the `auth.controller.js` file where we wil
 
 
 ==========================================
-day-178/src/controllers/auth.controller.js
+day-178/arTokens/src/controllers/auth.controller.js
 ==========================================
 
 
@@ -352,7 +352,7 @@ module.exports = { registerController, loginController };
 Now, we will create service for login :::
 
 ====================================
-day-178/src/services/auth.service.js
+day-178/arTokens/src/services/auth.service.js
 ====================================
 
 const UserModel = require('../models/user.model');
@@ -447,7 +447,7 @@ module.exports = { registerService, loginService };
 now that the service is done, we will need to implement the login service on the controller 
 
 ===========================================
-day-178/src/controllers/auth.controller.js
+day-178/arTokens/src/controllers/auth.controller.js
 ===========================================
 
 const { registerService, loginService } = require('../services/auth.service.js');
@@ -509,7 +509,7 @@ module.exports = { registerController, loginController };
 with the help of cookie-parser, we are able to set cookies for accessToken and refreshToken in the user's browser. This allows us to manage authentication tokens securely and conveniently. we will use it inside app.js
 
 ==================
-day-178/src/app.js
+day-178/arTokens/src/app.js
 ==================
 
 let express = require('express');
@@ -575,7 +575,7 @@ we will get the response as such:
 now,we need a protected route for which we will create a middleware to protect our home route by verifying the access token. This middleware will check if the access token is present in the cookies, verify it, and then attach the user information to the request object. If the token is invalid or missing, it will return an unauthorized response.
 
 =========================================
-day-178/src/middleware/auth.middleware.js 
+day-178/arTokens/src/middleware/auth.middleware.js 
 =========================================
 
 const jwt = require("jsonwebtoken");
@@ -616,7 +616,7 @@ module.exports = authMiddleware;
 => now we need protected routes, so we will create a home route
 
 ================================
-day-178/src/routes/home.route.js
+day-178/arTokens/src/routes/home.route.js
 ================================
 
 const express = require("express");
@@ -631,7 +631,7 @@ module.exports = router;
 => now, we need to link this to our app.js
 
 ================================
-day-178/src/app.js
+day-178/arTokens/src/app.js
 ================================
 
 let express = require('express');
@@ -660,7 +660,7 @@ module.exports = app;
 
 
 ================================
-day-178/src/routes/home.route.js
+day-178/arTokens/src/routes/home.route.js
 ================================
 
 const express = require("express");
@@ -688,7 +688,7 @@ module.exports = router;
 
 
 ================================
-day-178/src/services/auth.service.js
+day-178/arTokens/src/services/auth.service.js
 ================================
 
 
@@ -797,7 +797,7 @@ we put all these steps into a service function called `getAccessTokenService` in
 
 
 ====================================
-day-178/src/services/auth.service.js
+day-178/arTokens/src/services/auth.service.js
 ====================================
 
 const UserModel = require('../models/user.model');
@@ -906,7 +906,7 @@ module.exports = { registerService, loginService, getAccessTokenService };
 we will use the getAccessTokenService to generate a new access token using the refresh token stored in the user's cookies.lets make some changes in auth.controller.js to handle this properly.
 
 ==========================================
-day-178/src/controllers/auth.controller.js
+day-178/arTokens/src/controllers/auth.controller.js
 ==========================================
 
 const { registerService, loginService, getAccessTokenService } = require('../services/auth.service.js');
@@ -990,7 +990,7 @@ module.exports = { registerController, loginController, getAccessTokenController
 now, import this in your auth.routes.js file and add a route for it.
 
 ==========================
-src/routes/auth.routes.js
+day-178/arTokens/src/routes/auth.routes.js
 ==========================
 
 let express = require('express');
@@ -1029,3 +1029,147 @@ module.exports = router;
 
 
 => Till i have refresh token valid, I can keep generating new access tokens using the regeneration API.
+
+Finally, i'll implement cors on app.js to allow cross-origin requests.
+
+===========================
+day-178/arTokens/src/app.js
+===========================
+
+let express = require('express');
+let cookieParser = require('cookie-parser');
+let cors = require('cors');
+let authRoutes = require('./routes/auth.routes');
+let homeRoutes = require('./routes/home.routes');
+
+let app = express();
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors(
+    {
+        origin: 'http://localhost:5173', 
+        credentials: true
+    }
+));
+
+app.use('/api/auth', authRoutes);
+app.use('/api/home', homeRoutes);
+
+module.exports = app;
+
+
+
+just like `arTokens` we will add one more folder called  `integration` and we will run `npm create vite@latest .`
+
+now, we will go into App.jsx and start writing codes::
+
+=======================
+integration/src/App.jsx
+=======================
+
+import React from 'react'
+import axios from "axios"
+const App = () => {
+
+  let getData = async () => {
+    try {
+      let res = await axios.get('https://fakestoreapi.com/products');
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  getData()
+
+  return (
+    <div>
+      <h1>Hello, Integration App!</h1>
+    </div>
+  )
+}
+
+export default App
+
+so, what is instance in axios?
+An instance in axios is a custom configuration of axios that allows you to set default properties like baseURL, headers, and other settings for all requests made using that instance. This is useful when you have multiple APIs or need to reuse the same configuration across different parts of your application.
+
+Example:
+import axios from "axios";
+const api = axios.create({
+  baseURL: "http://localhost:3000/api",
+  withCredentials: true
+});
+
+// Now you can use `api` instead of `axios` for requests
+api.get("/home").then(res => console.log(res));
+
+
+========================================
+integration/src/config/axiosInstance.jsx
+========================================
+
+import axios from "axios";
+
+
+export let axiosInstance = axios.create({
+  baseURL: "https://fakestoreapi.com",
+});
+
+
+
+=======================
+integration/src/App.jsx
+=======================
+
+import React from 'react'
+import { axiosInstance } from "./config/axiosInstance";
+const App = () => {
+
+  let getData = async () => {
+    try {
+      let res = await axiosInstance.get('/products');
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  getData()
+
+  return (
+    <div>
+      <h1>Hello, Integration App!</h1>
+    </div>
+  )
+}
+
+export default App
+
+
+now, we will use interceptors, what are interceptors in axios?
+Interceptors in axios are functions that are called before a request is sent or before a response is handled. They allow you to modify requests or responses globally, such as adding authentication tokens, logging, or handling errors consistently.
+
+Example:
+import { axiosInstance } from "./config/axiosInstance";
+
+// Request interceptor
+axiosInstance.interceptors.request.use(
+  config => {
+    // Modify request config if needed
+    console.log("Request sent:", config);
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor
+axiosInstance.interceptors.response.use(
+  response => {
+    console.log("Response received:", response);
+    return response;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
