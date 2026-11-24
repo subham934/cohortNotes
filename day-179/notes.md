@@ -1860,6 +1860,92 @@ export default Register;
 
 => so now both pages just call `useAuth()` once to get everything they need, instead of each page having its own `useForm`/`useNavigate` + its own `onSubmit` function. `Login.jsx` uses `onLogin` and `Register.jsx` uses `onRegister` from the same shared hook. submitting either form still just logs the data to console for now(`login data {...}` / `register data {...}`) - actual backend integration(calling `/register` and `/login` APIs via `axiosInstance`) is still pending.
 
+now, lets actually wire up `onLogin` and `onRegister` inside `useAuth` to hit our real backend APIs, instead of just console.logging the form data.
+
+====================
+integration/src/hooks/useAuth.jsx
+====================
+
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { axiosInstance } from "../config/axiosInstance";
+
+export let useAuth = () => {
+  let navigate = useNavigate();
+    
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onLogin = async (data) => {
+    try {
+        let res = await axiosInstance.post("/api/auth/login", data)
+        console.log("login response", res);
+    } catch (error) {
+        console.log("error in login", error)
+    }
+  };
+
+  const onRegister = async (data) => {
+    try {
+        let res = await axiosInstance.post("/api/auth/register", data)
+        console.log("register response", res);
+    } catch (error) {
+        console.log("error in register", error)
+    }
+  };
+
+  return {
+    register,
+    handleSubmit,
+    errors,
+    navigate,
+    onLogin,
+    onRegister,
+  };
+};
+
+
+=> `onLogin` now posts to `/api/auth/login` and `onRegister` posts to `/api/auth/register`(both via `axiosInstance`), wrapped in try/catch so a failed request doesn't crash the app. both still just `console.log` the response/error for now - the "redirect on success"/"show error message" part is still pending.
+
+=> since these endpoints live on our own backend(not fakestoreapi anymore), i also updated `axiosInstance`'s `baseURL` to point to our backend running locally.
+
+====================
+integration/src/config/axiosInstance.jsx
+====================
+
+import axios from 'axios';
+
+export let axiosInstance = axios.create({
+  baseURL: 'https://localhost:3000',
+});
+
+
+=> our backend here is a separate node/express app(the `arTokens` folder) that exposes `/api/auth/register`, `/api/auth/login` etc. it listens on port `3000`(set via `.env` -> `PORT=3000`), connects to mongo via `connectDB()`, and is started with `node server.js`.
+
+=> bug: as soon as i tried registering from `localhost:5173/register`, i got this error in the console:
+
+POST https://localhost:3000/api/auth/register net::ERR_SSL_PROTOCOL_ERROR
+
+=> turns out, our backend is a plain express app - `app.listen(port, ...)` starts a regular **http** server, there's no https/TLS certificate configured anywhere in `server.js`/`app.js`. but `axiosInstance`'s `baseURL` was set to `https://localhost:3000`(notice the `https`). so the browser was trying to do a TLS handshake against a server that only speaks plain http on that port - hence `ERR_SSL_PROTOCOL_ERROR`.
+
+=> fix: changed the scheme from `https` to `http` in `axiosInstance.jsx`.
+
+====================
+integration/src/config/axiosInstance.jsx
+====================
+
+import axios from 'axios';
+
+export let axiosInstance = axios.create({
+  baseURL: 'http://localhost:3000',
+});
+
+
+=> after this fix, hitting register from the UI correctly reaches our backend at `http://localhost:3000/api/auth/register` instead of failing with the SSL error.
+
 
 
 

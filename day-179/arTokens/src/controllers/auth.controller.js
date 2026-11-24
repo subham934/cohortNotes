@@ -18,7 +18,7 @@ let registerController = async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000, // 1 day
   });
 
-  res.status(201).json({
+  res.status(200).json({
     message: 'User registered successfully',
     user: newUser,
   });
