@@ -1402,3 +1402,153 @@ createRoot(document.getElementById('root')).render(
 note: `App.jsx` is still there inside src with our old axios test code(fetching products from fakestoreapi using axiosInstance), but its not being rendered anymore since `main.jsx` now renders `AppRoutes` directly. keeping it around for now just for reference/testing the axios instance + interceptors.
 
 => now, when i run `npm run dev` and go to `http://localhost:5173/`, i see the Login page(since `/` -> AuthLayout -> index route -> Login). going to `http://localhost:5173/register` shows the Register page, and `http://localhost:5173/home` shows the Home page with "Navbar" above it(coming from MainLayout).
+
+now, lets build the actual UI for Login and Register pages, since till now they were just dummy pages with plain text.
+
+to handle form state/validation easily, i installed `react-hook-form`:
+
+npm i react-hook-form
+
+=> i also moved `Home.jsx` from directly inside `src/` into `src/pages/`, so that all pages live together in one place. this means the import inside `routes/AppRoutes.jsx` also had to change from `../Home` to `../pages/Home`.
+
+====================
+integration/src/routes/AppRoutes.jsx
+====================
+
+import Home from '../pages/Home';
+
+
+=> now, lets style up `Login.jsx` and `Register.jsx` using tailwind classes, and add actual form markup(inputs for email/password/name, submit button, link to switch between login/register).
+
+====================
+integration/src/pages/Login.jsx
+====================
+
+import React from "react";
+import { useNavigate } from "react-router";
+const Login = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+        <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
+
+        <p className="text-gray-500 text-center mb-6">Login to your account</p>
+
+        <form
+          className="flex flex-col gap-5">
+          <div>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <div>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="bg-black text-white py-3 rounded-xl font-semibold hover:opacity-90 transition"
+          >
+            Login
+          </button>
+        </form>
+
+        <p className="text-center text-gray-500 mt-6">
+          Don&apos;t have an account?
+          <span
+            onClick={() => navigate("/register")}
+            className="text-black font-semibold cursor-pointer"
+          >
+            &nbsp; Register
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+
+
+====================
+integration/src/pages/Register.jsx
+====================
+
+import React from "react";
+import { useNavigate } from "react-router";
+
+const Register = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+        <h1 className="text-3xl font-bold text-center mb-2">Create Account</h1>
+
+        <p className="text-gray-500 text-center mb-6">Register to continue</p>
+
+        <form
+          className="flex flex-col gap-5"
+        >
+          <div>
+            <input
+              type="text"
+              placeholder="Enter your name"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <div>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <div>
+            <input
+              type="password"
+              placeholder="Create password"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="bg-black text-white py-3 rounded-xl font-semibold hover:opacity-90 transition"
+          >
+            Register
+          </button>
+        </form>
+
+        <p className="text-center text-gray-500 mt-6">
+          Already have an account?
+          <span
+            onClick={() => navigate("/")}
+            className="text-black font-semibold cursor-pointer"
+          >
+            &nbsp; Login
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Register;
+
+
+=> so both pages now have a proper tailwind styled card with inputs and a submit button. `useNavigate` is used so clicking "Register"/"Login" text at the bottom switches between the two pages without a full reload(`navigate("/register")` from Login, `navigate("/")` from Register).
+
+=> in the actual files, the `useAuth` hook and `useForm`'s `register`, `handleSubmit`, `errors` are kept commented out for now(left out of the snippets above for clarity) - that's because the `useAuth` hook (which will hold the actual register/login logic, calling our backend APIs) hasn't been built yet. once that hook is ready, i'll uncomment these lines to wire up `handleSubmit(onLogin)`/`handleSubmit(onRegister)`, spread `register(...)` onto each input, and show validation `errors` below each field.
+
+=> for now, running `npm run dev` just shows the styled forms on `/` and `/register`, submit doesn't actually do anything yet since it's not wired up.

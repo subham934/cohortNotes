@@ -12,7 +12,7 @@ let registerService = async (data) => {
     let { name, email, password } = data;
 
     // Check if all required fields are provided
-    if (!name || !email || !password) {
+    if ( !name|| !email || !password) {
       throw new Error('All fields are required');
     }
 
