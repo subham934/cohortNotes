@@ -1425,8 +1425,13 @@ integration/src/pages/Login.jsx
 ====================
 
 import React from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 const Login = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const onSubmit = (data) => {
+    console.log(data);
+  };
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
@@ -1436,23 +1441,49 @@ const Login = () => {
         <p className="text-gray-500 text-center mb-6">Login to your account</p>
 
         <form
+        onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-5">
+          {/* Email */}
           <div>
             <input
               type="email"
               placeholder="Enter your email"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("email", {
+                required: "Email is required",
+              })}
             />
+
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
+          {/* Password */}
           <div>
             <input
               type="password"
               placeholder="Enter your password"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
             />
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
+          {/* Button */}
           <button
             type="submit"
             className="bg-black text-white py-3 rounded-xl font-semibold hover:opacity-90 transition"
@@ -1481,11 +1512,20 @@ export default Login;
 ====================
 integration/src/pages/Register.jsx
 ====================
-
-import React from "react";
-import { useNavigate } from "react-router";
+import React from 'react';
+import { useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
 
 const Register = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   const navigate = useNavigate();
 
   return (
@@ -1496,32 +1536,66 @@ const Register = () => {
         <p className="text-gray-500 text-center mb-6">Register to continue</p>
 
         <form
+          onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-5"
         >
+          {/* Name */}
           <div>
             <input
               type="text"
               placeholder="Enter your name"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("name", {
+                required: "Name is required",
+              })}
             />
+
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
           </div>
 
+          {/* Email */}
           <div>
             <input
               type="email"
               placeholder="Enter your email"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("email", {
+                required: "Email is required",
+              })}
             />
+
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
+          {/* Password */}
           <div>
             <input
               type="password"
               placeholder="Create password"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
             />
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
+          {/* Button */}
           <button
             type="submit"
             className="bg-black text-white py-3 rounded-xl font-semibold hover:opacity-90 transition"
@@ -1533,7 +1607,7 @@ const Register = () => {
         <p className="text-center text-gray-500 mt-6">
           Already have an account?
           <span
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
             className="text-black font-semibold cursor-pointer"
           >
             &nbsp; Login
@@ -1549,6 +1623,245 @@ export default Register;
 
 => so both pages now have a proper tailwind styled card with inputs and a submit button. `useNavigate` is used so clicking "Register"/"Login" text at the bottom switches between the two pages without a full reload(`navigate("/register")` from Login, `navigate("/")` from Register).
 
-=> in the actual files, the `useAuth` hook and `useForm`'s `register`, `handleSubmit`, `errors` are kept commented out for now(left out of the snippets above for clarity) - that's because the `useAuth` hook (which will hold the actual register/login logic, calling our backend APIs) hasn't been built yet. once that hook is ready, i'll uncomment these lines to wire up `handleSubmit(onLogin)`/`handleSubmit(onRegister)`, spread `register(...)` onto each input, and show validation `errors` below each field.
-
 => for now, running `npm run dev` just shows the styled forms on `/` and `/register`, submit doesn't actually do anything yet since it's not wired up.
+
+
+
+here, in both Login and Register pages, we are using `useForm` from `react-hook-form` to handle form state and validation. We are also using onSubmit handlers (`handleSubmit(onSubmit)`) to process the form data when the user submits the form. we will optimize this further once we integrate the actual authentication logic using the `useAuth` hook.
+
+now, lets actually pull this `useForm` + `useNavigate` logic out of `Login.jsx` and `Register.jsx` and into a dedicated `useAuth` hook, so both pages share the same logic instead of each one duplicating its own `useForm`/`useNavigate`/`onSubmit`.
+
+====================
+integration/src/hooks/useAuth.jsx
+====================
+
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+
+export let useAuth = () => {
+  let navigate = useNavigate();
+    
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onLogin = async (data) => {
+    console.log("login data", data);
+  };
+
+  const onRegister = async (data) => {
+    console.log("register data", data);
+  };
+
+  return {
+    register,
+    handleSubmit,
+    errors,
+    navigate,
+    onLogin,
+    onRegister,
+  };
+};
+
+
+=> `useAuth` wraps `useForm`(from `react-hook-form`) and `useNavigate`(from `react-router`) in one place, and returns `register`, `handleSubmit`, `errors`, `navigate` along with two handlers - `onLogin` and `onRegister`. both handlers just `console.log` the form data for now, they'll be replaced with actual API calls(via our `axiosInstance`) once the backend auth endpoints are wired up.
+
+=> now, `Login.jsx` and `Register.jsx` just call `useAuth()` instead of calling `useForm`/`useNavigate` directly.
+
+====================
+integration/src/pages/Login.jsx
+====================
+
+import React from 'react';
+import { useAuth } from '../hooks/useAuth';
+const Login = () => {
+  
+  let { register, handleSubmit, errors, navigate, onLogin } = useAuth();
+
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+        <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
+
+        <p className="text-gray-500 text-center mb-6">Login to your account</p>
+
+        <form onSubmit={handleSubmit(onLogin)} className="flex flex-col gap-5">
+          {/* Email */}
+          <div>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register('email', {
+                required: 'Email is required',
+              })}
+            />
+
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register('password', {
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters',
+                },
+              })}
+            />
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="bg-black text-white py-3 rounded-xl font-semibold hover:opacity-90 transition"
+          >
+            Login
+          </button>
+        </form>
+
+        <p className="text-center text-gray-500 mt-6">
+          Don&apos;t have an account?
+          <span
+            onClick={() => navigate('/register')}
+            className="text-black font-semibold cursor-pointer"
+          >
+            &nbsp; Register
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+
+
+====================
+integration/src/pages/Register.jsx
+====================
+
+import React from 'react';
+import { useAuth } from '../hooks/useAuth';
+
+const Register = () => {
+  let { register, handleSubmit, errors, navigate, onRegister } = useAuth();
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+        <h1 className="text-3xl font-bold text-center mb-2">Create Account</h1>
+
+        <p className="text-gray-500 text-center mb-6">Register to continue</p>
+
+        <form
+          onSubmit={handleSubmit(onRegister)}
+          className="flex flex-col gap-5"
+        >
+          {/* Name */}
+          <div>
+            <input
+              type="text"
+              placeholder="Enter your name"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("name", {
+                required: "Name is required",
+              })}
+            />
+
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("email", {
+                required: "Email is required",
+              })}
+            />
+
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <input
+              type="password"
+              placeholder="Create password"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+            />
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="bg-black text-white py-3 rounded-xl font-semibold hover:opacity-90 transition"
+          >
+            Register
+          </button>
+        </form>
+
+        <p className="text-center text-gray-500 mt-6">
+          Already have an account?
+          <span
+            onClick={() => navigate('/')}
+            className="text-black font-semibold cursor-pointer"
+          >
+            &nbsp; Login
+          </span>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Register;
+
+
+=> so now both pages just call `useAuth()` once to get everything they need, instead of each page having its own `useForm`/`useNavigate` + its own `onSubmit` function. `Login.jsx` uses `onLogin` and `Register.jsx` uses `onRegister` from the same shared hook. submitting either form still just logs the data to console for now(`login data {...}` / `register data {...}`) - actual backend integration(calling `/register` and `/login` APIs via `axiosInstance`) is still pending.
+
+
+
+
+
+

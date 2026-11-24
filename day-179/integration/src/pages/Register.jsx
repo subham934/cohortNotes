@@ -1,10 +1,8 @@
-import React from "react";
-// import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router";
+import React from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 const Register = () => {
-  // let { register, handleSubmit, onRegister, errors } = useAuth();
-  const navigate = useNavigate();
+  let { register, handleSubmit, errors, navigate, onRegister } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
@@ -14,7 +12,7 @@ const Register = () => {
         <p className="text-gray-500 text-center mb-6">Register to continue</p>
 
         <form
-          // onSubmit={handleSubmit(onRegister)}
+          onSubmit={handleSubmit(onRegister)}
           className="flex flex-col gap-5"
         >
           {/* Name */}
@@ -23,14 +21,14 @@ const Register = () => {
               type="text"
               placeholder="Enter your name"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
-              // {...register("name", {
-              //   required: "Name is required",
-              // })}
+              {...register('name', {
+                required: 'Name is required',
+              })}
             />
 
-            {/* {errors.name && (
+            {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )} */}
+            )}
           </div>
 
           {/* Email */}
@@ -39,16 +37,16 @@ const Register = () => {
               type="email"
               placeholder="Enter your email"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
-              // {...register("email", {
-              //   required: "Email is required",
-              // })}
+              {...register('email', {
+                required: 'Email is required',
+              })}
             />
 
-            {/* {errors.email && (
+            {errors.email && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.email.message}
               </p>
-            )} */}
+            )}
           </div>
 
           {/* Password */}
@@ -57,20 +55,20 @@ const Register = () => {
               type="password"
               placeholder="Create password"
               className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-black"
-              // {...register("password", {
-              //   required: "Password is required",
-              //   minLength: {
-              //     value: 6,
-              //     message: "Password must be at least 6 characters",
-              //   },
-              // })}
+              {...register('password', {
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters',
+                },
+              })}
             />
 
-            {/* {errors.password && (
+            {errors.password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}
               </p>
-            )} */}
+            )}
           </div>
 
           {/* Button */}
@@ -85,7 +83,7 @@ const Register = () => {
         <p className="text-center text-gray-500 mt-6">
           Already have an account?
           <span
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
             className="text-black font-semibold cursor-pointer"
           >
             &nbsp; Login
