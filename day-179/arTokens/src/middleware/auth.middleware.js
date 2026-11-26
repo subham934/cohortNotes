@@ -5,7 +5,7 @@ let authMiddleware = async (req, res, next) => {
   try {
     let accessToken = req.cookies.accessToken;
     if (!accessToken) {
-      return res.status(404).json({ message: 'Unauthorized request' });
+      return res.status(401).json({ message: 'Unauthorized request' });
     }
 
 

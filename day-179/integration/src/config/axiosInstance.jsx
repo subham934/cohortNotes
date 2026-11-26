@@ -2,25 +2,28 @@ import axios from 'axios';
 
 export let axiosInstance = axios.create({
   baseURL: 'http://localhost:3000',
+  withCredentials: true
 });
 
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     console.log('Request sent:', config);
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    
+    let originalReq = error.config;
+    
+    if(error.response.status === 401 || originalReq.retry){
 
-// axiosInstance.interceptors.response.use(
-//   (response) => {
-//     console.log('Axios instance response:', response);
-//     return response;
-//   },
-//   (error) => {
-//     console.error('Axios instance error:', error);
-//   }
-// );
-  
+      originalReq.retry = true;
+      try {
+        await axiosInstance.get('/api/auth/get-accessToken');
+        return axiosInstance(originalReq);
+      } catch (error) {
+        window.location.href = '/';
+        return Promise.reject(error);
+      }
+    }
+  }
+);
+

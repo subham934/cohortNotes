@@ -1,10 +1,11 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { axiosInstance } from "../config/axiosInstance";
-
+import { useDispatch } from "react-redux";
+import { addUser } from "../state/authReducer";
 export let useAuth = () => {
   let navigate = useNavigate();
-    
+    let dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -16,6 +17,7 @@ export let useAuth = () => {
     try {
         let res = await axiosInstance.post("/api/auth/login", data)
         console.log("login response", res);
+        dispatch(addUser(res.data.user));
     } catch (error) {
         console.log("error in login", error)
     }
