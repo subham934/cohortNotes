@@ -1,0 +1,405 @@
+NextJS = This is a fullstack framework for React that enables server-side rendering and static site generation.
+
+NextJS is good for ::
+SEO, routing, performance optimization, suitable for building fullstack applications.
+
+If react, then why Nextjs?
+-> SEO is the main advantage as NextJS enables server-side rendering which improves search engine visibility.SEO can be optimized in many ways, like delivering server-side rendered pages, optimizing meta tags, and improving page load speed.
+
+
+there are many ways for SEO optimization, the first is to deliver server-side rendering
+
+
+
+# Crawling, Indexing & SEO
+
+## 1. Crawling
+Crawling is the process of discovering and scanning web pages by search engine bots (also called crawlers or spiders).
+
+- Search engines use automated bots like Googlebot to visit websites.
+- These bots discover pages by following links from one page to another.
+- They can also discover URLs through XML sitemaps.
+
+**Example:** Googlebot visits your homepage and follows links to discover your About, Contact, Products, and Blog pages.
+
+**In simple words:** Crawling = Discovering web pages.
+
+## 2. Indexing
+Indexing is the process of analyzing and storing information about discovered web pages in a search engine's index.
+
+During indexing, Google may analyze:
+- Page title
+- Headings (H1, H2, H3)
+- Text and content
+- Images and their alt attributes
+- Internal and external links
+- Other relevant information
+
+If Google considers a page suitable, it may add that page to its search index.
+
+**Important:** Crawling does not guarantee indexing.
+
+**Example:** Googlebot crawls your blog page, analyzes its content, and stores information about it in Google's search index.
+
+**In simple words:** Indexing = Analyzing and storing web pages.
+
+## 3. SEO (Search Engine Optimization)
+SEO is the process of optimizing a website to improve its visibility in organic (unpaid) search engine results.
+
+**Example:** If someone searches for "Best JavaScript courses for beginners", SEO helps improve the chances of your website appearing higher in relevant search results.
+
+### Three Major Types of SEO
+
+**A. Technical SEO**
+Focuses on improving the technical aspects of a website.
+
+- Website loading speed
+- Mobile responsiveness
+- XML sitemap
+- Robots.txt
+- HTTPS
+- Crawlability and indexability
+- Proper URL structure
+
+**B. On-Page SEO**
+Focuses on optimizing the content and HTML elements of individual web pages.
+
+- Title tags
+- Meta descriptions
+- Proper heading structure (H1, H2, H3)
+- Relevant keywords
+- High-quality content
+- Image alt attributes
+- Internal linking
+
+**C. Off-Page SEO**
+Focuses on improving a website's reputation and authority outside the website itself.
+
+- Backlinks
+- Brand mentions
+- Digital PR
+- Website reputation and authority
+
+## 4. How Crawling, Indexing and SEO Work Together
+
+1. **Crawling:** Googlebot discovers and scans your website pages.
+2. **Indexing:** Google analyzes the discovered pages and may store information about them in its search index.
+3. **Ranking:** Google evaluates indexed pages and determines their positions for relevant search queries.
+4. **Search Results:** Users may find your website when they search for relevant information.
+
+**Note:** SEO is an ongoing process, not a separate step that happens only after indexing. It helps improve your website across these stages.
+
+## 5. Example for a Next.js Website
+
+Suppose you build a blog using Next.js.
+
+- Crawling: Googlebot visits `/blog/react-tutorial`.
+- Indexing: Google analyzes the page and may add it to its search index.
+- SEO: You optimize the page title, metadata, content, URL, loading speed and internal links.
+- Ranking: Google evaluates the page against other relevant pages and determines its position in search results.
+
+## Quick Revision
+
+| Term | Meaning |
+|---|---|
+
+
+SSR= server side rendering
+SSG= static site generation
+CSR= client side rendering
+ISR= Incremental side regeneration
+
+
+
+NextJS & things to learn: a)Routing 1. File based Routing, 2.App Router
+b) dynamic Routing
+c) protected Routing
+d) client side component & Server side component
+
+src/app = Base route
+src/app/page.js = Home page component
+src/app/product = Product is a new route, if we want to show the product page, we create this folder and add a page.js inside it.
+
+folder means Route(path) and page.js is element(component) that will be rendered for that route.
+
+=> So, till now, we have two page.js file, one for the home page (`src/app/page.js`) and one for the home route (`src/app/home/page.js`).
+
+project1/src/
+├─ app/
+│  ├─ page.js
+│  ├─ home/
+│  │  └─ page.js
+│  └─ product/
+│     └─ page.js
+
+
+========================
+project1/src/app/page.js
+========================
+
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>Hello , this is next js Page</div>
+  )
+}
+
+export default page
+
+=============================
+project1/src/app/home/page.js
+=============================
+
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>
+        <h1>This is home page element</h1>
+    </div>
+  )
+}
+
+export default page
+
+
+
+=> Now, when we visit the `localhost:3000`, we will be able to see `Hello , this is next js Page` and when we visit `localhost:3000/home`, we will be able to see `This is home page element`.
+
+=>Unlike React.js, where we typically create separate components such as `HomePage` or `ProductPage` and configure routes using a routing library, Next.js uses a file-system-based routing system. We create folders to define routes, and the `page.js` file inside each folder acts as the component rendered for that particular route.
+
+=> in a similar way, i've created two more routes, `contact` and `about`, by creating corresponding folders and adding `page.js` files inside them.
+
+=============================
+project1/src/app/contact/page.js
+=============================
+
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>
+        <h1>This is contact page element</h1>
+    </div>
+  )
+}
+
+export default page
+
+=============================
+project1/src/app/about/page.js
+=============================
+
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>
+        <h1>This is about page element</h1>
+    </div>
+  )
+}
+
+export default page
+
+=> when we visit `localhost:3000/contact`, we will see `This is contact page element` and when we visit `localhost:3000/about`, we will see `This is about page element`.
+
+
+=> For navigation, we use layout. The `layout.js` file inside the `app` folder acts as a wrapper for all the pages, allowing us to define common elements like headers, footers, and navigation links that will be present across all routes.
+
+if we want to create layout, we need to do so with ::
+
+ <html
+      lang="en"
+      className={`h-full antialiased`}
+ >
+    <body className="min-h-full flex flex-col">{children}</body>
+</html>
+
+we do this because layout.js is server, and to render anything in browser, we need to include the HTML structure with `<html>` and `<body>` tags, and place the `{children}` inside the body to render the page content. here, `{children}` represents the content of the specific page being rendered.
+
+
+if we write the layout.js file as shown below:
+
+```javascript
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        navbar
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+then the `navbar` will be displayed on all pages, and the specific page content will be rendered where `{children}` is placed.
+
+=> Now, we'll create a navbar component and include it in the layout.js file so that it appears on all pages.
+
+
+===========================
+project1/src/app/layout.js
+===========================
+
+import "./globals.css";
+
+
+export const metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        
+        <div className="flex gap-5">
+          <a href="/">Start</a>
+          <a href="/home">Home</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+        </div>
+        {children}</body>
+    </html>
+  );
+}
+
+
+=> Now, when we visit any page like `localhost:3000/home`, `localhost:3000/about`, or `localhost:3000/contact`, the navbar with links to all pages will be displayed at the top, and the specific page content will be rendered below it.
+
+
+=> there is an issue with reloading, when we click on any link in the navbar, the entire page reloads. This breaks the SPA behavior of Next.js. To fix this, we should use the `Link` component from `next/link` instead of the standard `<a>` tags for navigation. This allows Next.js to handle client-side navigation without full page reloads.
+
+
+===========================
+project1/src/app/layout.js
+===========================
+
+import "./globals.css";
+import Link from "next/link";
+
+export const metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        
+        <div className="flex gap-5">
+          <Link href="/">Start</Link>
+          <Link href="/home">Home</Link>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
+        </div>
+        {children}</body>
+    </html>
+  );
+}
+
+
+=> Now, when we click on any link in the navbar, the navigation will be handled client-side by Next.js, preventing full page reloads and maintaining the SPA behavior.
+
+
+=> we will create a separate file for Navbar.js inside component
+
+
+=================================
+project1/src/components/Navbar.js
+=================================
+
+import Link from 'next/link';
+import React from 'react';
+
+const Navbar = () => {
+  return (
+    <div>
+      <div className="flex gap-5">
+        <Link href="/">Start</Link>
+        <Link href="/home">Home</Link>
+        <Link href="/about">About</Link>
+        <Link href="/contact">Contact</Link>
+      </div>
+    </div>
+  );
+};
+
+export default Navbar;
+
+
+=> we'll import this Navbar inside layout.js
+
+
+===========================
+project1/src/app/layout.js
+===========================
+
+import Navbar from "@/components/Navbar";
+import "./globals.css";
+
+export const metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        <Navbar/>
+        {children}</body>
+    </html>
+  );
+}
+
+
+
+=> If we create a Home.js inside the `about` folder, and then go to localhost:3000/about, we will not see the Home component. This is because Next.js uses the file name `page.js` to determine the route. we can import `Home` inside `page.js` and use it there to render the Home component.
+
+===============================
+project1/src/app/about/Home.js
+===============================
+import React from 'react'
+
+const Home = () => {
+  return (
+    <div>Home</div>
+  )
+}
+
+export default Home
+
+===============================
+project1/src/app/about/page.js
+===============================
+import React from 'react';
+import Home from './Home';
+
+const page = () => {
+  return (
+    <div>
+        <h1>This is about page element</h1>
+        <Home />
+    </div>
+  )
+}
+
+export default page
