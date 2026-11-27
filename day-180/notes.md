@@ -823,3 +823,136 @@ export default layout;
 **Lesson:** always match import paths to file names exactly (including case), even on Windows/macOS where it silently works, because Linux-based deployments and newer bundlers like Turbopack are case-sensitive.
 
 **Note (still pending):** this `layout.js`, just like `authLayout/layout.js`, renders its own `<html>`/`<body>` even though the root `src/app/layout.js` already renders them. Only the root layout should contain `<html>` and `<body>` — nested layouts should just return `{children}` wrapped in a normal element (like `<div>`), otherwise it causes nested `<html>`/`<body>` tags and a hydration/DOM-nesting error.
+
+=> now, lets create the `products` page under `mainLayout` and add a link to it in the `MainNav` component.
+
+=================================
+project1/src/app/mainLayout/products/page.js
+=================================
+
+import React from 'react'
+
+const page = () => {
+  return (
+    <div className='p-6'>
+        <h1>All Products Lists here</h1>
+        <div>lists</div>
+    </div>
+  )
+}
+
+export default page
+
+
+now, we should be able to navigate to the `products` page from the `MainNav` component. 
+
+=================================
+project1/src/components/MainNav.js
+=================================
+
+import Link from 'next/link'
+import React from 'react'
+
+const MainNav = () => {
+  return (
+    <div className='flex gap-5'>
+        <Link href="/mainLayout/home">
+          Home
+        </Link>
+        <Link href="/mainLayout/about">
+          About
+        </Link>
+        <Link href="/mainLayout/contact">
+          Contact
+        </Link>
+        <Link href="/mainLayout/products">
+          Products
+        </Link>
+    </div>
+  )
+}
+
+export default MainNav
+
+now, we will call API inside the `products` page to fetch and display the list of products.
+
+
+=================================
+project1/src/app/mainLayout/products/page.js
+=================================
+
+
+import React from 'react'
+
+const page = async () => {
+
+    let res = await fetch('https://fakestoreapi.com/products');
+    let data = await res.json();
+
+  return (
+    <div className='p-6'>
+        <h1>All Products Lists here</h1>
+        <div>
+          {data.map((product) => (
+            <h1 className='text-xl' key={product.id}>{product.title}</h1>
+          ))}
+        </div>
+    </div>
+  )
+}
+
+export default page
+
+
+now, if we want an onClick handler for each product, we can add it inside the `map` function like this:
+
+```javascript
+{data.map((product) => (
+  <h1 
+    className='text-xl' 
+    key={product.id}
+    onClick={() => console.log("Hello")}
+  >
+    {product.title}
+  </h1>
+))}
+```
+
+=> Now, we will get an error because `onClick` is not allowed on server components in Next.js 13. To fix this, we need to make the component a client component by adding `'use client'` at the top of the file.
+
+
+
+=================================
+project1/src/app/mainLayout/products/page.js
+=================================
+
+'use client'
+import React, {useState, useEffect} from 'react'
+
+const page = () => {
+
+    const [products, setProducts] = useState([]);
+
+    let data = async ()=>{
+        
+        let res = await fetch('https://fakestoreapi.com/products');
+        let data = await res.json();
+        setProducts(data);
+    }
+
+    useEffect(()=>{
+        data();
+    },[]);
+
+  return (
+    <div className='p-6'>
+        <h1>All Products Lists here</h1>
+        <div>
+          {products.map((elem) => (
+            <h1 className='text-xl' key={elem.id} onClick={() => console.log("Hello")}>{elem.title}</h1>
+          ))}
+        </div>
+    </div>
+  )
+}
+export default page

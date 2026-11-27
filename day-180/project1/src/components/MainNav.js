@@ -13,6 +13,9 @@ const MainNav = () => {
         <Link href="/mainLayout/contact">
           Contact
         </Link>
+        <Link href="/mainLayout/products">
+          Products
+        </Link>
     </div>
   )
 }
