@@ -403,3 +403,104 @@ const page = () => {
 }
 
 export default page
+
+
+
+
+
+
+=> This entire process is server side rendering, for example, when we import `useState` and try to use it inside the `page.js` component, it will not work as expected because `useState` is a client-side hook. To use client-side hooks like `useState`, `useEffect`, etc., we need to create a client component by adding `"use client";` at the top of the file.
+
+
+===============================
+project1/src/app/home/page.js
+===============================
+import React, { useState } from 'react';
+
+const page = () => {
+
+  const [count, setCount] = useState(0);
+  
+
+  return (
+    <div>
+      <h1>This is home page element</h1>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};
+
+export default page;
+
+
+=> here, we are using the `useState` hook inside the `page.js` component, which is a client-side feature. This will show error on my browser if we don't mark this component as a client component by adding `"use client";` at the top of the file.
+
+
+
+===============================
+project1/src/app/home/page.js
+===============================
+
+"use client";
+import React, { useState } from 'react';
+
+const page = () => {
+
+  const [count, setCount] = useState(0);
+  
+
+  return (
+    <div>
+      <h1>This is home page element</h1>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};
+
+export default page;
+
+
+=> till now, we got that the `page.js` is element and the folder name is the path. Routing is happening in Next.js based on the folder structure inside the `app` directory. So the `app` folder is base URL.
+
+
+=> Now, lets talk about dynamic routing in NextJs
+
+here , we have created two `dynamic routes` under the `home` folder, named `1` and `2`. These correspond to the URLs `/home/1` and `/home/2` respectively. but if we type `/home/3`, it will not work because we haven't created a route for `3`. To handle such cases dynamically, we can use square brackets to create a dynamic route, like `[id]`.
+
+
+===============================
+project1/src/app/home/[id]/page.js
+===============================
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>
+        <h1>This is common page jisme dynamic id aayegi</h1>
+    </div>
+  )
+}
+
+export default page
+
+
+=> Here, we have created a dynamic route using `[id]`. This means that any URL matching the pattern `/home/{id}` will be handled by this page. For example, `/home/1`, `/home/2`, `/home/3`, etc., will all render this page, and we can access the dynamic `id` inside the component if needed.
+
+===============================
+project1/src/app/home/[id]/page.js
+===============================
+
+import React from 'react'
+
+const page = async ({params}) => {
+    let {id} = await params;
+  return (
+    <div>
+        <h1>This is common page jisme dynamic id aayegi {id}</h1>
+    </div>
+  )
+}
+
+export default page
