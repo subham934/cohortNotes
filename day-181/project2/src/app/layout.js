@@ -1,6 +1,7 @@
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import { ThemeProvider } from '@/components/themeProvider';
+import { AuthProvider } from '@/context/authContext';
 
 export const metadata = {
   title: 'Create Next App',
@@ -11,15 +12,17 @@ export default function RootLayout({ children }) {
   return (
     <html suppressHydrationWarning lang="en" className={`h-full antialiased`}>
       <body className="min-h-full flex gap-5 flex-col">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          <div className="px-6 flex-1">{children}</div>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navbar />
+            <div className="px-6 flex-1">{children}</div>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

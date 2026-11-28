@@ -1280,6 +1280,55 @@ export default page;
 
 
 
+since the api `api.team-sync.space` is not working , what i've done is import the arTokens folder in project2 and running on `localhost:4000`, i've made below changes in code::
 
+=====================
+day-181/arTokens/.env
+=====================
+
+PORT=4000
+
+JWT_ACCESS_SECRET=your_secret_key_here
+JWT_REFRESH_SECRET=your_refresh_secret_key_here
+
+=====================
+day-181/arTokens/src/app.js
+=====================
+
+let express = require('express');
+let cookieParser = require('cookie-parser');
+let cors = require('cors');
+let authRoutes = require('./routes/auth.routes');
+let homeRoutes = require('./routes/home.routes');
+
+let app = express();
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'],
+    credentials: true
+}));
+
+app.use('/api/auth', authRoutes);
+app.use('/api/home', homeRoutes);
+
+module.exports = app;
+
+
+===========================
+day-181/project2/lib/api.js
+===========================
+
+import axios from 'axios';
+
+export let api = axios.create({
+  baseURL: 'http://localhost:4000',
+  withCredentials: true
+});
+
+
+now, we can clearly login and register, but there is an issue, it is that when I login , I redirect to home page, but I can still go to '/login' page , so the route is not protected, also , we shouldn't directly go to `/home` page, i can only go there after i login
+
+At first,we will do hydration::
 
 

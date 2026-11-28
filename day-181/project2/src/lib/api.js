@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from 'axios';
 
 export let api = axios.create({
-  baseURL: 'https://api.team-sync.space', 
+  baseURL: 'http://localhost:4000',
   withCredentials: true
 });
