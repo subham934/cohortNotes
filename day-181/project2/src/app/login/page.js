@@ -10,16 +10,23 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/authContext';
 
 const page = () => {
-
   let router = useRouter();
+  const { user, setUser, loading } = useAuth();
 
   const [formData, setFormData] = useState({});
-  // console.log(formData);
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/home');
+    }
+  }, [user, loading, router]);
+
   let handleChange = (e) => {
     let { name, value } = e.target;
     setFormData({
@@ -32,10 +39,10 @@ const page = () => {
     e.preventDefault();
     try {
       let res = await api.post('/api/auth/login', formData);
-      // console.log(res)
+      setUser(res.data.user);
       router.push('/home');
     } catch (error) {
-      console.log("Error in Login", error)
+      console.log("Error in Login", error);
     }
   };
 
